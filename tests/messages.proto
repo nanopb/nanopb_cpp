@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message StringContainer {
+  string str = 1;
+}
+
+message MapUint32StringContainer {
+  map<uint32, string> map = 1;
+}
+
+message MapStringStringContainer {
+  map<string, string> map = 1;
+}
