@@ -4,7 +4,8 @@
 #include "tests/helpers.h"
 
 using MapType = std::map<std::string, std::string>;
-using MapConverter = NanoPb::Converter::GenericMapConverter<MapType, MapStringStringContainer_MapEntry>;
+using MapConverter = NanoPb::Converter::GenericMapConverter<
+        MapType, MapStringStringContainer_MapEntry, &MapStringStringContainer_MapEntry_msg>;
 
 int main() {
     MapType originalMap = {
@@ -16,7 +17,6 @@ int main() {
     {
         MapConverter::EncoderContext ctx(
                 &originalMap,
-                &MapStringStringContainer_MapEntry_msg,
                 [](auto &k, auto &v) {
                     return MapConverter::ProtoMapEntry {
                             .key = NanoPb::Converter::StringConverter::encoder(&k),
@@ -36,7 +36,6 @@ int main() {
 
         MapConverter::DecoderContext ctx(
                 &decodedMap,
-                &MapStringStringContainer_MapEntry_msg,
                 [](auto &k, auto &v) {
                     return MapConverter::ProtoMapEntry {
                         // both

@@ -51,7 +51,7 @@ namespace NanoPb {
         /**
         * GenericMapConverter
         */
-        template<class MAP, class PROTO_MAP_ENTRY>
+        template<class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
         class GenericMapConverter
         {
         private:
@@ -68,10 +68,9 @@ namespace NanoPb {
             template<typename CONTEXT_MAP_PTR, class INITIALIZER>
             struct Context {
                 CONTEXT_MAP_PTR map;
-                const pb_msgdesc_t* msgDesc;
                 INITIALIZER initializerFunction;
-                Context(CONTEXT_MAP_PTR map, const pb_msgdesc_t *msgDesc, const INITIALIZER &initializer) :
-                        map(map), msgDesc(msgDesc), initializerFunction(initializer) {}
+                Context(CONTEXT_MAP_PTR map, const INITIALIZER &initializer) :
+                        map(map), initializerFunction(initializer) {}
             };
         public:
             using ProtoMapEntry = PROTO_MAP_ENTRY;
@@ -79,9 +78,9 @@ namespace NanoPb {
 
             struct DecoderContext : public Context<MapType*, DecoderEntryInitializerFunction> {
                 DecoderMapPairFunction mapPairFunction;
-                DecoderContext(MapType *map, const pb_msgdesc_t *msgDesc,
+                DecoderContext(MapType *map,
                                const DecoderEntryInitializerFunction &initializerFunction, const DecoderMapPairFunction& mapPairFunction)
-                        : Context<MapType*, DecoderEntryInitializerFunction>(map, msgDesc, initializerFunction), mapPairFunction(mapPairFunction) {}
+                        : Context<MapType *, DecoderEntryInitializerFunction>(map, initializerFunction), mapPairFunction(mapPairFunction) {}
             };
 
             static pb_callback_t encoder(const EncoderContext* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
@@ -100,7 +99,7 @@ namespace NanoPb {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    if (!pb_encode_submessage(stream, ctx->msgDesc, &entry))
+                    if (!pb_encode_submessage(stream, PROTO_MAP_ENTRY_MSG, &entry))
                         return false;
                 }
                 return true;
@@ -111,7 +110,7 @@ namespace NanoPb {
                 KeyType key;
                 ValueType value;
                 PROTO_MAP_ENTRY entry = ctx->initializerFunction(key, value);
-                if (!pb_decode(stream, ctx->msgDesc, &entry)) {
+                if (!pb_decode(stream, PROTO_MAP_ENTRY_MSG, &entry)) {
                     return false;
                 }
                 ctx->map->insert(ctx->mapPairFunction(entry, key, value));
