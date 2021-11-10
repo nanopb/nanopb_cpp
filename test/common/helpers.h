@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "pb.h"
-#include "messages.pb.h"
 
 #ifdef NDEBUG
 #error Tests should be compiled in debug mode

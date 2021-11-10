@@ -1,7 +1,8 @@
 #include <iostream>
 
 #include "nanopb_cpp.h"
-#include "tests/helpers.h"
+#include "test_string.pb.h"
+#include "helpers.h"
 
 int main() {
     std::string originalString = "My super string";

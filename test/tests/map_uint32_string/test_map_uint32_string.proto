@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message MapUint32StringContainer {
+  map<uint32, string> map = 1;
+}
