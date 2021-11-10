@@ -18,7 +18,7 @@ int main() {
                 &originalMap,
                 &MapUint32StringContainer_MapEntry_msg,
                 [](auto &k, auto &v) {
-                    return MapUint32StringContainer_MapEntry{
+                    return MapConverter::ProtoMapEntry{
                             .key = k,
                             .value = NanoPb::Converter::StringConverter::encoder(&v)
                     };
@@ -38,7 +38,7 @@ int main() {
                 &decodedMap,
                 &MapUint32StringContainer_MapEntry_msg,
                 [](auto &k, auto &v ) {
-                    return MapUint32StringContainer_MapEntry{
+                    return MapConverter::ProtoMapEntry{
                         // We have ony value as callback, so initialize decoder only on it
                         // key will be decoded by the nanopb
                         .value = NanoPb::Converter::StringConverter::decoder(&v)

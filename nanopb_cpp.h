@@ -74,6 +74,7 @@ namespace NanoPb {
                         map(map), msgDesc(msgDesc), initializerFunction(initializer) {}
             };
         public:
+            using ProtoMapEntry = PROTO_MAP_ENTRY;
             using EncoderContext = Context<const MapType*, EncoderEntryInitializerFunction>;
 
             struct DecoderContext : public Context<MapType*, DecoderEntryInitializerFunction> {

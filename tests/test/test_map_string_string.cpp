@@ -18,7 +18,7 @@ int main() {
                 &originalMap,
                 &MapStringStringContainer_MapEntry_msg,
                 [](auto &k, auto &v) {
-                    return MapStringStringContainer_MapEntry{
+                    return MapConverter::ProtoMapEntry {
                             .key = NanoPb::Converter::StringConverter::encoder(&k),
                             .value = NanoPb::Converter::StringConverter::encoder(&v)
                     };
@@ -38,7 +38,7 @@ int main() {
                 &decodedMap,
                 &MapStringStringContainer_MapEntry_msg,
                 [](auto &k, auto &v) {
-                    return MapStringStringContainer_MapEntry{
+                    return MapConverter::ProtoMapEntry {
                         // both
                         .key = NanoPb::Converter::StringConverter::decoder(&k),
                         .value = NanoPb::Converter::StringConverter::decoder(&v)
