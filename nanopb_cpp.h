@@ -10,7 +10,7 @@
 
 #ifndef NANOPB_CPP_ASSERT
 #ifndef NDEBUG
-#include <assert.h>
+#include <cassert>
 #define NANOPB_CPP_ASSERT(expr) assert(expr)
 #else
 #define _nanopb_cpp_unused(x) ((void)(x))
@@ -86,7 +86,7 @@ namespace NanoPb {
             static pb_callback_t encoder(const EncoderContext* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
             static pb_callback_t decoder(DecoderContext* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
         private:
-            GenericMapConverter() {}
+            GenericMapConverter() = default;
 
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
                 auto ctx = static_cast<const EncoderContext*>(*arg);
@@ -105,7 +105,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, void **arg){
+            static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, void **arg){
                 auto ctx = static_cast<DecoderContext*>(*arg);
                 KeyType key;
                 ValueType value;
