@@ -75,18 +75,20 @@ namespace NanoPb {
 
 
         /**
-         * Abstract converter for message
+         * Abstract proto message converter
          */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class AbstractMessageConverter {
-        protected:
+        public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
         public:
+            static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
+
             static ProtoType encoderInit(const LocalType& local){ return CONVERTER::_encoderInit(local); };
             static ProtoType decoderInit(LocalType& local){ return CONVERTER::_decoderInit(local); };
-            static void decoderApply(const ProtoType& proto, LocalType& local){ return CONVERTER::_decoderApply(proto, local); };
+            static bool decoderApply(const ProtoType& proto, LocalType& local){ return CONVERTER::_decoderApply(proto, local); };
         };
 
 
@@ -253,7 +255,7 @@ namespace NanoPb {
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
 
                 for (auto &item: *arg) {
-                    ProtoEntryType protoEntry = CONVERTER::_encoderInitializer(item);
+                    ProtoEntryType protoEntry = CONVERTER::_encoderInit(item);
 
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -266,7 +268,7 @@ namespace NanoPb {
 
             static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, LocalType *arg){
                 LocalEntryType localEntry;
-                ProtoEntryType protoEntry = CONVERTER::_decoderInitializer(localEntry);
+                ProtoEntryType protoEntry = CONVERTER::_decoderInit(localEntry);
                 if (!pb_decode(stream, PROTO_ENTRY_MSG, &protoEntry)) {
                     return false;
                 }
