@@ -12,7 +12,7 @@ int testRepeated(typename CONTAINER::value_type minValue, typename CONTAINER::va
 
     int status = 0;
 
-    CONTAINER original = {minValue, 0, 1 , 2, 3, 4, 5, maxValue};
+    const CONTAINER original = {minValue, 0, 1 , 2, 3, 4, 5, maxValue};
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 

@@ -40,7 +40,7 @@ private:
 int main() {
     int status = 0;
 
-    MapType originalMap = {
+    const MapType originalMap = {
             {"key_1", "value_1" },
             {"key_2", "value_2" }
     };

@@ -43,7 +43,7 @@ private:
 int main() {
     int status = 0;
 
-    MapType originalMap = {
+    const MapType originalMap = {
             {1, "value_1" },
             {2, "value_2" }
     };

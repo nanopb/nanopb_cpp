@@ -11,7 +11,7 @@ template <class CONTAINER>
 int testRepeated(const typename CONTAINER::value_type minValue, const typename CONTAINER::value_type maxValue){
     int status = 0;
 
-    CONTAINER original = {minValue, 0, 1 , 2, 3, 4, 5, maxValue};
+    const CONTAINER original = {minValue, 0, 1 , 2, 3, 4, 5, maxValue};
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 

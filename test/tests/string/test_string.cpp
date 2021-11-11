@@ -4,7 +4,7 @@
 int main() {
     int status = 0;
 
-    std::string originalString = "My super string";
+    const std::string originalString = "My super string";
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
