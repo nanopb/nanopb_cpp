@@ -1,9 +1,42 @@
 #include "tests_common.h"
 #include "test_map_uint32_string.pb.h"
 
+using namespace NanoPb::Converter;
+
 using MapType = std::map<uint32_t, std::string>;
-using MapConverter = NanoPb::Converter::GenericMapConverter<
-        MapType, MapUint32StringContainer_MapEntry, &MapUint32StringContainer_MapEntry_msg>;
+
+class MapConverter : public AbstractMapConverter<
+        MapConverter,
+        MapType,
+        MapUint32StringContainer_MapEntry,
+        &MapUint32StringContainer_MapEntry_msg
+        >
+{
+private:
+    friend class AbstractMapConverter;
+
+    static ProtoMapEntry _encoderInitializer(const KeyType& key, const ValueType& value){
+        return ProtoMapEntry{
+                .key = key,
+                .value = StringConverter::encoder(&value)
+        };
+    }
+
+    static ProtoMapEntry _decoderInitializer(KeyType& key, ValueType& value){
+        return ProtoMapEntry{
+                // key is scalar type and will be decoded by nanopb, so we don't need to initialize it
+                // value is callback type
+                .value = StringConverter::decoder(&value)
+        };
+    }
+
+    static PairType _decoderCreateMapPair(const ProtoMapEntry& entry, const KeyType&, const ValueType& value){
+        // We take scalar type key directly from  entry
+        // and take value which had callback decoder from callback result
+        return LocalMapPair(entry.key, value);
+    }
+
+};
 
 int main() {
     int status = 0;
@@ -15,17 +48,8 @@ int main() {
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        MapConverter::EncoderContext ctx(
-                &originalMap,
-                [](auto &k, auto &v) {
-                    return MapConverter::ProtoMapEntry{
-                            .key = k,
-                            .value = NanoPb::Converter::StringConverter::encoder(&v)
-                    };
-                });
-
         MapUint32StringContainer msg = {
-                .map = MapConverter::encoder(&ctx)
+                .map = MapConverter::encoder(&originalMap)
         };
 
         TEST(pb_encode(&outputStream, &MapUint32StringContainer_msg, &msg));
@@ -34,21 +58,8 @@ int main() {
     {
         MapType decodedMap;
 
-        MapConverter::DecoderContext ctx(
-                &decodedMap,
-                [](auto &k, auto &v ) {
-                    return MapConverter::ProtoMapEntry{
-                        // We have ony value as callback, so initialize decoder only on it
-                        // key will be decoded by the nanopb
-                        .value = NanoPb::Converter::StringConverter::decoder(&v)
-                    };
-                },
-                [](auto &e, auto &k, auto &v){
-                    return MapConverter::LocalMapPair(e.key, v);
-                });
-
         MapUint32StringContainer msg = {
-                .map = MapConverter::decoder(&ctx)
+                .map = MapConverter::decoder(&decodedMap)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());

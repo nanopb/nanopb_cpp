@@ -109,51 +109,31 @@ namespace NanoPb {
         };
 
         /**
-        * GenericMapConverter
-        */
-        template<class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
-        class GenericMapConverter
-        {
-        private:
+         * AbstractMapConverter
+         */
+        template<class CONVERTER, class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
+        class AbstractMapConverter {
+        protected:
             using MapType = MAP;
 
             using KeyType = typename MapType::key_type;
             using ValueType = typename MapType::mapped_type;
             using PairType = typename MapType::value_type;
 
-            using EncoderEntryInitializerFunction = std::function<PROTO_MAP_ENTRY(const KeyType&, const ValueType&)>;
-            using DecoderEntryInitializerFunction = std::function<PROTO_MAP_ENTRY(KeyType&, ValueType&)>;
-            using DecoderMapPairFunction = std::function<PairType(const PROTO_MAP_ENTRY& entry, const KeyType&, const ValueType&)>;
-
-            template<typename CONTEXT_MAP_PTR, class INITIALIZER>
-            struct Context {
-                CONTEXT_MAP_PTR map;
-                INITIALIZER initializerFunction;
-                Context(CONTEXT_MAP_PTR map, const INITIALIZER &initializer) :
-                        map(map), initializerFunction(initializer) {}
-            };
         public:
             using ProtoMapEntry = PROTO_MAP_ENTRY;
             using LocalMapPair = PairType;
-            using EncoderContext = Context<const MapType*, EncoderEntryInitializerFunction>;
 
-            struct DecoderContext : public Context<MapType*, DecoderEntryInitializerFunction> {
-                DecoderMapPairFunction mapPairFunction;
-                DecoderContext(MapType *map,
-                               const DecoderEntryInitializerFunction &initializerFunction, const DecoderMapPairFunction& mapPairFunction)
-                        : Context<MapType *, DecoderEntryInitializerFunction>(map, initializerFunction), mapPairFunction(mapPairFunction) {}
-            };
-
-            static pb_callback_t encoder(const EncoderContext* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
-            static pb_callback_t decoder(DecoderContext* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
+            static pb_callback_t encoder(const MapType* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
+            static pb_callback_t decoder(MapType* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
         private:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                auto ctx = static_cast<const EncoderContext*>(*arg);
-                for (auto &kv: *ctx->map) {
+                auto map = static_cast<const MapType*>(*arg);
+                for (auto &kv: *map) {
                     auto &key = kv.first;
                     auto &value = kv.second;
 
-                    PROTO_MAP_ENTRY entry = ctx->initializerFunction(key, value);
+                    PROTO_MAP_ENTRY entry = CONVERTER::_encoderInitializer(key, value);
 
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -165,19 +145,18 @@ namespace NanoPb {
             }
 
             static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, void **arg){
-                auto ctx = static_cast<DecoderContext*>(*arg);
+                auto map = static_cast<MapType*>(*arg);
                 KeyType key;
                 ValueType value;
-                PROTO_MAP_ENTRY entry = ctx->initializerFunction(key, value);
+                PROTO_MAP_ENTRY entry = CONVERTER::_decoderInitializer(key, value);
                 if (!pb_decode(stream, PROTO_MAP_ENTRY_MSG, &entry)) {
                     return false;
                 }
-                ctx->map->insert(ctx->mapPairFunction(entry, key, value));
+                map->insert(CONVERTER::_decoderCreateMapPair(entry, key, value));
 
                 return true;
             }
         };
-
     }
 }
 

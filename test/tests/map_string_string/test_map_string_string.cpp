@@ -1,9 +1,39 @@
 #include "tests_common.h"
 #include "test_map_string_string.pb.h"
 
+using namespace NanoPb::Converter;
+
 using MapType = std::map<std::string, std::string>;
-using MapConverter = NanoPb::Converter::GenericMapConverter<
-        MapType, MapStringStringContainer_MapEntry, &MapStringStringContainer_MapEntry_msg>;
+
+class MapConverter : public AbstractMapConverter<
+        MapConverter,
+        MapType,
+        MapStringStringContainer_MapEntry,
+        &MapStringStringContainer_MapEntry_msg
+>
+{
+private:
+    friend class AbstractMapConverter;
+
+    static ProtoMapEntry _encoderInitializer(const KeyType& key, const ValueType& value){
+        return ProtoMapEntry{
+                .key = StringConverter::encoder(&key),
+                .value = StringConverter::encoder(&value)
+        };
+    }
+
+    static ProtoMapEntry _decoderInitializer(KeyType& key, ValueType& value){
+        return ProtoMapEntry{
+                .key = StringConverter::decoder(&key),
+                .value = StringConverter::decoder(&value)
+        };
+    }
+
+    static PairType _decoderCreateMapPair(const ProtoMapEntry& entry, const KeyType& key, const ValueType& value){
+        return LocalMapPair(key, value);
+    }
+
+};
 
 int main() {
     int status = 0;
@@ -15,17 +45,8 @@ int main() {
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        MapConverter::EncoderContext ctx(
-                &originalMap,
-                [](auto &k, auto &v) {
-                    return MapConverter::ProtoMapEntry {
-                            .key = NanoPb::Converter::StringConverter::encoder(&k),
-                            .value = NanoPb::Converter::StringConverter::encoder(&v)
-                    };
-                });
-
         MapStringStringContainer msg = {
-                .map = MapConverter::encoder(&ctx)
+                .map = MapConverter::encoder(&originalMap)
         };
 
         TEST(pb_encode(&outputStream, &MapStringStringContainer_msg, &msg));
@@ -34,22 +55,8 @@ int main() {
     {
         MapType decodedMap;
 
-        MapConverter::DecoderContext ctx(
-                &decodedMap,
-                [](auto &k, auto &v) {
-                    return MapConverter::ProtoMapEntry {
-                        // both
-                        .key = NanoPb::Converter::StringConverter::decoder(&k),
-                        .value = NanoPb::Converter::StringConverter::decoder(&v)
-                    };
-                },
-                [](auto &e, auto &k, auto &v){
-                    // we ignore entry because key and value were decoded by the callbacks
-                    return MapConverter::LocalMapPair(k, v);
-                });
-
         MapStringStringContainer msg = {
-                .map = MapConverter::decoder(&ctx)
+                .map = MapConverter::decoder(&decodedMap)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
