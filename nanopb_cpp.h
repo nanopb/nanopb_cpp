@@ -84,8 +84,8 @@ namespace NanoPb {
             using ProtoType = PROTO_TYPE;
 
         public:
-            static void encoderInit(ProtoType& proto, const LocalType& local){ return CONVERTER::_encoderInit(proto, local); };
-            static void decoderInit(ProtoType& proto, LocalType& local){ return CONVERTER::_decoderInit(proto, local); };
+            static ProtoType encoderInit(const LocalType& local){ return CONVERTER::_encoderInit(local); };
+            static ProtoType decoderInit(LocalType& local){ return CONVERTER::_decoderInit(local); };
             static void decoderApply(const ProtoType& proto, LocalType& local){ return CONVERTER::_decoderApply(proto, local); };
         };
 

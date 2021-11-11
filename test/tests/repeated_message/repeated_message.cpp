@@ -28,14 +28,18 @@ class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageIt
 private:
     friend class AbstractMessageConverter;
 
-    static void _encoderInit(ProtoType& proto, const LocalType& local){
-        proto.number = local.number;
-        proto.text = StringConverter::encoder(&local.text);
-    };
+    static ProtoType _encoderInit(ProtoType& proto, const LocalType& local) {
+        return ProtoType{
+                .number = local.number,
+                .text = StringConverter::encoder(&local.text)
+        };
+    }
 
-    static void _decoderInit(ProtoType& proto, LocalType& local){
-        proto.text = StringConverter::decoder(&local.text);
-    };
+    static ProtoType _decoderInit(ProtoType& proto, LocalType& local){
+        return ProtoType{
+            .text = StringConverter::decoder(&local.text)
+        };
+    }
 
     static void _decoderApply(const ProtoType& proto, LocalType& local){
         local.number = proto.number;
