@@ -36,13 +36,13 @@ jobs:
       - name: Installing dependencies for local act
         if: ${{ env.ACT }}
         run: |
-          apt update
-          apt install -y cmake
-          apt install -y build-essential
+          sudo apt update
+          sudo apt install -y cmake
+          sudo apt install -y build-essential
 
       - name: Installing common dependencies
         run: |
-          apt install -y python3-protobuf protobuf-compiler
+          sudo apt install -y python3-protobuf protobuf-compiler
 
       - name: Setup build vars
         run: |
