@@ -1,5 +1,5 @@
 syntax = "proto3";
 
-message RepeatedUint32Container {
-  repeated uint32 values = 1;
+message RepeatedUnsignedContainer {
+  repeated uint64 values = 1;
 }
