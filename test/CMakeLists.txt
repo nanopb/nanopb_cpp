@@ -21,6 +21,8 @@ find_package(Nanopb REQUIRED)
 #        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*
 #        )
 
+add_definitions(-Wall)
+
 add_subdirectory(tests/enum)
 add_subdirectory(tests/map_string_string)
 add_subdirectory(tests/map_uint32_string)
