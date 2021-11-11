@@ -226,6 +226,48 @@ namespace NanoPb {
         };
 
         /**
+         * Repeated message converter
+         */
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_ENTRY_TYPE, const pb_msgdesc_t* PROTO_ENTRY_MSG>
+        class AbstractRepeatedMessageConverter : public AbstractCallbackConverter<AbstractRepeatedMessageConverter<CONVERTER, LOCAL_TYPE, PROTO_ENTRY_TYPE, PROTO_ENTRY_MSG>,LOCAL_TYPE>
+        {
+        protected:
+            using LocalType = LOCAL_TYPE;
+            using LocalEntryType = typename LOCAL_TYPE::value_type;
+            using ProtoEntryType = PROTO_ENTRY_TYPE;
+        private:
+            friend class AbstractCallbackConverter<AbstractRepeatedMessageConverter<CONVERTER, LOCAL_TYPE, ProtoEntryType, PROTO_ENTRY_MSG>,LOCAL_TYPE>;
+
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
+
+                for (auto &item: *arg) {
+                    ProtoEntryType protoEntry = CONVERTER::_encoderInitializer(item);
+
+                    if (!pb_encode_tag_for_field(stream, field))
+                        return false;
+
+                    if (!pb_encode_submessage(stream, PROTO_ENTRY_MSG, &protoEntry))
+                        return false;
+                }
+                return true;
+            }
+
+            static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, LocalType *arg){
+                LocalEntryType localEntry;
+                ProtoEntryType protoEntry = CONVERTER::_decoderInitializer(localEntry);
+                if (!pb_decode(stream, PROTO_ENTRY_MSG, &protoEntry)) {
+                    return false;
+                }
+                if (!CONVERTER::_decoderApply(protoEntry, localEntry)){
+                    return false;
+                }
+                arg->push_back(localEntry);
+
+                return true;
+            }
+        };
+
+        /**
          * AbstractMapConverter
          */
         template<class CONVERTER, class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
