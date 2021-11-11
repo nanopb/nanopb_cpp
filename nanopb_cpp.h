@@ -2,8 +2,6 @@
 #define NANOPB_CPP_NANOPB_CPP_H
 
 #include <string>
-#include <map>
-#include <functional>
 #include <memory>
 
 #include "pb.h"

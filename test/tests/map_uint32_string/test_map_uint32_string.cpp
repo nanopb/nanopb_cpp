@@ -1,3 +1,5 @@
+#include <map>
+
 #include "tests_common.h"
 #include "test_map_uint32_string.pb.h"
 
