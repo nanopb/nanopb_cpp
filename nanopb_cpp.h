@@ -19,6 +19,33 @@
 #endif
 
 namespace NanoPb {
+
+    using BufferType = std::string;
+    using BufferPtr = std::unique_ptr<BufferType>;
+
+
+    /**
+     * StringOutputStream
+     */
+    class StringOutputStream : public pb_ostream_t {
+    public:
+        StringOutputStream(size_t maxSize);
+        BufferPtr release();
+    private:
+        BufferPtr _buffer;
+    };
+
+    /**
+     * StringInputStream
+     */
+    class StringInputStream : public pb_istream_t {
+    public:
+        StringInputStream(BufferPtr&& buffer);
+    private:
+        BufferPtr _buffer;
+        size_t _position;
+    };
+
     namespace Converter {
         /**
          * AbstractSingleArgConverter

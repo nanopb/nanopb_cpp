@@ -13,7 +13,7 @@ int main() {
             {1, "value_1" },
             {2, "value_2" }
     };
-    OutputStream outputStream;
+    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
         MapConverter::EncoderContext ctx(
@@ -29,7 +29,7 @@ int main() {
                 .map = MapConverter::encoder(&ctx)
         };
 
-        NANOPB_CPP_ASSERT(pb_encode(outputStream.getStream(), &MapUint32StringContainer_msg, &msg));
+        NANOPB_CPP_ASSERT(pb_encode(&outputStream, &MapUint32StringContainer_msg, &msg));
     }
 
     {
@@ -52,9 +52,9 @@ int main() {
                 .map = MapConverter::decoder(&ctx)
         };
 
-        pb_istream_t stream = pb_istream_from_buffer(outputStream.getData(), outputStream.getDataSize());
+        auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        NANOPB_CPP_ASSERT(pb_decode(&stream, &MapUint32StringContainer_msg, &msg));
+        NANOPB_CPP_ASSERT(pb_decode(&inputStream, &MapUint32StringContainer_msg, &msg));
 
         NANOPB_CPP_ASSERT(originalMap == decodedMap);
     }

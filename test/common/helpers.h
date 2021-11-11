@@ -10,15 +10,6 @@
 #error Tests should be compiled in debug mode
 #endif
 
-class OutputStream {
-public:
-    OutputStream();
-    pb_ostream_t* getStream();
-    const pb_byte_t * getData();
-    size_t getDataSize();
-private:
-    std::unique_ptr<std::string> _strBuffer;
-    std::unique_ptr<pb_ostream_t> _ostream;
-};
+#define STRING_BUFFER_STREAM_MAX_SIZE 65535
 
 #endif //NANOPB_CPP_HELPERS_H
