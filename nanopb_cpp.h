@@ -53,7 +53,7 @@ namespace NanoPb {
          * AbstractSingleArgConverter
          */
         template<class CONVERTER, class ARG>
-        class AbstractSingleArgConverter {
+        class AbstractCallbackConverter {
         public:
             static pb_callback_t encoder(const ARG* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
             static pb_callback_t decoder(ARG* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
@@ -70,9 +70,9 @@ namespace NanoPb {
         /**
          * StringConverter
          */
-        class StringConverter : public AbstractSingleArgConverter<StringConverter, std::string> {
+        class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         private:
-            friend class AbstractSingleArgConverter;
+            friend class AbstractCallbackConverter;
             static bool encode(pb_ostream_t *stream, const pb_field_t *field, const std::string *arg);
             static bool decode(pb_istream_t *stream, const pb_field_t *field, std::string *arg);
         };
