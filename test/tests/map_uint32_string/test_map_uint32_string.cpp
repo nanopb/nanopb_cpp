@@ -44,7 +44,7 @@ int main() {
                     };
                 },
                 [](auto &e, auto &k, auto &v){
-                    return MapType::value_type(e.key, v);
+                    return MapConverter::LocalMapPair(e.key, v);
                 });
 
         MapUint32StringContainer msg = {

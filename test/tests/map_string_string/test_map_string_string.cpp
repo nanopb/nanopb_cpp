@@ -45,7 +45,7 @@ int main() {
                 },
                 [](auto &e, auto &k, auto &v){
                     // we ignore entry because key and value were decoded by the callbacks
-                    return MapType::value_type(k, v);
+                    return MapConverter::LocalMapPair(k, v);
                 });
 
         MapStringStringContainer msg = {
