@@ -23,7 +23,7 @@ find_package(Nanopb REQUIRED)
 
 set (CMAKE_CXX_STANDARD 11)
 
-add_definitions(-Wall)
+add_definitions(-Werror -Wall)
 
 add_subdirectory(tests/enum)
 add_subdirectory(tests/map_string_string)
