@@ -64,7 +64,7 @@ namespace NanoPb {
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
         class AbstractScalarConverter {
-        public:
+        protected:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
@@ -81,7 +81,7 @@ namespace NanoPb {
          */
         template<class CONVERTER, class LOCAL_TYPE>
         class AbstractCallbackConverter {
-        public:
+        protected:
             using LocalType = LOCAL_TYPE;
         public:
             static pb_callback_t encoder(const LocalType* arg) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)arg }; }
@@ -112,7 +112,7 @@ namespace NanoPb {
         template<class CONVERTER, class LOCAL_TYPE>
         class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>
         {
-        public:
+        protected:
             using LocalType = LOCAL_TYPE;
             using LocalEntryType = typename LocalType::value_type;
 
@@ -277,8 +277,6 @@ namespace NanoPb {
             using KeyType = typename MAP::key_type;
             using ValueType = typename MAP::mapped_type;
             using PairType = typename MAP::value_type;
-
-        public:
             using LocalType = MAP;
             using LocalMapPair = typename MAP::value_type;
             using ProtoMapEntry = PROTO_MAP_ENTRY;
