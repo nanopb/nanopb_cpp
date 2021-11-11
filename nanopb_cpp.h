@@ -75,6 +75,22 @@ namespace NanoPb {
 
 
         /**
+         * Abstract converter for message
+         */
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
+        class AbstractMessageConverter {
+        protected:
+            using LocalType = LOCAL_TYPE;
+            using ProtoType = PROTO_TYPE;
+
+        public:
+            static void encoderInit(ProtoType& proto, const LocalType& local){ return CONVERTER::_encoderInit(proto, local); };
+            static void decoderInit(ProtoType& proto, LocalType& local){ return CONVERTER::_decoderInit(proto, local); };
+            static void decoderApply(const ProtoType& proto, LocalType& local){ return CONVERTER::_decoderApply(proto, local); };
+        };
+
+
+        /**
          * Abstract Callback converter factory
          *
          *  See StringConverter for the example implementation

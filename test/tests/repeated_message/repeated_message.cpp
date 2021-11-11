@@ -5,24 +5,42 @@
 
 using namespace NanoPb::Converter;
 
-struct LocalMessageItem {
+struct LocalInnerMessage {
     uint32_t number = 0;
     std::string text;
 
-    LocalMessageItem() = default; // Default constructor is required
-    LocalMessageItem(uint32_t number, const std::string &text) : number(number), text(text) {}
+    LocalInnerMessage() = default; // Default constructor is required
+    LocalInnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
 
-    bool operator==(const LocalMessageItem &rhs) const {
+    bool operator==(const LocalInnerMessage &rhs) const {
         return number == rhs.number &&
                text == rhs.text;
     }
 
-    bool operator!=(const LocalMessageItem &rhs) const {
+    bool operator!=(const LocalInnerMessage &rhs) const {
         return !(rhs == *this);
     }
 };
 
-using LocalMessageContainer = std::vector<LocalMessageItem>;
+using LocalMessageContainer = std::vector<LocalInnerMessage>;
+
+class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageItemConverter, LocalInnerMessage, InnerMessage> {
+private:
+    friend class AbstractMessageConverter;
+
+    static void _encoderInit(ProtoType& proto, const LocalType& local){
+        proto.number = local.number;
+        proto.text = StringConverter::encoder(&local.text);
+    };
+
+    static void _decoderInit(ProtoType& proto, LocalType& local){
+        proto.text = StringConverter::decoder(&local.text);
+    };
+
+    static void _decoderApply(const ProtoType& proto, LocalType& local){
+        local.number = proto.number;
+    }
+};
 
 class RepeatedMessageContainerConverter : public AbstractRepeatedMessageConverter<
         RepeatedMessageContainerConverter,
@@ -59,9 +77,9 @@ int main() {
     int status = 0;
 
     const LocalMessageContainer original = {
-            LocalMessageItem(1 , "entry_1"),
-            LocalMessageItem(2 , "entry_1"),
-            LocalMessageItem(UINT32_MAX , "entry_max"),
+            LocalInnerMessage(1 , "entry_1"),
+            LocalInnerMessage(2 , "entry_1"),
+            LocalInnerMessage(UINT32_MAX , "entry_max"),
     };
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
