@@ -24,23 +24,6 @@ NanoPb::BufferPtr NanoPb::StringOutputStream::release() {
     return std::move(_buffer);
 }
 
-bool NanoPb::Converter::StringConverter::_encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg) {
-    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
-    if (!pb_encode_tag_for_field(stream, field))
-        return false;
-    return pb_encode_string(stream, (const pb_byte_t *) arg->c_str(), arg->size());
-}
-
-bool NanoPb::Converter::StringConverter::_decode(pb_istream_t *stream, const pb_field_t *field, LocalType *arg) {
-    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
-    size_t len = stream->bytes_left;
-    arg->resize(len);
-    if (!pb_read(stream, (uint8_t *) arg->data(), len)) {
-        return false;
-    }
-    return true;
-}
-
 NanoPb::StringInputStream::StringInputStream(BufferPtr &&buffer) : _buffer(std::move(buffer)), _position(0) {
     callback = +[](pb_istream_t *stream, pb_byte_t *buf, size_t count) -> bool {
         auto self = static_cast<NanoPb::StringInputStream *>(stream->state);
@@ -63,4 +46,21 @@ NanoPb::StringInputStream::StringInputStream(BufferPtr &&buffer) : _buffer(std::
 #ifndef PB_NO_ERRMSG
     errmsg = NULL;
 #endif
+}
+
+bool NanoPb::Converter::StringConverter::_encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg) {
+    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
+    if (!pb_encode_tag_for_field(stream, field))
+        return false;
+    return pb_encode_string(stream, (const pb_byte_t *) arg->c_str(), arg->size());
+}
+
+bool NanoPb::Converter::StringConverter::_decode(pb_istream_t *stream, const pb_field_t *field, LocalType *arg) {
+    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
+    size_t len = stream->bytes_left;
+    arg->resize(len);
+    if (!pb_read(stream, (uint8_t *) arg->data(), len)) {
+        return false;
+    }
+    return true;
 }

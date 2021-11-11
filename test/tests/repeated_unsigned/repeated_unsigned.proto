@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message RepeatedUint32Container {
+  repeated uint32 values = 1;
+}
