@@ -115,8 +115,6 @@ namespace NanoPb {
             static pb_callback_t encoder(const EncoderContext* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
             static pb_callback_t decoder(DecoderContext* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
         private:
-            GenericMapConverter() = default;
-
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
                 auto ctx = static_cast<const EncoderContext*>(*arg);
                 for (auto &kv: *ctx->map) {
