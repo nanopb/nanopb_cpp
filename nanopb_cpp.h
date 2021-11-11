@@ -77,20 +77,24 @@ namespace NanoPb {
 
 
         /**
-         * AbstractSingleArgConverter
+         * Abstract Callback converter factory
+         *
+         *  See StringConverter for the example implementation
          */
-        template<class CONVERTER, class ARG>
+        template<class CONVERTER, class LOCAL_TYPE>
         class AbstractCallbackConverter {
         public:
-            static pb_callback_t encoder(const ARG* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
-            static pb_callback_t decoder(ARG* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
+            using LocalType = LOCAL_TYPE;
+        public:
+            static pb_callback_t encoder(const LocalType* arg) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)arg }; }
+            static pb_callback_t decoder(LocalType* arg) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)arg }; }
 
         private:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return CONVERTER::encode(stream, field, static_cast<const ARG*>(*arg));
+            static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
+                return CONVERTER::_encode(stream, field, static_cast<const LocalType*>(*arg));
             };
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::decode(stream, field, static_cast<ARG*>(*arg));
+            static bool _decodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
+                return CONVERTER::_decode(stream, field, static_cast<LocalType*>(*arg));
             };
         };
 
@@ -100,8 +104,8 @@ namespace NanoPb {
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         private:
             friend class AbstractCallbackConverter;
-            static bool encode(pb_ostream_t *stream, const pb_field_t *field, const std::string *arg);
-            static bool decode(pb_istream_t *stream, const pb_field_t *field, std::string *arg);
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType *arg);
         };
 
         /**
