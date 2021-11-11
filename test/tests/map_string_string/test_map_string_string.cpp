@@ -1,6 +1,5 @@
-#include "nanopb_cpp.h"
+#include "tests_common.h"
 #include "test_map_string_string.pb.h"
-#include "helpers.h"
 
 using MapType = std::map<std::string, std::string>;
 using MapConverter = NanoPb::Converter::GenericMapConverter<

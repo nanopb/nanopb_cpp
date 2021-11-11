@@ -33,7 +33,6 @@ function(nanopb_cpp_add_test TEST)
             ${TEST_SOURCES}
             ${PROTO_SRCS}
             ${PROTO_HDRS}
-            ${TEST_COMMON_DIR}/helpers.cpp
             ${PROJECT_SOURCE_DIR}/nanopb_cpp.cpp
             )
 
