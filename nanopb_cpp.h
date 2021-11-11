@@ -109,6 +109,33 @@ namespace NanoPb {
         };
 
         /**
+         * AbstractRepeatedConverter
+         */
+        template<class CONVERTER, class LOCAL_TYPE>
+        class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>
+        {
+        public:
+            using LocalType = LOCAL_TYPE;
+            using LocalEntryType = typename LocalType::value_type;
+
+        private:
+            friend class AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>;
+
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
+                for (auto &item: *arg) {
+                    if (!CONVERTER::_encodeItem(stream, field, item)){
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType *arg){
+                return CONVERTER::_decodeItem(stream, field, arg);
+            }
+        };
+
+        /**
          * AbstractMapConverter
          */
         template<class CONVERTER, class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
