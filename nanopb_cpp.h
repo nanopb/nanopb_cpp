@@ -112,24 +112,21 @@ namespace NanoPb {
          * AbstractMapConverter
          */
         template<class CONVERTER, class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
-        class AbstractMapConverter {
+        class AbstractMapConverter : public AbstractCallbackConverter<AbstractMapConverter<CONVERTER, MAP, PROTO_MAP_ENTRY, PROTO_MAP_ENTRY_MSG>,MAP>
+        {
         protected:
-            using MapType = MAP;
-
-            using KeyType = typename MapType::key_type;
-            using ValueType = typename MapType::mapped_type;
-            using PairType = typename MapType::value_type;
+            using KeyType = typename MAP::key_type;
+            using ValueType = typename MAP::mapped_type;
+            using PairType = typename MAP::value_type;
 
         public:
+            using LocalType = MAP;
+            using LocalMapPair = typename MAP::value_type;
             using ProtoMapEntry = PROTO_MAP_ENTRY;
-            using LocalMapPair = PairType;
-
-            static pb_callback_t encoder(const MapType* arg) { return { .funcs = { .encode = _encode }, .arg = (void*)arg }; }
-            static pb_callback_t decoder(MapType* arg) { return { .funcs = { .decode = _decode }, .arg = (void*)arg }; }
         private:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                auto map = static_cast<const MapType*>(*arg);
-                for (auto &kv: *map) {
+            friend class AbstractCallbackConverter<AbstractMapConverter<CONVERTER, MAP, PROTO_MAP_ENTRY, PROTO_MAP_ENTRY_MSG>,MAP                    >;
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
+                for (auto &kv: *arg) {
                     auto &key = kv.first;
                     auto &value = kv.second;
 
@@ -144,15 +141,14 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, void **arg){
-                auto map = static_cast<MapType*>(*arg);
+            static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, LocalType *arg){
                 KeyType key;
                 ValueType value;
                 PROTO_MAP_ENTRY entry = CONVERTER::_decoderInitializer(key, value);
                 if (!pb_decode(stream, PROTO_MAP_ENTRY_MSG, &entry)) {
                     return false;
                 }
-                map->insert(CONVERTER::_decoderCreateMapPair(entry, key, value));
+                arg->insert(CONVERTER::_decoderCreateMapPair(entry, key, value));
 
                 return true;
             }
