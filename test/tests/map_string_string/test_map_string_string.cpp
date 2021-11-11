@@ -29,7 +29,7 @@ private:
         };
     }
 
-    static PairType _decoderCreateMapPair(const ProtoMapEntry& entry, const KeyType& key, const ValueType& value){
+    static PairType _decoderCreateMapPair(const ProtoMapEntry& protoMapEntry, const KeyType& key, const ValueType& value){
         return LocalMapPair(key, value);
     }
 

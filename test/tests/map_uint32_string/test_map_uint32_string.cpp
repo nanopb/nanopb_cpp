@@ -30,10 +30,10 @@ private:
         };
     }
 
-    static PairType _decoderCreateMapPair(const ProtoMapEntry& entry, const KeyType&, const ValueType& value){
+    static PairType _decoderCreateMapPair(const ProtoMapEntry& protoMapEntry, const KeyType& key, const ValueType& value){
         // We take scalar type key directly from  entry
         // and take value which had callback decoder from callback result
-        return LocalMapPair(entry.key, value);
+        return LocalMapPair(protoMapEntry.key, value);
     }
 
 };
