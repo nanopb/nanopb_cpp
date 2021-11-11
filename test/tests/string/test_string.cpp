@@ -2,6 +2,8 @@
 #include "test_string.pb.h"
 
 int main() {
+    int status = 0;
+
     std::string originalString = "My super string";
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
@@ -10,7 +12,7 @@ int main() {
                 .str = NanoPb::Converter::StringConverter::encoder(&originalString)
         };
 
-        NANOPB_CPP_ASSERT(pb_encode(&outputStream, &StringContainer_msg, &msg));
+        TEST(pb_encode(&outputStream, &StringContainer_msg, &msg));
     }
     {
         std::string decodedString;
@@ -20,10 +22,10 @@ int main() {
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        NANOPB_CPP_ASSERT(pb_decode(&inputStream, &StringContainer_msg, &msg));
+        TEST(pb_decode(&inputStream, &StringContainer_msg, &msg));
 
-        NANOPB_CPP_ASSERT(originalString == decodedString);
+        TEST(originalString == decodedString);
     }
 
-    return 0;
+    return status;
 }

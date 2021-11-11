@@ -6,6 +6,8 @@ using MapConverter = NanoPb::Converter::GenericMapConverter<
         MapType, MapStringStringContainer_MapEntry, &MapStringStringContainer_MapEntry_msg>;
 
 int main() {
+    int status = 0;
+
     MapType originalMap = {
             {"key_1", "value_1" },
             {"key_2", "value_2" }
@@ -26,7 +28,7 @@ int main() {
                 .map = MapConverter::encoder(&ctx)
         };
 
-        NANOPB_CPP_ASSERT(pb_encode(&outputStream, &MapStringStringContainer_msg, &msg));
+        TEST(pb_encode(&outputStream, &MapStringStringContainer_msg, &msg));
     }
 
     {
@@ -52,10 +54,10 @@ int main() {
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        NANOPB_CPP_ASSERT(pb_decode(&inputStream, &MapStringStringContainer_msg, &msg));
+        TEST(pb_decode(&inputStream, &MapStringStringContainer_msg, &msg));
 
-        NANOPB_CPP_ASSERT(originalMap == decodedMap);
+        TEST(originalMap == decodedMap);
     }
 
-    return 0;
+    return status;
 }
