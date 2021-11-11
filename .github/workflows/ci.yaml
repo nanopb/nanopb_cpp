@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build and test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,17 +33,44 @@ jobs:
           ref: nanopb-0.4.5
           path: 'nanopb_src'
 
+      - name: Installing dependencies for local act
+        if: ${{ env.ACT }}
+        run: |
+          apt update
+          apt install -y cmake
+          apt install -y build-essential
+
+      - name: Installing common dependencies
+        run: |
+          apt install -y python3-protobuf protobuf-compiler
+
       - name: Setup build vars
-        run: echo '::set-output name=BUILD_DIR::build_${{ matrix.config.dir }}'
+        run: |
+          echo '::set-output name=BUILD_DIR::${{ matrix.config.dir }}'
+          echo '::set-output name=NANOPB_ROOT::'$(pwd)'/nanopb_src'
         id: build_vars
 
-      - name:  🚀 Run unit tests
-        uses: HorstBaerbel/action-ctest@1.1
-        with:
-          sourcedir: '.'
-          builddir: ${{ steps.build_vars.outputs.BUILD_DIR }}
-          cmakeoptions: |
-            -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
-            -DNANOPB_ROOT="nanopb_src"
-          ctestoptions: ''
+      - name: 🏗 Configure
+        shell: bash
+        run: |
+          mkdir ${{ steps.build_vars.outputs.BUILD_DIR }}
+          echo "ROOT: ${{ steps.build_vars.outputs.NANOPB_ROOT }}"
+          ls ${{ steps.build_vars.outputs.NANOPB_ROOT }}
+          cmake \
+            -S . \
+            -B ${{ steps.build_vars.outputs.BUILD_DIR }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -DNANOPB_ROOT="${{ steps.build_vars.outputs.NANOPB_ROOT }}"
+
+      - name: 🚀 Build
+        shell: bash
+        run: |
+          cmake --build ${{ steps.build_vars.outputs.BUILD_DIR }}
+
+      - name: Run tests
+        shell: bash
+        run: |
+          cd ${{ steps.build_vars.outputs.BUILD_DIR }}
+          ctest
+
 
