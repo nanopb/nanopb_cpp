@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message RepeatedSignedContainer {
+  repeated int64 values = 1;
+}

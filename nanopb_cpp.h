@@ -134,7 +134,8 @@ namespace NanoPb {
         };
 
         /**
-         * Repeated converter.
+         * Repeated unsigned converter.
+         *
          *  Value size depend o PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
@@ -170,6 +171,52 @@ namespace NanoPb {
                 #else
                 uint64_t value;
                 if (!pb_decode_varint(stream, &value)) {
+                    return false;
+                }
+                #endif
+                arg->push_back(value);
+                return true;
+            }
+        };
+
+        /**
+         * Repeated signed converter.
+         *
+         *  Value size depend o PB_WITHOUT_64BIT:
+         *      is set: max 32 bit
+         *      is not set: max 64 bit
+          *
+          * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
+          */
+        template<class CONTAINER>
+        class RepeatedSignedConverter  : public AbstractRepeatedConverter<
+                RepeatedUnsignedConverter<CONTAINER>,
+                CONTAINER>
+        {
+        private:
+            using LocalType = CONTAINER;
+            using LocalEntryType = typename LocalType::value_type;
+
+            friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
+
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalEntryType& item){
+                if (!pb_encode_tag_for_field(stream, field)) {
+                    return false;
+                }
+                if (!pb_encode_varint(stream, item))
+                    return false;
+                return true;
+            }
+
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, LocalType *arg){
+                #ifdef PB_WITHOUT_64BIT
+                int32_t value;
+                if (!pb_decode_svarint32(stream, &value)) {
+                    return false;
+                }
+                #else
+                int64_t value;
+                if (!pb_decode_svarint(stream, &value)) {
                     return false;
                 }
                 #endif
