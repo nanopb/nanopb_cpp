@@ -159,9 +159,7 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedUnsignedConverter  : public AbstractRepeatedConverter<
-                RepeatedUnsignedConverter<CONTAINER>,
-                CONTAINER>
+        class RepeatedUnsignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>
         {
         private:
             using LocalType = CONTAINER;
@@ -205,9 +203,7 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedSignedConverter  : public AbstractRepeatedConverter<
-                RepeatedUnsignedConverter<CONTAINER>,
-                CONTAINER>
+        class RepeatedSignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>
         {
         private:
             using LocalType = CONTAINER;
