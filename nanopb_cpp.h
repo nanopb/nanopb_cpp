@@ -3,6 +3,8 @@
 
 #include <string>
 #include <map>
+#include <functional>
+#include <memory>
 
 #include "pb.h"
 #include "pb_encode.h"
