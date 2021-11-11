@@ -21,6 +21,8 @@ find_package(Nanopb REQUIRED)
 #        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*
 #        )
 
+set (CMAKE_CXX_STANDARD 11)
+
 add_definitions(-Wall)
 
 add_subdirectory(tests/enum)

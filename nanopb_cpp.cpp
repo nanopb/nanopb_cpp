@@ -3,7 +3,7 @@
 #include "pb_encode.h"
 #include "pb_decode.h"
 
-NanoPb::StringOutputStream::StringOutputStream(size_t maxSize) : _buffer(std::make_unique<NanoPb::BufferType>()) {
+NanoPb::StringOutputStream::StringOutputStream(size_t maxSize) : _buffer(new NanoPb::BufferType()) {
     callback = +[](pb_ostream_t *stream, const pb_byte_t *buf, size_t count) -> bool {
         auto strBuffer = static_cast<NanoPb::BufferPtr *>(stream->state);
         NANOPB_CPP_ASSERT(strBuffer);
