@@ -49,6 +49,33 @@ namespace NanoPb {
     };
 
     namespace Converter {
+
+        /**
+         * Abstract converter for basic scalar types
+         *
+         *  Child class example:
+         *
+         *      using namespace NanoPb::Converter;
+         *      
+         *      class SimpleEnumConverter: public AbstractScalarConverter<SimpleEnumConverter, SimpleEnum, ProtoSimpleEnum>
+         *      private
+         *          friend class AbstractScalarConverter
+         *          static ProtoType _encode(const LocalType& arg){};
+         *          static LocalType _decode(const ProtoType& arg){};
+         *      }
+         */
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
+        class AbstractScalarConverter {
+        public:
+            using LocalType = LOCAL_TYPE;
+            using ProtoType = PROTO_TYPE;
+
+        public:
+            static ProtoType encode(const LocalType& arg){ return CONVERTER::_encode(arg); };
+            static LocalType decode(const ProtoType& arg){ return CONVERTER::_decode(arg); };
+        };
+
+
         /**
          * AbstractSingleArgConverter
          */

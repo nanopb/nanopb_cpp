@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+enum ProtoSimpleEnum {
+  Invalid = 0;
+  ValueOne = 1;
+  ValueTwo = 2;
+}

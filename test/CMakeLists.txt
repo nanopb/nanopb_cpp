@@ -16,13 +16,12 @@ list(APPEND CMAKE_MODULE_PATH
 
 find_package(Nanopb REQUIRED)
 
-file(GLOB TEST_DIRS
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*
-        )
+#file(GLOB TEST_DIRS
+#        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+#        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*
+#        )
 
-foreach(TEST_DIR ${TEST_DIRS})
-    add_subdirectory(${TEST_DIR})
-endforeach()
-
-
+add_subdirectory(tests/enum)
+add_subdirectory(tests/map_string_string)
+add_subdirectory(tests/map_uint32_string)
+add_subdirectory(tests/string)
