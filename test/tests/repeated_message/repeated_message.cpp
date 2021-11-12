@@ -5,26 +5,26 @@
 
 using namespace NanoPb::Converter;
 
-struct LocalInnerMessage {
+struct LocalMessageItem {
     uint32_t number = 0;
     std::string text;
 
-    LocalInnerMessage() = default; // Default constructor is required
-    LocalInnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
+    LocalMessageItem() = default; // Default constructor is required
+    LocalMessageItem(uint32_t number, const std::string &text) : number(number), text(text) {}
 
-    bool operator==(const LocalInnerMessage &rhs) const {
+    bool operator==(const LocalMessageItem &rhs) const {
         return number == rhs.number &&
                text == rhs.text;
     }
 
-    bool operator!=(const LocalInnerMessage &rhs) const {
+    bool operator!=(const LocalMessageItem &rhs) const {
         return !(rhs == *this);
     }
 };
 
-using LocalMessageContainer = std::vector<LocalInnerMessage>;
+using LocalMessageContainer = std::vector<LocalMessageItem>;
 
-class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageItemConverter, LocalInnerMessage, InnerMessage, &InnerMessage_msg> {
+class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageItemConverter, LocalMessageItem, InnerMessage, &InnerMessage_msg> {
 private:
     friend class AbstractMessageConverter;
 
@@ -47,44 +47,26 @@ private:
     }
 };
 
-class RepeatedMessageContainerConverter : public AbstractRepeatedMessageConverter<
-        RepeatedMessageContainerConverter,
+class LocalMessageContainerConverter : public AbstractRepeatedMessageConverter<
+        LocalMessageContainerConverter,
         LocalMessageContainer,
-        InnerMessage,
-        &InnerMessage_msg
-        >
-{
-private:
-    friend class AbstractRepeatedMessageConverter;
-
-    static ProtoEntryType _encoderInit(const LocalEntryType& item){
-        return LocalMessageItemConverter::encoderInit(item);
-    }
-
-    static ProtoEntryType _decoderInit(LocalEntryType& item){
-        return LocalMessageItemConverter::decoderInit(item);
-    }
-
-    static bool _decoderApply(const ProtoEntryType& protoEntry, LocalEntryType& localEntry){
-        return LocalMessageItemConverter::decoderApply(protoEntry, localEntry);
-    }
-
-};
+        LocalMessageItemConverter>
+{};
 
 int main() {
     int status = 0;
 
     const LocalMessageContainer original = {
-            LocalInnerMessage(1 , "entry_1"),
-            LocalInnerMessage(2 , "entry_1"),
-            LocalInnerMessage(UINT32_MAX , "entry_max"),
+            LocalMessageItem(1 , "entry_1"),
+            LocalMessageItem(2 , "entry_1"),
+            LocalMessageItem(UINT32_MAX , "entry_max"),
     };
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
         RepeatedMessageContainerMessage msg = {
-                .items = RepeatedMessageContainerConverter::encoder(&original)
+                .items = LocalMessageContainerConverter::encoder(&original)
         };
 
         TEST(pb_encode(&outputStream, &RepeatedMessageContainerMessage_msg, &msg));
@@ -94,7 +76,7 @@ int main() {
         LocalMessageContainer decoded;
 
         RepeatedMessageContainerMessage msg = {
-                .items = RepeatedMessageContainerConverter::decoder(&decoded)
+                .items = LocalMessageContainerConverter::decoder(&decoded)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());

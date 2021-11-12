@@ -242,41 +242,41 @@ namespace NanoPb {
         /**
          * Repeated message converter
          */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_ENTRY_TYPE, const pb_msgdesc_t* PROTO_ENTRY_MSG>
-        class AbstractRepeatedMessageConverter : public AbstractCallbackConverter<AbstractRepeatedMessageConverter<CONVERTER, LOCAL_TYPE, PROTO_ENTRY_TYPE, PROTO_ENTRY_MSG>,LOCAL_TYPE>
+        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
+        class AbstractRepeatedMessageConverter : public AbstractCallbackConverter<
+                AbstractRepeatedMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                LOCAL_CONTAINER_TYPE
+                >
         {
-        protected:
-            using LocalType = LOCAL_TYPE;
-            using LocalEntryType = typename LOCAL_TYPE::value_type;
-            using ProtoEntryType = PROTO_ENTRY_TYPE;
         private:
-            friend class AbstractCallbackConverter<AbstractRepeatedMessageConverter<CONVERTER, LOCAL_TYPE, ProtoEntryType, PROTO_ENTRY_MSG>,LOCAL_TYPE>;
+            friend class AbstractCallbackConverter<
+                    AbstractRepeatedMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                    LOCAL_CONTAINER_TYPE
+                    >;
 
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
-
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE *arg){
                 for (auto &item: *arg) {
-                    ProtoEntryType protoEntry = CONVERTER::_encoderInit(item);
+                    typename ITEM_MESSAGE_CONVERTER::ProtoType protoEntry = ITEM_MESSAGE_CONVERTER::encoderInit(item);
 
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    if (!pb_encode_submessage(stream, PROTO_ENTRY_MSG, &protoEntry))
+                    if (!pb_encode_submessage(stream, ITEM_MESSAGE_CONVERTER::getMsgType(), &protoEntry))
                         return false;
                 }
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, LocalType *arg){
-                LocalEntryType localEntry;
-                ProtoEntryType protoEntry = CONVERTER::_decoderInit(localEntry);
-                if (!pb_decode(stream, PROTO_ENTRY_MSG, &protoEntry)) {
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE *arg){
+                typename ITEM_MESSAGE_CONVERTER::LocalType localEntry;
+                typename ITEM_MESSAGE_CONVERTER::ProtoType protoEntry = ITEM_MESSAGE_CONVERTER::decoderInit(localEntry);
+                if (!pb_decode(stream, ITEM_MESSAGE_CONVERTER::getMsgType(), &protoEntry)) {
                     return false;
                 }
-                if (!CONVERTER::_decoderApply(protoEntry, localEntry)){
+                if (!ITEM_MESSAGE_CONVERTER::decoderApply(protoEntry, localEntry)){
                     return false;
                 }
                 arg->push_back(localEntry);
-
                 return true;
             }
         };
