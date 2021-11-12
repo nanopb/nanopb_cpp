@@ -146,12 +146,13 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedUnsignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>
-        {
+        class RepeatedUnsignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER> {
+        private:
+            using LocalItemType = typename CONTAINER::value_type;
         private:
             friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
 
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const typename CONTAINER::value_type& item){
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
@@ -187,12 +188,13 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedSignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>
-        {
+        class RepeatedSignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER> {
+        private:
+            using LocalItemType = typename CONTAINER::value_type;
         private:
             friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
 
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const typename CONTAINER::value_type& item){
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
@@ -228,14 +230,17 @@ namespace NanoPb {
                 >
         {
         private:
+            using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
+            using ProtoItemType = typename ITEM_MESSAGE_CONVERTER::ProtoType;
+        private:
             friend class AbstractCallbackConverter<
                     AbstractRepeatedMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
                     LOCAL_CONTAINER_TYPE
                     >;
 
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE *arg){
-                for (auto &item: *arg) {
-                    typename ITEM_MESSAGE_CONVERTER::ProtoType protoEntry = ITEM_MESSAGE_CONVERTER::encoderInit(item);
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE *container){
+                for (auto &item: *container) {
+                    ProtoItemType protoEntry = ITEM_MESSAGE_CONVERTER::encoderInit(item);
 
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -246,18 +251,43 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE *arg){
-                typename ITEM_MESSAGE_CONVERTER::LocalType localEntry;
-                typename ITEM_MESSAGE_CONVERTER::ProtoType protoEntry = ITEM_MESSAGE_CONVERTER::decoderInit(localEntry);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE *container){
+                LocalItemType localEntry;
+                ProtoItemType protoEntry = ITEM_MESSAGE_CONVERTER::decoderInit(localEntry);
                 if (!pb_decode(stream, ITEM_MESSAGE_CONVERTER::getMsgType(), &protoEntry)) {
                     return false;
                 }
                 if (!ITEM_MESSAGE_CONVERTER::decoderApply(protoEntry, localEntry)){
                     return false;
                 }
-                arg->push_back(localEntry);
+                CONVERTER::_insert(container, localEntry);
                 return true;
             }
+        };
+
+        /**
+         * Converter for vector/list
+         */
+        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
+        class ArrayMessageConverter : public AbstractRepeatedMessageConverter<
+                ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                LOCAL_CONTAINER_TYPE,
+                ITEM_MESSAGE_CONVERTER
+        >
+        {
+        private:
+            using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
+        private:
+            friend class AbstractRepeatedMessageConverter<
+                    ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                    LOCAL_CONTAINER_TYPE,
+                    ITEM_MESSAGE_CONVERTER
+            >;
+
+            static void _insert(LOCAL_CONTAINER_TYPE* container, LocalItemType item){
+                container->push_back(item);
+            }
+
         };
 
         /**
