@@ -293,18 +293,18 @@ namespace NanoPb {
         /**
          * AbstractMapConverter
          */
-        template<class CONVERTER, class MAP, class PROTO_MAP_ENTRY, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
-        class AbstractMapConverter : public AbstractCallbackConverter<AbstractMapConverter<CONVERTER, MAP, PROTO_MAP_ENTRY, PROTO_MAP_ENTRY_MSG>,MAP>
+        template<class CONVERTER, class LOCAL_MAP_TYPE, class PROTO_ITEM_TYPE, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
+        class AbstractMapConverter : public AbstractCallbackConverter<AbstractMapConverter<CONVERTER, LOCAL_MAP_TYPE, PROTO_ITEM_TYPE, PROTO_MAP_ENTRY_MSG>,LOCAL_MAP_TYPE>
         {
         protected:
-            using KeyType = typename MAP::key_type;
-            using ValueType = typename MAP::mapped_type;
-            using PairType = typename MAP::value_type;
-            using LocalType = MAP;
-            using LocalMapPair = typename MAP::value_type;
-            using ProtoMapEntry = PROTO_MAP_ENTRY;
+            using KeyType = typename LOCAL_MAP_TYPE::key_type;
+            using ValueType = typename LOCAL_MAP_TYPE::mapped_type;
+            using PairType = typename LOCAL_MAP_TYPE::value_type;
+            using LocalType = LOCAL_MAP_TYPE;
+            using LocalMapPair = typename LOCAL_MAP_TYPE::value_type;
+            using ProtoMapEntry = PROTO_ITEM_TYPE;
         private:
-            friend class AbstractCallbackConverter<AbstractMapConverter<CONVERTER, MAP, ProtoMapEntry, PROTO_MAP_ENTRY_MSG>,MAP>;
+            friend class AbstractCallbackConverter<AbstractMapConverter<CONVERTER, LOCAL_MAP_TYPE, ProtoMapEntry, PROTO_MAP_ENTRY_MSG>,LOCAL_MAP_TYPE>;
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
                 for (auto &kv: *arg) {
                     auto &key = kv.first;
