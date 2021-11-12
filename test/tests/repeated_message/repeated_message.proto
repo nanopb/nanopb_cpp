@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+package PROTO;
 
 message InnerMessage {
   uint32 number = 1;

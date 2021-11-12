@@ -24,7 +24,7 @@ struct LocalMessageItem {
 
 using LocalMessageContainer = std::vector<LocalMessageItem>;
 
-class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageItemConverter, LocalMessageItem, InnerMessage, &InnerMessage_msg> {
+class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageItemConverter, LocalMessageItem, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
 private:
     friend class AbstractMessageConverter;
 
@@ -65,23 +65,23 @@ int main() {
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        OuterMessage msg = {
+        PROTO_OuterMessage msg = {
                 .items = LocalMessageContainerConverter::encoder(&original)
         };
 
-        TEST(pb_encode(&outputStream, &OuterMessage_msg, &msg));
+        TEST(pb_encode(&outputStream, &PROTO_OuterMessage_msg, &msg));
     }
 
     {
         LocalMessageContainer decoded;
 
-        OuterMessage msg = {
+        PROTO_OuterMessage msg = {
                 .items = LocalMessageContainerConverter::decoder(&decoded)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        TEST(pb_decode(&inputStream, &OuterMessage_msg, &msg));
+        TEST(pb_decode(&inputStream, &PROTO_OuterMessage_msg, &msg));
 
         TEST(original == decoded);
     }
