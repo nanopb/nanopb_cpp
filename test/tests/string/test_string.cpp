@@ -9,7 +9,7 @@ int main() {
 
     {
         StringContainer msg = {
-                .str = NanoPb::Converter::StringConverter::encoder(&originalString)
+                .str = NanoPb::Converter::StringConverter::encoder(originalString)
         };
 
         TEST(pb_encode(&outputStream, &StringContainer_msg, &msg));
@@ -17,7 +17,7 @@ int main() {
     {
         std::string decodedString;
         StringContainer msg = {
-                .str = NanoPb::Converter::StringConverter::decoder(&decodedString)
+                .str = NanoPb::Converter::StringConverter::decoder(decodedString)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());

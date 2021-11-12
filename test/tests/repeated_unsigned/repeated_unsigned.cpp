@@ -18,7 +18,7 @@ int testRepeated(typename CONTAINER::value_type minValue, typename CONTAINER::va
 
     {
         PROTO_TestMessage msg = {
-                .values = RepeatedUnsignedConverter<CONTAINER>::encoder(&original)
+                .values = RepeatedUnsignedConverter<CONTAINER>::encoder(original)
         };
 
         TEST(pb_encode(&outputStream, &PROTO_TestMessage_msg, &msg));
@@ -28,7 +28,7 @@ int testRepeated(typename CONTAINER::value_type minValue, typename CONTAINER::va
         CONTAINER decoded;
 
         PROTO_TestMessage msg = {
-                .values = RepeatedUnsignedConverter<CONTAINER>::decoder(&decoded)
+                .values = RepeatedUnsignedConverter<CONTAINER>::decoder(decoded)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());

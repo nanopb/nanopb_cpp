@@ -35,14 +35,14 @@ private:
         static ProtoType _encoderInit(const LocalType& local) {
             return ProtoType{
                     .key = local.first,
-                    .value = StringConverter::encoder(&local.second)
+                    .value = StringConverter::encoder(local.second)
             };
         }
 
         static ProtoType _decoderInit(LocalType& local){
             return ProtoType{
                     // no need to set key decoder because it is scalar type, not callback
-                    .value = StringConverter::decoder(&local.second)
+                    .value = StringConverter::decoder(local.second)
             };
         }
 
@@ -61,13 +61,13 @@ private:
 private:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
-                .items = ItemsConverter::encoder(&local.items)
+                .items = ItemsConverter::encoder(local.items)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-                .items = ItemsConverter::decoder(&local.items)
+                .items = ItemsConverter::decoder(local.items)
         };
     }
 

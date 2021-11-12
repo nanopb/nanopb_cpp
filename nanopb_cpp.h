@@ -91,15 +91,15 @@ namespace NanoPb {
         protected:
             using LocalType = LOCAL_TYPE;
         public:
-            static pb_callback_t encoder(const LocalType* arg) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)arg }; }
-            static pb_callback_t decoder(LocalType* arg) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)arg }; }
+            static pb_callback_t encoder(const LocalType& arg) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)&arg }; }
+            static pb_callback_t decoder(LocalType& arg) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)&arg }; }
 
         private:
             static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return CONVERTER::_encode(stream, field, static_cast<const LocalType*>(*arg));
+                return CONVERTER::_encode(stream, field, *(static_cast<const LocalType*>(*arg)));
             };
             static bool _decodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::_decode(stream, field, static_cast<LocalType*>(*arg));
+                return CONVERTER::_decode(stream, field, *(static_cast<LocalType*>(*arg)));
             };
         };
 
@@ -109,8 +109,8 @@ namespace NanoPb {
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         private:
             friend class AbstractCallbackConverter;
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg);
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType *arg);
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
         };
 
         /**
@@ -122,8 +122,8 @@ namespace NanoPb {
         private:
             friend class AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>;
 
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_TYPE *arg){
-                for (auto &item: *arg) {
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_TYPE &arg){
+                for (auto &item: arg) {
                     if (!CONVERTER::_encodeItem(stream, field, item)){
                         return false;
                     }
@@ -131,7 +131,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_TYPE *arg){
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_TYPE &arg){
                 return CONVERTER::_decodeItem(stream, field, arg);
             }
         };
@@ -161,7 +161,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER *arg){
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container){
                 #ifdef PB_WITHOUT_64BIT
                 uint32_t value;
                 if (!pb_decode_varint32(stream, &value)) {
@@ -173,7 +173,7 @@ namespace NanoPb {
                     return false;
                 }
                 #endif
-                arg->push_back(value);
+                container.push_back(value);
                 return true;
             }
         };
@@ -203,7 +203,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER *arg){
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
                 #ifdef PB_WITHOUT_64BIT
                 int32_t value;
                 if (!pb_decode_svarint32(stream, &value)) {
@@ -215,7 +215,7 @@ namespace NanoPb {
                     return false;
                 }
                 #endif
-                arg->push_back(value);
+                container.push_back(value);
                 return true;
             }
         };
@@ -238,8 +238,8 @@ namespace NanoPb {
                     LOCAL_CONTAINER_TYPE
                     >;
 
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE *container){
-                for (auto &item: *container) {
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
+                for (auto &item: container) {
                     ProtoItemType protoEntry = ITEM_MESSAGE_CONVERTER::encoderInit(item);
 
                     if (!pb_encode_tag_for_field(stream, field))
@@ -251,7 +251,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE *container){
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
                 LocalItemType localEntry;
                 ProtoItemType protoEntry = ITEM_MESSAGE_CONVERTER::decoderInit(localEntry);
                 if (!pb_decode(stream, ITEM_MESSAGE_CONVERTER::getMsgType(), &protoEntry)) {
@@ -284,8 +284,8 @@ namespace NanoPb {
                     ITEM_MESSAGE_CONVERTER
             >;
 
-            static void _insert(LOCAL_CONTAINER_TYPE* container, LocalItemType item){
-                container->push_back(item);
+            static void _insert(LOCAL_CONTAINER_TYPE& container, LocalItemType& item){
+                container.push_back(item);
             }
 
         };
@@ -309,8 +309,8 @@ namespace NanoPb {
                     ITEM_MESSAGE_CONVERTER
             >;
 
-            static void _insert(LOCAL_CONTAINER_TYPE* container, LocalItemType item){
-                container->insert(item);
+            static void _insert(LOCAL_CONTAINER_TYPE& container, LocalItemType& item){
+                container.insert(item);
             }
         };
 

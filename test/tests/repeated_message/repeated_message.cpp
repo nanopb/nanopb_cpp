@@ -49,13 +49,13 @@ private:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,
-                .text = StringConverter::encoder(&local.text)
+                .text = StringConverter::encoder(local.text)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-            .text = StringConverter::decoder(&local.text)
+            .text = StringConverter::decoder(local.text)
         };
     }
 
@@ -79,13 +79,13 @@ private:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,
-                .items = ItemsConverter::encoder(&local.items)
+                .items = ItemsConverter::encoder(local.items)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-                .items = ItemsConverter::decoder(&local.items)
+                .items = ItemsConverter::decoder(local.items)
         };
     }
 

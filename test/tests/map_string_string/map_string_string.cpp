@@ -33,15 +33,15 @@ private:
         friend class AbstractMessageConverter;
         static ProtoType _encoderInit(const LocalType& local) {
             return ProtoType{
-                    .key = StringConverter::encoder(&local.first),
-                    .value = StringConverter::encoder(&local.second)
+                    .key = StringConverter::encoder(local.first),
+                    .value = StringConverter::encoder(local.second)
             };
         }
 
         static ProtoType _decoderInit(LocalType& local){
             return ProtoType{
-                    .key = StringConverter::decoder(&local.first),
-                    .value = StringConverter::decoder(&local.second)
+                    .key = StringConverter::decoder(local.first),
+                    .value = StringConverter::decoder(local.second)
             };
         }
 
@@ -59,13 +59,13 @@ private:
 private:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
-                .items = ItemsConverter::encoder(&local.items)
+                .items = ItemsConverter::encoder(local.items)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-                .items = ItemsConverter::decoder(&local.items)
+                .items = ItemsConverter::decoder(local.items)
         };
     }
 
