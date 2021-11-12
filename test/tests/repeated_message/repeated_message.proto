@@ -6,6 +6,6 @@ message InnerMessage {
   string text = 2;
 }
 
-message RepeatedMessageContainerMessage {
+message OuterMessage {
   repeated InnerMessage items = 1;
 }

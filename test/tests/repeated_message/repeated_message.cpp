@@ -65,23 +65,23 @@ int main() {
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        RepeatedMessageContainerMessage msg = {
+        OuterMessage msg = {
                 .items = LocalMessageContainerConverter::encoder(&original)
         };
 
-        TEST(pb_encode(&outputStream, &RepeatedMessageContainerMessage_msg, &msg));
+        TEST(pb_encode(&outputStream, &OuterMessage_msg, &msg));
     }
 
     {
         LocalMessageContainer decoded;
 
-        RepeatedMessageContainerMessage msg = {
+        OuterMessage msg = {
                 .items = LocalMessageContainerConverter::decoder(&decoded)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        TEST(pb_decode(&inputStream, &RepeatedMessageContainerMessage_msg, &msg));
+        TEST(pb_decode(&inputStream, &OuterMessage_msg, &msg));
 
         TEST(original == decoded);
     }
