@@ -49,18 +49,7 @@ namespace NanoPb {
     namespace Converter {
 
         /**
-         * Abstract converter for basic scalar types
-         *
-         *  Child class example:
-         *
-         *      using namespace NanoPb::Converter;
-         *      
-         *      class SimpleEnumConverter: public AbstractScalarConverter<SimpleEnumConverter, SimpleEnum, ProtoSimpleEnum>
-         *      private
-         *          friend class AbstractScalarConverter
-         *          static ProtoType _encode(const LocalType& arg){};
-         *          static LocalType _decode(const ProtoType& arg){};
-         *      }
+         * Abstract converter for basic scalar types like enum
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
         class AbstractScalarConverter {
@@ -93,7 +82,7 @@ namespace NanoPb {
 
 
         /**
-         * Abstract Callback converter factory
+         * Abstract Callback converter
          *
          *  See StringConverter for the example implementation
          */
@@ -125,19 +114,15 @@ namespace NanoPb {
         };
 
         /**
-         * AbstractRepeatedConverter
+         * Abstract repeated converter
          */
         template<class CONVERTER, class LOCAL_TYPE>
         class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>
         {
-        protected:
-            using LocalType = LOCAL_TYPE;
-            using LocalEntryType = typename LocalType::value_type;
-
         private:
             friend class AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>;
 
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_TYPE *arg){
                 for (auto &item: *arg) {
                     if (!CONVERTER::_encodeItem(stream, field, item)){
                         return false;
@@ -146,7 +131,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType *arg){
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_TYPE *arg){
                 return CONVERTER::_decodeItem(stream, field, arg);
             }
         };
@@ -164,12 +149,9 @@ namespace NanoPb {
         class RepeatedUnsignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>
         {
         private:
-            using LocalType = CONTAINER;
-            using LocalEntryType = typename LocalType::value_type;
-
             friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
 
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalEntryType& item){
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const typename CONTAINER::value_type& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
@@ -178,7 +160,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, LocalType *arg){
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER *arg){
                 #ifdef PB_WITHOUT_64BIT
                 uint32_t value;
                 if (!pb_decode_varint32(stream, &value)) {
@@ -208,12 +190,9 @@ namespace NanoPb {
         class RepeatedSignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>
         {
         private:
-            using LocalType = CONTAINER;
-            using LocalEntryType = typename LocalType::value_type;
-
             friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
 
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalEntryType& item){
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const typename CONTAINER::value_type& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
@@ -222,7 +201,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, LocalType *arg){
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER *arg){
                 #ifdef PB_WITHOUT_64BIT
                 int32_t value;
                 if (!pb_decode_svarint32(stream, &value)) {
@@ -240,7 +219,7 @@ namespace NanoPb {
         };
 
         /**
-         * Repeated message converter
+         * Abstract repeated message converter
          */
         template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
         class AbstractRepeatedMessageConverter : public AbstractCallbackConverter<
