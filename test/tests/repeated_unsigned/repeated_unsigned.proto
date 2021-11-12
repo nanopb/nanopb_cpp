@@ -2,6 +2,6 @@ syntax = "proto3";
 
 package PROTO;
 
-message RepeatedUnsignedContainer {
+message TestMessage {
   repeated uint64 values = 1;
 }

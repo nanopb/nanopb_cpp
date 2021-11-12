@@ -2,6 +2,6 @@ syntax = "proto3";
 
 package PROTO;
 
-message MapStringStringContainer {
+message TestMessage {
   map<string, string> map = 1;
 }
