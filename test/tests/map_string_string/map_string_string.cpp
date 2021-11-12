@@ -5,68 +5,97 @@
 
 using namespace NanoPb::Converter;
 
-using MapType = std::map<std::string, std::string>;
+struct LOCAL_TestMessage {
+    using MapType = std::map<std::string, std::string>;
+    MapType items;
 
-class MapConverter : public AbstractMapConverter<
-        MapConverter,
-        MapType,
-        PROTO_TestMessage_MapEntry,
-        &PROTO_TestMessage_MapEntry_msg
->
-{
-private:
-    friend class AbstractMapConverter;
-
-    static ProtoMapEntry _encoderInit(const KeyType& key, const ValueType& value){
-        return ProtoMapEntry{
-                .key = StringConverter::encoder(&key),
-                .value = StringConverter::encoder(&value)
-        };
+    bool operator==(const LOCAL_TestMessage &rhs) const {
+        return items == rhs.items;
     }
 
-    static ProtoMapEntry _decoderInit(KeyType& key, ValueType& value){
-        return ProtoMapEntry{
-                .key = StringConverter::decoder(&key),
-                .value = StringConverter::decoder(&value)
-        };
+    bool operator!=(const LOCAL_TestMessage &rhs) const {
+        return !(rhs == *this);
     }
-
-    static PairType _decoderCreateMapPair(const ProtoMapEntry& protoMapEntry, const KeyType& key, const ValueType& value){
-        return LocalMapPair(key, value);
-    }
-
 };
+
+class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
+private:
+    friend class AbstractMessageConverter;
+
+private:
+    class ItemConverter : public AbstractMessageConverter<
+            ItemConverter,
+            std::pair<LocalType::MapType::key_type, LocalType::MapType::mapped_type>,
+            PROTO_TestMessage_ItemsEntry ,
+            &PROTO_TestMessage_ItemsEntry_msg>
+    {
+    private:
+        friend class AbstractMessageConverter;
+        static ProtoType _encoderInit(const LocalType& local) {
+            return ProtoType{
+                    .key = StringConverter::encoder(&local.first),
+                    .value = StringConverter::encoder(&local.second)
+            };
+        }
+
+        static ProtoType _decoderInit(LocalType& local){
+            return ProtoType{
+                    .key = StringConverter::decoder(&local.first),
+                    .value = StringConverter::decoder(&local.second)
+            };
+        }
+
+        static bool _decoderApply(const ProtoType& proto, LocalType& local){
+            return true; //nothing to apply
+        }
+    };
+
+    class ItemsConverter : public MapConverter<
+            ItemsConverter,
+            LOCAL_TestMessage::MapType,
+            ItemConverter>
+    {};
+
+private:
+    static ProtoType _encoderInit(const LocalType& local) {
+        return ProtoType{
+                .items = ItemsConverter::encoder(&local.items)
+        };
+    }
+
+    static ProtoType _decoderInit(LocalType& local){
+        return ProtoType{
+                .items = ItemsConverter::decoder(&local.items)
+        };
+    }
+
+    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+        return true;
+    }
+};
+
 
 int main() {
     int status = 0;
 
-    const MapType originalMap = {
-            {"key_1", "value_1" },
-            {"key_2", "value_2" }
+    const LOCAL_TestMessage original = {
+            .items = {
+                    {"key_1", "value_1"},
+                    {"key_2", "value_2"}
+            }
     };
+
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    {
-        PROTO_TestMessage msg = {
-                .map = MapConverter::encoder(&originalMap)
-        };
+    TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
 
-        TEST(pb_encode(&outputStream, &PROTO_TestMessage_msg, &msg));
-    }
+    auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    {
-        MapType decodedMap;
+    LOCAL_TestMessage decoded;
 
-        PROTO_TestMessage msg = {
-                .map = MapConverter::decoder(&decodedMap)
-        };
+    TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
 
-        auto inputStream = NanoPb::StringInputStream(outputStream.release());
-
-        TEST(pb_decode(&inputStream, &PROTO_TestMessage_msg, &msg));
-
-        TEST(originalMap == decodedMap);
-    }
+    TEST(original == decoded);
 
     return status;
 }

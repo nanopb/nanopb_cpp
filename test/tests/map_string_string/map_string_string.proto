@@ -3,5 +3,5 @@ syntax = "proto3";
 package PROTO;
 
 message TestMessage {
-  map<string, string> map = 1;
+  map<string, string> items = 1;
 }

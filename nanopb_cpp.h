@@ -312,53 +312,8 @@ namespace NanoPb {
             static void _insert(LOCAL_CONTAINER_TYPE* container, LocalItemType item){
                 container->insert(item);
             }
-
         };
 
-
-        /**
-         * AbstractMapConverter
-         */
-        template<class CONVERTER, class LOCAL_MAP_TYPE, class PROTO_ITEM_TYPE, const pb_msgdesc_t* PROTO_MAP_ENTRY_MSG>
-        class AbstractMapConverter : public AbstractCallbackConverter<AbstractMapConverter<CONVERTER, LOCAL_MAP_TYPE, PROTO_ITEM_TYPE, PROTO_MAP_ENTRY_MSG>,LOCAL_MAP_TYPE>
-        {
-        protected:
-            using KeyType = typename LOCAL_MAP_TYPE::key_type;
-            using ValueType = typename LOCAL_MAP_TYPE::mapped_type;
-            using PairType = typename LOCAL_MAP_TYPE::value_type;
-            using LocalType = LOCAL_MAP_TYPE;
-            using LocalMapPair = typename LOCAL_MAP_TYPE::value_type;
-            using ProtoMapEntry = PROTO_ITEM_TYPE;
-        private:
-            friend class AbstractCallbackConverter<AbstractMapConverter<CONVERTER, LOCAL_MAP_TYPE, ProtoMapEntry, PROTO_MAP_ENTRY_MSG>,LOCAL_MAP_TYPE>;
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType *arg){
-                for (auto &kv: *arg) {
-                    auto &key = kv.first;
-                    auto &value = kv.second;
-
-                    ProtoMapEntry entry = CONVERTER::_encoderInit(key, value);
-
-                    if (!pb_encode_tag_for_field(stream, field))
-                        return false;
-
-                    if (!pb_encode_submessage(stream, PROTO_MAP_ENTRY_MSG, &entry))
-                        return false;
-                }
-                return true;
-            }
-
-            static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, LocalType *arg){
-                KeyType key;
-                ValueType value;
-                ProtoMapEntry entry = CONVERTER::_decoderInit(key, value);
-                if (!pb_decode(stream, PROTO_MAP_ENTRY_MSG, &entry)) {
-                    return false;
-                }
-                arg->insert(CONVERTER::_decoderCreateMapPair(entry, key, value));
-
-                return true;
-            }
-        };
     }
 
 
