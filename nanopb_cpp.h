@@ -188,7 +188,7 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedSignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER> {
+        class RepeatedSignedConverter : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
             using LocalItemType = typename CONTAINER::value_type;
         private:
@@ -269,8 +269,8 @@ namespace NanoPb {
          * Converter for vector/list
          */
         template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
-        class ArrayConverter : public AbstractRepeatedMessageConverter<
-                ArrayConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+        class ArrayMessageConverter : public AbstractRepeatedMessageConverter<
+                ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
                 LOCAL_CONTAINER_TYPE,
                 ITEM_MESSAGE_CONVERTER
         >
@@ -279,7 +279,7 @@ namespace NanoPb {
             using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
         private:
             friend class AbstractRepeatedMessageConverter<
-                    ArrayConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                    ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
                     LOCAL_CONTAINER_TYPE,
                     ITEM_MESSAGE_CONVERTER
             >;
