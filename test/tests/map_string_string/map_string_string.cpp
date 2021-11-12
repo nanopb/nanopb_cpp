@@ -50,7 +50,7 @@ private:
         }
     };
 
-    class ValuesConverter : public MapConverter<
+    class ValuesConverter : public AbstractMapConverter<
             ValuesConverter,
             LOCAL_TestMessage::MapType,
             ItemConverter>
