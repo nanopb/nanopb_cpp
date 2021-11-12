@@ -3,12 +3,12 @@
 #include <list>
 
 #include "tests_common.h"
-#include "repeated_unsigned.pb.h"
+#include "array_signed.pb.h"
 
 using namespace NanoPb::Converter;
 
 struct LOCAL_TestMessage {
-    using ContainerType = std::vector<uint64_t>;
+    using ContainerType = std::vector<int64_t>;
     ContainerType values;
 
     LOCAL_TestMessage() = default;
@@ -69,11 +69,11 @@ int testRepeated(const typename CONTAINER::value_type minValue, const typename C
 int main() {
     int status = 0;
 
-    status |= testRepeated<std::vector<uint64_t>>(0, UINT64_MAX);
-    status |= testRepeated<std::list<uint64_t>>(0, UINT64_MAX);
+    status |= testRepeated<std::vector<int64_t>>(INT64_MIN, INT64_MAX);
+    status |= testRepeated<std::list<int64_t>>(INT64_MIN, INT64_MAX);
 
-    status |= testRepeated<std::vector<uint32_t>>(0, UINT32_MAX);
-    status |= testRepeated<std::list<uint32_t>>(0, UINT32_MAX);
+    status |= testRepeated<std::vector<int32_t>>(INT32_MIN, INT32_MAX);
+    status |= testRepeated<std::list<int32_t>>(INT32_MIN, INT32_MAX);
 
     return status;
 }

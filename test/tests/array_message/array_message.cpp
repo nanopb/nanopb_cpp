@@ -1,7 +1,7 @@
 #include <vector>
 
 #include "tests_common.h"
-#include "repeated_message.pb.h"
+#include "array_message.pb.h"
 
 using namespace NanoPb::Converter;
 
