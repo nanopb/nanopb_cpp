@@ -8,5 +8,6 @@ message InnerMessage {
 }
 
 message OuterMessage {
-  repeated InnerMessage items = 1;
+  int32 number = 1;
+  repeated InnerMessage items = 2;
 }

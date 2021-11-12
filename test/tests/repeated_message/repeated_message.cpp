@@ -25,10 +25,16 @@ struct LOCAL_InnerMessage {
 struct LOCAL_OuterMessage {
     using ItemsContainer = std::vector<LOCAL_InnerMessage>;
 
+    int32_t number = 0;
     ItemsContainer items;
 
+    LOCAL_OuterMessage() = default;
+
+    LOCAL_OuterMessage(int32_t number, const ItemsContainer &items) : number(number), items(items) {}
+
     bool operator==(const LOCAL_OuterMessage &rhs) const {
-        return items == rhs.items;
+        return number == rhs.number &&
+               items == rhs.items;
     }
 
     bool operator!=(const LOCAL_OuterMessage &rhs) const {
@@ -72,6 +78,7 @@ private:
 
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
+                .number = local.number,
                 .items = OuterMessageItemsConverter::encoder(&local.items)
         };
     }
@@ -83,7 +90,7 @@ private:
     }
 
     static bool _decoderApply(const ProtoType& proto, LocalType& local){
-        //nothing to apply
+        local.number = proto.number;
         return true;
     }
 };
@@ -92,13 +99,14 @@ private:
 int main() {
     int status = 0;
 
-    const LOCAL_OuterMessage original = {
-            .items = {
+    LOCAL_OuterMessage original (
+            INT32_MIN,
+            {
                     LOCAL_InnerMessage(1, "entry_1"),
                     LOCAL_InnerMessage(2, "entry_1"),
                     LOCAL_InnerMessage(UINT32_MAX, "entry_max"),
             }
-    };
+    );
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
@@ -116,6 +124,8 @@ int main() {
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
         TEST(pb_decode(&inputStream, OuterMessageConverter::getMsgType(), &msg));
+
+        OuterMessageConverter::decoderApply(msg, decoded);
 
         TEST(original == decoded);
     }
