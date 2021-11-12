@@ -17,14 +17,14 @@ class MapConverter : public AbstractMapConverter<
 private:
     friend class AbstractMapConverter;
 
-    static ProtoMapEntry _encoderInitializer(const KeyType& key, const ValueType& value){
+    static ProtoMapEntry _encoderInit(const KeyType& key, const ValueType& value){
         return ProtoMapEntry{
                 .key = key,
                 .value = StringConverter::encoder(&value)
         };
     }
 
-    static ProtoMapEntry _decoderInitializer(KeyType& key, ValueType& value){
+    static ProtoMapEntry _decoderInit(KeyType& key, ValueType& value){
         return ProtoMapEntry{
                 // key is scalar type and will be decoded by nanopb, so we don't need to initialize it
                 // value is callback type

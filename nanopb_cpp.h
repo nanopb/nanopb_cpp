@@ -280,7 +280,7 @@ namespace NanoPb {
                     auto &key = kv.first;
                     auto &value = kv.second;
 
-                    ProtoMapEntry entry = CONVERTER::_encoderInitializer(key, value);
+                    ProtoMapEntry entry = CONVERTER::_encoderInit(key, value);
 
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -294,7 +294,7 @@ namespace NanoPb {
             static bool _decode(pb_istream_t *stream, __attribute__((unused)) const pb_field_t *field, LocalType *arg){
                 KeyType key;
                 ValueType value;
-                ProtoMapEntry entry = CONVERTER::_decoderInitializer(key, value);
+                ProtoMapEntry entry = CONVERTER::_decoderInit(key, value);
                 if (!pb_decode(stream, PROTO_MAP_ENTRY_MSG, &entry)) {
                     return false;
                 }

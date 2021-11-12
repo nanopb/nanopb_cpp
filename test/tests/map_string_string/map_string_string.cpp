@@ -17,14 +17,14 @@ class MapConverter : public AbstractMapConverter<
 private:
     friend class AbstractMapConverter;
 
-    static ProtoMapEntry _encoderInitializer(const KeyType& key, const ValueType& value){
+    static ProtoMapEntry _encoderInit(const KeyType& key, const ValueType& value){
         return ProtoMapEntry{
                 .key = StringConverter::encoder(&key),
                 .value = StringConverter::encoder(&value)
         };
     }
 
-    static ProtoMapEntry _decoderInitializer(KeyType& key, ValueType& value){
+    static ProtoMapEntry _decoderInit(KeyType& key, ValueType& value){
         return ProtoMapEntry{
                 .key = StringConverter::decoder(&key),
                 .value = StringConverter::decoder(&value)
