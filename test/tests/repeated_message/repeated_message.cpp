@@ -5,26 +5,38 @@
 
 using namespace NanoPb::Converter;
 
-struct LocalMessageItem {
+struct LOCAL_InnerMessage {
     uint32_t number = 0;
     std::string text;
 
-    LocalMessageItem() = default; // Default constructor is required
-    LocalMessageItem(uint32_t number, const std::string &text) : number(number), text(text) {}
+    LOCAL_InnerMessage() = default; // Default constructor is required
+    LOCAL_InnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
 
-    bool operator==(const LocalMessageItem &rhs) const {
+    bool operator==(const LOCAL_InnerMessage &rhs) const {
         return number == rhs.number &&
                text == rhs.text;
     }
 
-    bool operator!=(const LocalMessageItem &rhs) const {
+    bool operator!=(const LOCAL_InnerMessage &rhs) const {
         return !(rhs == *this);
     }
 };
 
-using LocalMessageContainer = std::vector<LocalMessageItem>;
+struct LOCAL_OuterMessage {
+    using ItemsContainer = std::vector<LOCAL_InnerMessage>;
 
-class LocalMessageItemConverter : public AbstractMessageConverter<LocalMessageItemConverter, LocalMessageItem, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
+    ItemsContainer items;
+
+    bool operator==(const LOCAL_OuterMessage &rhs) const {
+        return items == rhs.items;
+    }
+
+    bool operator!=(const LOCAL_OuterMessage &rhs) const {
+        return !(rhs == *this);
+    }
+};
+
+class InnerMessageConverter : public AbstractMessageConverter<InnerMessageConverter, LOCAL_InnerMessage, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
 private:
     friend class AbstractMessageConverter;
 
@@ -47,41 +59,63 @@ private:
     }
 };
 
-class LocalMessageContainerConverter : public AbstractRepeatedMessageConverter<
-        LocalMessageContainerConverter,
-        LocalMessageContainer,
-        LocalMessageItemConverter>
+
+class OuterMessageItemsConverter : public AbstractRepeatedMessageConverter<
+        OuterMessageItemsConverter,
+        LOCAL_OuterMessage::ItemsContainer ,
+        InnerMessageConverter>
 {};
+
+class OuterMessageConverter : public AbstractMessageConverter<OuterMessageConverter, LOCAL_OuterMessage, PROTO_OuterMessage, &PROTO_OuterMessage_msg> {
+private:
+    friend class AbstractMessageConverter;
+
+    static ProtoType _encoderInit(const LocalType& local) {
+        return ProtoType{
+                .items = OuterMessageItemsConverter::encoder(&local.items)
+        };
+    }
+
+    static ProtoType _decoderInit(LocalType& local){
+        return ProtoType{
+                .items = OuterMessageItemsConverter::decoder(&local.items)
+        };
+    }
+
+    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+        //nothing to apply
+        return true;
+    }
+};
+
 
 int main() {
     int status = 0;
 
-    const LocalMessageContainer original = {
-            LocalMessageItem(1 , "entry_1"),
-            LocalMessageItem(2 , "entry_1"),
-            LocalMessageItem(UINT32_MAX , "entry_max"),
+    const LOCAL_OuterMessage original = {
+            .items = {
+                    LOCAL_InnerMessage(1, "entry_1"),
+                    LOCAL_InnerMessage(2, "entry_1"),
+                    LOCAL_InnerMessage(UINT32_MAX, "entry_max"),
+            }
     };
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        PROTO_OuterMessage msg = {
-                .items = LocalMessageContainerConverter::encoder(&original)
-        };
+        auto msg = OuterMessageConverter::encoderInit(original);
 
-        TEST(pb_encode(&outputStream, &PROTO_OuterMessage_msg, &msg));
+        TEST(pb_encode(&outputStream, OuterMessageConverter::getMsgType(), &msg));
     }
 
     {
-        LocalMessageContainer decoded;
+        LOCAL_OuterMessage decoded;
 
-        PROTO_OuterMessage msg = {
-                .items = LocalMessageContainerConverter::decoder(&decoded)
-        };
+        auto msg = OuterMessageConverter::decoderInit(decoded);
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        TEST(pb_decode(&inputStream, &PROTO_OuterMessage_msg, &msg));
+        TEST(pb_decode(&inputStream, OuterMessageConverter::getMsgType(), &msg));
 
         TEST(original == decoded);
     }
