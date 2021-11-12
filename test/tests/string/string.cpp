@@ -1,5 +1,5 @@
 #include "tests_common.h"
-#include "test_string.pb.h"
+#include "string.pb.h"
 
 using namespace NanoPb::Converter;
 
