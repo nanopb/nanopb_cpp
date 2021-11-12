@@ -137,7 +137,7 @@ namespace NanoPb {
         };
 
         /**
-         * Repeated unsigned converter.
+         * Array unsigned converter.
          *
          *  Value size depend o PB_WITHOUT_64BIT:
          *      is set: max 32 bit
@@ -146,11 +146,11 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedUnsignedConverter  : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER> {
+        class ArrayUnsignedConverter  : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
             using LocalItemType = typename CONTAINER::value_type;
         private:
-            friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
+            friend class AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER>;
 
             static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
@@ -179,7 +179,7 @@ namespace NanoPb {
         };
 
         /**
-         * Repeated signed converter.
+         * Array signed converter.
          *
          *  Value size depend o PB_WITHOUT_64BIT:
          *      is set: max 32 bit
@@ -188,11 +188,11 @@ namespace NanoPb {
           * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
           */
         template<class CONTAINER>
-        class RepeatedSignedConverter : public AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER> {
+        class ArraySignedConverter : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
             using LocalItemType = typename CONTAINER::value_type;
         private:
-            friend class AbstractRepeatedConverter<RepeatedUnsignedConverter<CONTAINER>,CONTAINER>;
+            friend class AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER>;
 
             static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 if (!pb_encode_tag_for_field(stream, field)) {

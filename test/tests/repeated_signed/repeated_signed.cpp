@@ -30,13 +30,13 @@ private:
 private:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = RepeatedUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoder(local.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoder(local.values)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-                .values = RepeatedUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoder(local.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoder(local.values)
         };
     }
 
