@@ -68,7 +68,7 @@ private:
 
 class OuterMessageConverter : public AbstractMessageConverter<OuterMessageConverter, LOCAL_OuterMessage, PROTO_OuterMessage, &PROTO_OuterMessage_msg> {
 private:
-    class ItemsConverter : public ArrayMessageConverter<
+    class ItemsConverter : public ArrayConverter<
             ItemsConverter,
             LOCAL_OuterMessage::ItemsContainer ,
             InnerMessageConverter>
