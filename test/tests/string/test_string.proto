@@ -1,5 +1,7 @@
 syntax = "proto3";
 
-message StringContainer {
+package PROTO;
+
+message TestMessage {
   string str = 1;
 }

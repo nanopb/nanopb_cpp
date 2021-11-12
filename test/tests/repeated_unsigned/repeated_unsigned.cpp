@@ -1,3 +1,4 @@
+#include <utility>
 #include <vector>
 #include <list>
 
@@ -6,38 +7,62 @@
 
 using namespace NanoPb::Converter;
 
+struct LOCAL_TestMessage {
+    using ContainerType = std::vector<uint64_t>;
+    ContainerType values;
+
+    LOCAL_TestMessage() = default;
+    LOCAL_TestMessage(ContainerType values) : values(std::move(values)) {}
+
+    bool operator==(const LOCAL_TestMessage &rhs) const {
+        return values == rhs.values;
+    }
+
+    bool operator!=(const LOCAL_TestMessage &rhs) const {
+        return !(rhs == *this);
+    }
+};
+
+class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
+private:
+    friend class AbstractMessageConverter;
+
+private:
+    static ProtoType _encoderInit(const LocalType& local) {
+        return ProtoType{
+                .values = RepeatedUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoder(local.values)
+        };
+    }
+
+    static ProtoType _decoderInit(LocalType& local){
+        return ProtoType{
+                .values = RepeatedUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoder(local.values)
+        };
+    }
+
+    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+        return true;
+    }
+};
+
 
 template <class CONTAINER>
-int testRepeated(typename CONTAINER::value_type minValue, typename CONTAINER::value_type maxValue){
-
+int testRepeated(const typename CONTAINER::value_type minValue, const typename CONTAINER::value_type maxValue){
     int status = 0;
 
-    const CONTAINER original = {minValue, 0, 1 , 2, 3, 4, 5, maxValue};
+    LOCAL_TestMessage original({minValue, 0, 1 , 2, 3, 4, 5, maxValue});
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    {
-        PROTO_TestMessage msg = {
-                .values = RepeatedUnsignedConverter<CONTAINER>::encoder(original)
-        };
+    TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
 
-        TEST(pb_encode(&outputStream, &PROTO_TestMessage_msg, &msg));
-    }
+    auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    {
-        CONTAINER decoded;
+    LOCAL_TestMessage decoded;
 
-        PROTO_TestMessage msg = {
-                .values = RepeatedUnsignedConverter<CONTAINER>::decoder(decoded)
-        };
+    TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
 
-        auto inputStream = NanoPb::StringInputStream(outputStream.release());
-
-        TEST(pb_decode(&inputStream, &PROTO_TestMessage_msg, &msg));
-
-        TEST(original == decoded);
-    }
-
+    TEST(original == decoded);
     return status;
 }
 
