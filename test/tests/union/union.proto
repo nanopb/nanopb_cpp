@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package PROTO;
+
+message InnerMessageOne {
+  int32 number = 1;
+}
+
+message InnerMessageTwo {
+  string str = 1;
+}
+
+message InnerMessageThree {
+  repeated uint32 values = 1;
+}
+
+message UnionMessage {
+  oneof msg {
+      InnerMessageOne msg1 = 1;
+      InnerMessageTwo msg2 = 2;
+      InnerMessageThree msg3 = 3;
+  }
+}
