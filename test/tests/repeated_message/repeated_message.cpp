@@ -66,26 +66,26 @@ private:
 };
 
 
-class OuterMessageItemsConverter : public AbstractRepeatedMessageConverter<
-        OuterMessageItemsConverter,
-        LOCAL_OuterMessage::ItemsContainer ,
-        InnerMessageConverter>
-{};
-
 class OuterMessageConverter : public AbstractMessageConverter<OuterMessageConverter, LOCAL_OuterMessage, PROTO_OuterMessage, &PROTO_OuterMessage_msg> {
+private:
+    class ItemsConverter : public AbstractRepeatedMessageConverter<
+            ItemsConverter,
+            LOCAL_OuterMessage::ItemsContainer ,
+            InnerMessageConverter>
+    {};
 private:
     friend class AbstractMessageConverter;
 
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,
-                .items = OuterMessageItemsConverter::encoder(&local.items)
+                .items = ItemsConverter::encoder(&local.items)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-                .items = OuterMessageItemsConverter::decoder(&local.items)
+                .items = ItemsConverter::decoder(&local.items)
         };
     }
 
@@ -110,25 +110,15 @@ int main() {
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    {
-        auto msg = OuterMessageConverter::encoderInit(original);
+    TEST(NanoPb::encode<OuterMessageConverter>(outputStream, original));
 
-        TEST(pb_encode(&outputStream, OuterMessageConverter::getMsgType(), &msg));
-    }
+    auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    {
-        LOCAL_OuterMessage decoded;
+    LOCAL_OuterMessage decoded;
 
-        auto msg = OuterMessageConverter::decoderInit(decoded);
+    TEST(NanoPb::decode<OuterMessageConverter>(inputStream, decoded));
 
-        auto inputStream = NanoPb::StringInputStream(outputStream.release());
-
-        TEST(pb_decode(&inputStream, OuterMessageConverter::getMsgType(), &msg));
-
-        OuterMessageConverter::decoderApply(msg, decoded);
-
-        TEST(original == decoded);
-    }
+    TEST(original == decoded);
 
     return status;
 }

@@ -304,6 +304,29 @@ namespace NanoPb {
             }
         };
     }
+
+
+    /**
+     * Encode message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
+        auto proto = MESSAGE_CONVERTER::encoderInit(local);
+        return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
+    }
+
+    /**
+     * Decode message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
+        auto proto = MESSAGE_CONVERTER::decoderInit(local);
+        if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
+            return false;
+        if (!MESSAGE_CONVERTER::decoderApply(proto, local))
+            return false;
+        return true;
+    }
 }
 
 #endif //NANOPB_CPP_NANOPB_CPP_H
