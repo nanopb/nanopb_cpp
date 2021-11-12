@@ -290,6 +290,31 @@ namespace NanoPb {
 
         };
 
+        /**
+         * Converter for map
+         */
+        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
+        class MapConverter : public AbstractRepeatedMessageConverter<
+                MapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                LOCAL_CONTAINER_TYPE,
+                ITEM_MESSAGE_CONVERTER
+        >
+        {
+        private:
+            using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
+        private:
+            friend class AbstractRepeatedMessageConverter<
+                    MapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                    LOCAL_CONTAINER_TYPE,
+                    ITEM_MESSAGE_CONVERTER
+            >;
+
+            static void _insert(LOCAL_CONTAINER_TYPE* container, LocalItemType item){
+                container->insert(item);
+            }
+
+        };
+
 
         /**
          * AbstractMapConverter
