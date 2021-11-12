@@ -107,8 +107,12 @@ namespace NanoPb {
          * StringConverter
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
+        public:
+            class StringConverterFriend {};
         private:
             friend class AbstractCallbackConverter;
+
+        public: // make public to use it from ArrayStringConverter
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
         };
@@ -142,9 +146,9 @@ namespace NanoPb {
          *  Value size depend o PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
-          *
-          * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
-          */
+         *
+         * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
+         */
         template<class CONTAINER>
         class ArrayUnsignedConverter  : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
@@ -184,9 +188,9 @@ namespace NanoPb {
          *  Value size depend o PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
-          *
-          * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
-          */
+         *
+         * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
+         */
         template<class CONTAINER>
         class ArraySignedConverter : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
@@ -216,6 +220,29 @@ namespace NanoPb {
                 }
                 #endif
                 container.push_back(value);
+                return true;
+            }
+        };
+
+        /**
+         * Array string converter.
+         */
+        template<class CONTAINER>
+        class ArrayStringConverter : public AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER> {
+        private:
+            using LocalItemType = typename CONTAINER::value_type;
+        private:
+            friend class AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER>;
+
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
+                return StringConverter::_encode(stream, field, item);
+            }
+
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
+                std::string str;
+                if  (!StringConverter::_decode(stream, field, str))
+                    return false;
+                container.push_back(str);
                 return true;
             }
         };
