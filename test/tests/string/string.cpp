@@ -58,5 +58,4 @@ int main() {
 
     TEST(original == decoded);
     return status;
-    return status;
 }
