@@ -17,23 +17,23 @@ int testRepeated(typename CONTAINER::value_type minValue, typename CONTAINER::va
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        RepeatedUnsignedContainer msg = {
+        PROTO_RepeatedUnsignedContainer msg = {
                 .values = RepeatedUnsignedConverter<CONTAINER>::encoder(&original)
         };
 
-        TEST(pb_encode(&outputStream, &RepeatedUnsignedContainer_msg, &msg));
+        TEST(pb_encode(&outputStream, &PROTO_RepeatedUnsignedContainer_msg, &msg));
     }
 
     {
         CONTAINER decoded;
 
-        RepeatedUnsignedContainer msg = {
+        PROTO_RepeatedUnsignedContainer msg = {
                 .values = RepeatedUnsignedConverter<CONTAINER>::decoder(&decoded)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        TEST(pb_decode(&inputStream, &RepeatedUnsignedContainer_msg, &msg));
+        TEST(pb_decode(&inputStream, &PROTO_RepeatedUnsignedContainer_msg, &msg));
 
         TEST(original == decoded);
     }

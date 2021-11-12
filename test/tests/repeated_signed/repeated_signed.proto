@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package PROTO;
+
 message RepeatedSignedContainer {
   repeated int64 values = 1;
 }

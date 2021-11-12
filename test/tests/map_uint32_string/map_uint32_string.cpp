@@ -10,8 +10,8 @@ using MapType = std::map<uint32_t, std::string>;
 class MapConverter : public AbstractMapConverter<
         MapConverter,
         MapType,
-        MapUint32StringContainer_MapEntry,
-        &MapUint32StringContainer_MapEntry_msg
+        PROTO_MapUint32StringContainer_MapEntry,
+        &PROTO_MapUint32StringContainer_MapEntry_msg
         >
 {
 private:
@@ -50,23 +50,23 @@ int main() {
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     {
-        MapUint32StringContainer msg = {
+        PROTO_MapUint32StringContainer msg = {
                 .map = MapConverter::encoder(&originalMap)
         };
 
-        TEST(pb_encode(&outputStream, &MapUint32StringContainer_msg, &msg));
+        TEST(pb_encode(&outputStream, &PROTO_MapUint32StringContainer_msg, &msg));
     }
 
     {
         MapType decodedMap;
 
-        MapUint32StringContainer msg = {
+        PROTO_MapUint32StringContainer msg = {
                 .map = MapConverter::decoder(&decodedMap)
         };
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        TEST(pb_decode(&inputStream, &MapUint32StringContainer_msg, &msg));
+        TEST(pb_decode(&inputStream, &PROTO_MapUint32StringContainer_msg, &msg));
 
         TEST(originalMap == decodedMap);
     }

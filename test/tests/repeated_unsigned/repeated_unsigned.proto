@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package PROTO;
+
 message RepeatedUnsignedContainer {
   repeated uint64 values = 1;
 }

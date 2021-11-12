@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package PROTO;
+
 message MapUint32StringContainer {
   map<uint32, string> map = 1;
 }
