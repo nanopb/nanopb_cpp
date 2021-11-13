@@ -52,8 +52,8 @@ private:
         }
     };
 
-    class ValuesConverter : public AbstractMapConverter<
-            ValuesConverter,
+    class ItemsConverter : public AbstractMapConverter<
+            ItemsConverter,
             LOCAL_TestMessage::MapType,
             ItemConverter>
     {};
@@ -61,13 +61,13 @@ private:
 private:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
-                .items = ValuesConverter::encoder(local.items)
+                .items = ItemsConverter::encoder(local.items)
         };
     }
 
     static ProtoType _decoderInit(LocalType& local){
         return ProtoType{
-                .items = ValuesConverter::decoder(local.items)
+                .items = ItemsConverter::decoder(local.items)
         };
     }
 
