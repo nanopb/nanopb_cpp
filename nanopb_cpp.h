@@ -46,6 +46,37 @@ namespace NanoPb {
         size_t _position;
     };
 
+    /**
+     * Encode message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
+        auto proto = MESSAGE_CONVERTER::encoderInit(local);
+        return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
+    }
+
+    /**
+     * Encode sub message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool encodeSubMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
+        auto proto = MESSAGE_CONVERTER::encoderInit(local);
+        return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
+    }
+
+    /**
+     * Decode message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
+        auto proto = MESSAGE_CONVERTER::decoderInit(local);
+        if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
+            return false;
+        if (!MESSAGE_CONVERTER::decoderApply(proto, local))
+            return false;
+        return true;
+    }
+
     namespace Converter {
 
         /**
@@ -266,25 +297,20 @@ namespace NanoPb {
                     >;
 
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
-                for (auto &item: container) {
-                    ProtoItemType protoEntry = ITEM_MESSAGE_CONVERTER::encoderInit(item);
-
+                for (const LocalItemType &item: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    if (!pb_encode_submessage(stream, ITEM_MESSAGE_CONVERTER::getMsgType(), &protoEntry))
+                    if (!encodeSubMessage<ITEM_MESSAGE_CONVERTER>(*stream, item)){
                         return false;
+                    }
                 }
                 return true;
             }
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
                 LocalItemType localEntry;
-                ProtoItemType protoEntry = ITEM_MESSAGE_CONVERTER::decoderInit(localEntry);
-                if (!pb_decode(stream, ITEM_MESSAGE_CONVERTER::getMsgType(), &protoEntry)) {
-                    return false;
-                }
-                if (!ITEM_MESSAGE_CONVERTER::decoderApply(protoEntry, localEntry)){
+                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, localEntry)){
                     return false;
                 }
                 CONVERTER::_insert(container, localEntry);
@@ -341,29 +367,6 @@ namespace NanoPb {
             }
         };
 
-    }
-
-
-    /**
-     * Encode message
-     */
-    template<class MESSAGE_CONVERTER>
-    bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
-        auto proto = MESSAGE_CONVERTER::encoderInit(local);
-        return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
-    }
-
-    /**
-     * Decode message
-     */
-    template<class MESSAGE_CONVERTER>
-    bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
-        auto proto = MESSAGE_CONVERTER::decoderInit(local);
-        if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
-            return false;
-        if (!MESSAGE_CONVERTER::decoderApply(proto, local))
-            return false;
-        return true;
     }
 }
 
