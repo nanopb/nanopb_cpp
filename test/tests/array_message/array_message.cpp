@@ -10,6 +10,12 @@ struct LOCAL_InnerMessage {
     std::string text;
 
     LOCAL_InnerMessage() = default; // Default constructor is required
+
+    // Remove copy constructor and add move constructor
+    // to ensure that all can work without copy constructor
+    LOCAL_InnerMessage(const LOCAL_InnerMessage&) = delete;
+    LOCAL_InnerMessage(LOCAL_InnerMessage&& other) : number(other.number), text(std::move(other.text)) {};
+
     LOCAL_InnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
 
     bool operator==(const LOCAL_InnerMessage &rhs) const {
@@ -30,7 +36,7 @@ struct LOCAL_OuterMessage {
 
     LOCAL_OuterMessage() = default;
 
-    LOCAL_OuterMessage(int32_t number, const ItemsContainer &items) : number(number), items(items) {}
+    LOCAL_OuterMessage(int32_t number, ItemsContainer &&items) : number(number), items(std::move(items)) {}
 
     bool operator==(const LOCAL_OuterMessage &rhs) const {
         return number == rhs.number &&
@@ -99,13 +105,14 @@ private:
 int main() {
     int status = 0;
 
-    LOCAL_OuterMessage original (
+    LOCAL_OuterMessage::ItemsContainer items;
+    items.push_back(LOCAL_InnerMessage(1, "entry_1"));
+    items.push_back(LOCAL_InnerMessage(2, "entry_1"));
+    items.push_back(LOCAL_InnerMessage(UINT32_MAX, "entry_max"));
+
+    const LOCAL_OuterMessage original (
             INT32_MIN,
-            {
-                    LOCAL_InnerMessage(1, "entry_1"),
-                    LOCAL_InnerMessage(2, "entry_1"),
-                    LOCAL_InnerMessage(UINT32_MAX, "entry_max"),
-            }
+            std::move(items)
     );
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);

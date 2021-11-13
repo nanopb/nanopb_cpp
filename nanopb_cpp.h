@@ -312,12 +312,7 @@ namespace NanoPb {
             }
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
-                LocalItemType localEntry;
-                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, localEntry)){
-                    return false;
-                }
-                CONVERTER::_insert(container, localEntry);
-                return true;
+                return CONVERTER::_decode(stream, field, container);
             }
         };
 
@@ -340,10 +335,14 @@ namespace NanoPb {
                     ITEM_MESSAGE_CONVERTER
             >;
 
-            static void _insert(LOCAL_CONTAINER_TYPE& container, LocalItemType& item){
-                container.push_back(item);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
+                container.push_back(LocalItemType());
+                LocalItemType& localEntry = *container.rbegin();
+                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, localEntry)){
+                    return false;
+                }
+                return true;
             }
-
         };
 
         /**
@@ -365,9 +364,15 @@ namespace NanoPb {
                     ITEM_MESSAGE_CONVERTER
             >;
 
-            static void _insert(LOCAL_CONTAINER_TYPE& container, LocalItemType& item){
-                container.insert(item);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
+                LocalItemType localEntry;
+                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, localEntry)){
+                    return false;
+                }
+                container.insert(localEntry);
+                return true;
             }
+
         };
 
     }
