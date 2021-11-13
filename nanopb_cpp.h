@@ -331,8 +331,8 @@ namespace NanoPb {
         {
         private:
             using KeyType = typename LOCAL_CONTAINER_TYPE::key_type;
-            using MappedType = typename LOCAL_CONTAINER_TYPE::mapped_type;
-            using PairType = std::pair<KeyType,MappedType>;
+            using ValueType = typename LOCAL_CONTAINER_TYPE::mapped_type;
+            using PairType = std::pair<KeyType,ValueType>;
         private:
             friend class AbstractCallbackConverter<
                     AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
