@@ -200,17 +200,17 @@ namespace NanoPb {
             }
 
             static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container){
-                #ifdef PB_WITHOUT_64BIT
+#ifdef PB_WITHOUT_64BIT
                 uint32_t value;
                 if (!pb_decode_varint32(stream, &value)) {
                     return false;
                 }
-                #else
+#else
                 uint64_t value;
                 if (!pb_decode_varint(stream, &value)) {
                     return false;
                 }
-                #endif
+#endif
                 container.push_back(value);
                 return true;
             }
@@ -242,17 +242,17 @@ namespace NanoPb {
             }
 
             static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
-                #ifdef PB_WITHOUT_64BIT
+#ifdef PB_WITHOUT_64BIT
                 int32_t value;
                 if (!pb_decode_svarint32(stream, &value)) {
                     return false;
                 }
-                #else
+#else
                 int64_t value;
                 if (!pb_decode_svarint(stream, &value)) {
                     return false;
                 }
-                #endif
+#endif
                 container.push_back(value);
                 return true;
             }
@@ -282,22 +282,21 @@ namespace NanoPb {
         };
 
         /**
-         * Abstract repeated message converter
+         * Converter for vector/list
          */
         template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
-        class AbstractRepeatedMessageConverter : public AbstractCallbackConverter<
-                AbstractRepeatedMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+        class ArrayMessageConverter : public AbstractCallbackConverter<
+                ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
                 LOCAL_CONTAINER_TYPE
-                >
+        >
         {
         private:
             using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
-            using ProtoItemType = typename ITEM_MESSAGE_CONVERTER::ProtoType;
         private:
             friend class AbstractCallbackConverter<
-                    AbstractRepeatedMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                    ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
                     LOCAL_CONTAINER_TYPE
-                    >;
+            >;
 
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
                 for (auto &item: container) {
@@ -310,30 +309,6 @@ namespace NanoPb {
                 }
                 return true;
             }
-
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
-                return CONVERTER::_decode(stream, field, container);
-            }
-        };
-
-        /**
-         * Converter for vector/list
-         */
-        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
-        class ArrayMessageConverter : public AbstractRepeatedMessageConverter<
-                ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
-                LOCAL_CONTAINER_TYPE,
-                ITEM_MESSAGE_CONVERTER
-        >
-        {
-        private:
-            using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
-        private:
-            friend class AbstractRepeatedMessageConverter<
-                    ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
-                    LOCAL_CONTAINER_TYPE,
-                    ITEM_MESSAGE_CONVERTER
-            >;
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
                 container.push_back(LocalItemType());
@@ -349,27 +324,39 @@ namespace NanoPb {
          * Converter for map
          */
         template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
-        class AbstractMapConverter : public AbstractRepeatedMessageConverter<
+        class AbstractMapConverter : public AbstractCallbackConverter<
                 AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
-                LOCAL_CONTAINER_TYPE,
-                ITEM_MESSAGE_CONVERTER
+                LOCAL_CONTAINER_TYPE
         >
         {
         private:
-            using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
+            using KeyType = typename LOCAL_CONTAINER_TYPE::key_type;
+            using MappedType = typename LOCAL_CONTAINER_TYPE::mapped_type;
+            using PairType = std::pair<KeyType,MappedType>;
         private:
-            friend class AbstractRepeatedMessageConverter<
+            friend class AbstractCallbackConverter<
                     AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
-                    LOCAL_CONTAINER_TYPE,
-                    ITEM_MESSAGE_CONVERTER
+                    LOCAL_CONTAINER_TYPE
             >;
 
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
+                for (auto &item: container) {
+                    if (!pb_encode_tag_for_field(stream, field))
+                        return false;
+
+                    if (!encodeSubMessage<ITEM_MESSAGE_CONVERTER>(*stream, item)){
+                        return false;
+                    }
+                }
+                return true;
+            }
+
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
-                LocalItemType localEntry;
-                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, localEntry)){
+                PairType pair;
+                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, pair)){
                     return false;
                 }
-                container.insert(localEntry);
+                container.insert(std::move(pair));
                 return true;
             }
 
