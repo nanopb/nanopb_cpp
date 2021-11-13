@@ -323,28 +323,31 @@ namespace NanoPb {
         /**
          * Converter for map
          */
-        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
+        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class AbstractMapConverter : public AbstractCallbackConverter<
-                AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                 LOCAL_CONTAINER_TYPE
         >
         {
-        private:
-            using KeyType = typename LOCAL_CONTAINER_TYPE::key_type;
-            using ValueType = typename LOCAL_CONTAINER_TYPE::mapped_type;
-            using PairType = std::pair<KeyType,ValueType>;
+        protected:
+            using LocalKeyType = typename LOCAL_CONTAINER_TYPE::key_type;
+            using LocalValueType = typename LOCAL_CONTAINER_TYPE::mapped_type;
+            using LocalPairType = std::pair<LocalKeyType,LocalValueType>;
+            using ProtoPairType = PROTO_PAIR_TYPE;
         private:
             friend class AbstractCallbackConverter<
-                    AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
+                    AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                     LOCAL_CONTAINER_TYPE
             >;
 
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
-                for (auto &item: container) {
+                for (auto &pair: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    if (!encodeSubMessage<ITEM_MESSAGE_CONVERTER>(*stream, item)){
+                    ProtoPairType protoPair = CONVERTER::_encoderInit(pair.first, pair.second);
+
+                    if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair)) {
                         return false;
                     }
                 }
@@ -352,11 +355,16 @@ namespace NanoPb {
             }
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
-                PairType pair;
-                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, pair)){
+                LocalKeyType key;
+                LocalValueType value;
+                ProtoPairType protoPair = CONVERTER::_decoderInit(key, value);
+
+                if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                }
-                container.insert(std::move(pair));
+                if (!CONVERTER::_decoderApply(protoPair, key, value))
+                    return false;
+
+                container.insert(std::move(LocalPairType(std::move(key), std::move(value))));
                 return true;
             }
 

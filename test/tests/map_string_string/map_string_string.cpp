@@ -23,38 +23,32 @@ private:
     friend class AbstractMessageConverter;
 
 private:
-    class ItemPairConverter : public AbstractMessageConverter<
-            ItemPairConverter,
-            std::pair<LocalType::MapType::key_type, LocalType::MapType::mapped_type>,
-            PROTO_TestMessage_ItemsEntry ,
-            &PROTO_TestMessage_ItemsEntry_msg>
-    {
-    private:
-        friend class AbstractMessageConverter;
-        static ProtoType _encoderInit(const LocalType& local) {
-            return ProtoType{
-                    .key = StringConverter::encoder(local.first),
-                    .value = StringConverter::encoder(local.second)
-            };
-        }
-
-        static ProtoType _decoderInit(LocalType& local){
-            return ProtoType{
-                    .key = StringConverter::decoder(local.first),
-                    .value = StringConverter::decoder(local.second)
-            };
-        }
-
-        static bool _decoderApply(const ProtoType& proto, LocalType& local){
-            return true; //nothing to apply
-        }
-    };
-
     class ValuesConverter : public AbstractMapConverter<
             ValuesConverter,
             LOCAL_TestMessage::MapType,
-            ItemPairConverter>
-    {};
+            PROTO_TestMessage_ItemsEntry,
+            &PROTO_TestMessage_ItemsEntry_msg>
+    {
+    private:
+        friend class AbstractMapConverter;
+
+        static ProtoPairType _encoderInit(const LocalKeyType& key, const LocalValueType& value) {
+            return ProtoPairType{
+                    .key = StringConverter::encoder(key),
+                    .value = StringConverter::encoder(value)
+            };
+        }
+        static ProtoPairType _decoderInit(LocalKeyType& key, LocalValueType& value){
+            return ProtoPairType{
+                    .key = StringConverter::decoder(key),
+                    .value = StringConverter::decoder(value)
+            };
+        }
+        static bool _decoderApply(const ProtoPairType& proto, LocalKeyType& key, LocalValueType& value){
+            //nothing to apply
+            return true;
+        }
+    };
 
 private:
     static ProtoType _encoderInit(const LocalType& local) {
