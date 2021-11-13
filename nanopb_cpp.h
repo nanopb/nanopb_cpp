@@ -51,7 +51,8 @@ namespace NanoPb {
      */
     template<class MESSAGE_CONVERTER>
     bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
-        auto proto = MESSAGE_CONVERTER::encoderInit(local);
+        using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
+        ProtoType proto = MESSAGE_CONVERTER::encoderInit(local);
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
     }
 
@@ -60,7 +61,8 @@ namespace NanoPb {
      */
     template<class MESSAGE_CONVERTER>
     bool encodeSubMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
-        auto proto = MESSAGE_CONVERTER::encoderInit(local);
+        using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
+        ProtoType proto = MESSAGE_CONVERTER::encoderInit(local);
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
     }
 
@@ -69,7 +71,8 @@ namespace NanoPb {
      */
     template<class MESSAGE_CONVERTER>
     bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
-        auto proto = MESSAGE_CONVERTER::decoderInit(local);
+        using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
+        ProtoType proto = MESSAGE_CONVERTER::decoderInit(local);
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
             return false;
         if (!MESSAGE_CONVERTER::decoderApply(proto, local))
