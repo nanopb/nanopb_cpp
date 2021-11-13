@@ -300,7 +300,7 @@ namespace NanoPb {
                     >;
 
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
-                for (const LocalItemType &item: container) {
+                for (auto &item: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
