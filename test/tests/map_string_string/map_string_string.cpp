@@ -23,8 +23,8 @@ private:
     friend class AbstractMessageConverter;
 
 private:
-    class ItemConverter : public AbstractMessageConverter<
-            ItemConverter,
+    class ItemPairConverter : public AbstractMessageConverter<
+            ItemPairConverter,
             std::pair<LocalType::MapType::key_type, LocalType::MapType::mapped_type>,
             PROTO_TestMessage_ItemsEntry ,
             &PROTO_TestMessage_ItemsEntry_msg>
@@ -53,7 +53,7 @@ private:
     class ValuesConverter : public AbstractMapConverter<
             ValuesConverter,
             LOCAL_TestMessage::MapType,
-            ItemConverter>
+            ItemPairConverter>
     {};
 
 private:
