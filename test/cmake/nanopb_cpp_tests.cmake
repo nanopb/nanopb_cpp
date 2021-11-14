@@ -23,6 +23,8 @@ function(nanopb_cpp_add_test TEST)
         message(FATAL_ERROR "No .proto found in ${TEST_FOLDER}")
     endif()
 
+    set(NANOPB_OPTIONS --error-on-unmatched)
+
     nanopb_generate_cpp(
             PROTO_SRCS
             PROTO_HDRS
