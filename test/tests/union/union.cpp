@@ -301,17 +301,13 @@ int testMessage(const LOCAL_UnionMessage& original){
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    auto encoderContext = UnionMessageConverter::createEncoderContext(original);
-
-    TEST(NanoPb::encode<UnionMessageConverter>(outputStream, encoderContext));
+    TEST(NanoPb::encode<UnionMessageConverter>(outputStream, original));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
     LOCAL_UnionMessage decoded;
 
-    auto decoderContext = UnionMessageConverter::createDecoderContext(decoded);
-
-    TEST(NanoPb::decode<UnionMessageConverter>(inputStream, decoderContext));
+    TEST(NanoPb::decode<UnionMessageConverter>(inputStream, decoded));
 
     TEST(original == decoded);
 
