@@ -48,14 +48,14 @@ NanoPb::StringInputStream::StringInputStream(BufferPtr &&buffer) : _buffer(std::
 #endif
 }
 
-bool NanoPb::Converter::StringConverter::_encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg) {
+bool NanoPb::Converter::StringConverter::_encode(pb_ostream_t *stream, const pb_field_t *field, const Context &arg) {
     NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
     if (!pb_encode_tag_for_field(stream, field))
         return false;
     return pb_encode_string(stream, (const pb_byte_t *) arg.c_str(), arg.size());
 }
 
-bool NanoPb::Converter::StringConverter::_decode(pb_istream_t *stream, const pb_field_t *field, LocalType &arg) {
+bool NanoPb::Converter::StringConverter::_decode(pb_istream_t *stream, const pb_field_t *field, Context &arg) {
     NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
     size_t len = stream->bytes_left;
     arg.resize(len);

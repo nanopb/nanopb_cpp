@@ -128,20 +128,20 @@ namespace NanoPb {
          *
          *  See StringConverter for the example implementation
          */
-        template<class CONVERTER, class LOCAL_TYPE>
+        template<class CONVERTER, class CONTEXT>
         class AbstractCallbackConverter {
         protected:
-            using LocalType = LOCAL_TYPE;
+            using Context = CONTEXT;
         public:
-            static pb_callback_t encoder(const LocalType& arg) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)&arg }; }
-            static pb_callback_t decoder(LocalType& arg) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)&arg }; }
+            static pb_callback_t encoder(const Context& ctx) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)&ctx }; }
+            static pb_callback_t decoder(Context& ctx) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)&ctx }; }
 
         private:
             static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return CONVERTER::_encode(stream, field, *(static_cast<const LocalType*>(*arg)));
+                return CONVERTER::_encode(stream, field, *(static_cast<const Context*>(*arg)));
             };
             static bool _decodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::_decode(stream, field, *(static_cast<LocalType*>(*arg)));
+                return CONVERTER::_decode(stream, field, *(static_cast<Context*>(*arg)));
             };
         };
 
@@ -149,20 +149,19 @@ namespace NanoPb {
          * StringConverter
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
-        public: // make public to use it from ArrayStringConverter
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
+        public:
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, Context &arg);
         };
 
         /**
          * Abstract repeated converter
          */
-        template<class CONVERTER, class LOCAL_TYPE>
-        class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>
-        {
+        template<class CONVERTER, class CONTEXT_CONTAINER>
+        class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, CONTEXT_CONTAINER>,CONTEXT_CONTAINER> {
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_TYPE &arg){
-                for (auto &item: arg) {
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &ctx){
+                for (auto &item: ctx) {
                     if (!CONVERTER::_encodeItem(stream, field, item)){
                         return false;
                     }
@@ -170,8 +169,8 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_TYPE &arg){
-                return CONVERTER::_decodeItem(stream, field, arg);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &ctx){
+                return CONVERTER::_decodeItem(stream, field, ctx);
             }
         };
 
@@ -279,31 +278,31 @@ namespace NanoPb {
         /**
          * Converter for vector/list
          */
-        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class ITEM_MESSAGE_CONVERTER>
+        template<class CONVERTER, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
         class ArrayMessageConverter : public AbstractCallbackConverter<
-                ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
-                LOCAL_CONTAINER_TYPE
+                ArrayMessageConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
+                CONTEXT_CONTAINER
         >
         {
         private:
-            using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
+            using LocalItemType = typename ITEM_CONVERTER::LocalType;
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
                 for (auto &item: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    if (!encodeSubMessage<ITEM_MESSAGE_CONVERTER>(*stream, item)){
+                    if (!encodeSubMessage<ITEM_CONVERTER>(*stream, item)){
                         return false;
                     }
                 }
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
                 container.push_back(LocalItemType());
                 LocalItemType& localEntry = *container.rbegin();
-                if (!decode<ITEM_MESSAGE_CONVERTER>(*stream, localEntry)){
+                if (!decode<ITEM_CONVERTER>(*stream, localEntry)){
                     return false;
                 }
                 return true;
@@ -313,20 +312,20 @@ namespace NanoPb {
         /**
          * Converter for map
          */
-        template<class CONVERTER, class LOCAL_CONTAINER_TYPE, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
+        template<class CONVERTER, class CONTEXT_CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class AbstractMapConverter : public AbstractCallbackConverter<
-                AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
-                LOCAL_CONTAINER_TYPE
+                AbstractMapConverter<CONVERTER, CONTEXT_CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
+                CONTEXT_CONTAINER
         >
         {
         protected:
-            using LocalKeyType = typename LOCAL_CONTAINER_TYPE::key_type;
-            using LocalValueType = typename LOCAL_CONTAINER_TYPE::mapped_type;
+            using LocalKeyType = typename CONTEXT_CONTAINER::key_type;
+            using LocalValueType = typename CONTEXT_CONTAINER::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
         private:
             using LocalPairType = std::pair<LocalKeyType,LocalValueType>;
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
                 for (auto &pair: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -340,7 +339,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, LOCAL_CONTAINER_TYPE &container){
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
                 LocalKeyType key;
                 LocalValueType value;
                 ProtoPairType protoPair = CONVERTER::_decoderInit(key, value);
