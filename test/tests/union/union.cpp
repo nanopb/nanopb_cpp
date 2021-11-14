@@ -200,47 +200,103 @@ private:
 };
 
 
-class UnionMessageConverter : public AbstractMessageConverter<
+struct UnionMessageConverterContext {
+    struct Encoder {
+        const LOCAL_UnionMessage& local;
+
+        Encoder(const LOCAL_UnionMessage &local) : local(local) {}
+    };
+    struct Decoder {
+        LOCAL_UnionMessage& local;
+        std::unique_ptr<LOCAL_InnerMessageOne> msg1;
+        std::unique_ptr<LOCAL_InnerMessageTwo> msg2;
+        std::unique_ptr<LOCAL_InnerMessageThree> msg3;
+
+        Decoder(const Decoder&) = delete;
+        Decoder(LOCAL_UnionMessage &local) :
+            local(local),
+            msg1(new LOCAL_InnerMessageOne()),
+            msg2(new LOCAL_InnerMessageTwo()),
+            msg3(new LOCAL_InnerMessageThree())
+        {
+        }
+    };
+
+    std::unique_ptr<Encoder> encoder;
+    std::unique_ptr<Decoder> decoder;
+
+private:
+    UnionMessageConverterContext(std::unique_ptr<Encoder>&& encoder) : encoder(std::move(encoder)) {}
+    UnionMessageConverterContext(std::unique_ptr<Decoder>&& decoder) : decoder(std::move(decoder)) {}
+public:
+
+    static UnionMessageConverterContext createEncoder(const LOCAL_UnionMessage& local){
+        return UnionMessageConverterContext(std::unique_ptr<Encoder>(new Encoder(local)));
+    }
+
+    static UnionMessageConverterContext createDecoder(LOCAL_UnionMessage& local){
+        return UnionMessageConverterContext(std::unique_ptr<Decoder>(new Decoder(local)));
+    }
+};
+
+class UnionMessageConverter : public AbstractMessageContextConverter<
         UnionMessageConverter,
-        LOCAL_UnionMessage,
+        UnionMessageConverterContext,
         PROTO_UnionMessage ,
         &PROTO_UnionMessage_msg>
 {
 private:
-    friend class AbstractMessageConverter;
+    friend class AbstractMessageContextConverter;
 private:
-    static ProtoType _encoderInit(const LocalType& local) {
-        ProtoType ret {
-                .which_msg = 0
-        };
+    static ProtoType _encoderInit(const Context& ctx) {
+        auto& local = ctx.encoder->local;
+        ProtoType ret {};
+        NANOPB_CPP_ASSERT(local.message);
         if (!local.message) {
             return ret;
         }
         switch (local.message->getType()) {
             case LOCAL_InnerMessage::Type::InnerMessageOne:
-                ret.which_msg = PROTO_UnionMessage_msg1_tag;
-                ret.msg.msg1 = InnerMessageOneConverter::encoderInit(*local.message->as<LOCAL_InnerMessageOne>());
+                ret.has_msg1 = true;
+                ret.msg1 = InnerMessageOneConverter::encoderInit(*local.message->as<LOCAL_InnerMessageOne>());
                 break;
             case LOCAL_InnerMessage::Type::InnerMessageTwo:
-                ret.which_msg = PROTO_UnionMessage_msg2_tag;
-                ret.msg.msg2 = InnerMessageTwoConverter::encoderInit(*local.message->as<LOCAL_InnerMessageTwo>());
+                ret.has_msg2 = true;
+                ret.msg2 = InnerMessageTwoConverter::encoderInit(*local.message->as<LOCAL_InnerMessageTwo>());
                 break;
             case LOCAL_InnerMessage::Type::InnerMessageThree:
-                ret.which_msg = PROTO_UnionMessage_msg3_tag;
-                ret.msg.msg3 = InnerMessageThreeConverter::encoderInit(*local.message->as<LOCAL_InnerMessageThree>());
+                ret.has_msg3 = true;
+                ret.msg3 = InnerMessageThreeConverter::encoderInit(*local.message->as<LOCAL_InnerMessageThree>());
                 break;
         }
         return ret;
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-            //FIXME: Not implemented
+            .msg1 = InnerMessageOneConverter::decoderInit(*ctx.decoder->msg1),
+            .msg2 = InnerMessageTwoConverter::decoderInit(*ctx.decoder->msg2),
+            .msg3 = InnerMessageThreeConverter::decoderInit(*ctx.decoder->msg3)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
-        return true;
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+        if (proto.has_msg1){
+            InnerMessageOneConverter::decoderApply(proto.msg1,*ctx.decoder->msg1),
+            ctx.decoder->local.message = std::move(ctx.decoder->msg1);
+            return true;
+        } else if (proto.has_msg2){
+            InnerMessageTwoConverter::decoderApply(proto.msg2, *ctx.decoder->msg2),
+            ctx.decoder->local.message = std::move(ctx.decoder->msg2);
+            return true;
+        } else if (proto.has_msg3){
+            InnerMessageThreeConverter::decoderApply(proto.msg3, *ctx.decoder->msg3),
+            ctx.decoder->local.message = std::move(ctx.decoder->msg3);
+            return true;
+        } else {
+            NANOPB_CPP_ASSERT(0&&"Invalid msg");
+            return false;
+        }
     }
 };
 
@@ -251,13 +307,17 @@ int testMessage(const LOCAL_UnionMessage& original){
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    TEST(NanoPb::encode<UnionMessageConverter>(outputStream, original));
+    auto encoderContext = UnionMessageConverterContext::createEncoder(original);
+
+    TEST(NanoPb::encode<UnionMessageConverter>(outputStream, encoderContext));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
     LOCAL_UnionMessage decoded;
 
-    TEST(NanoPb::decode<UnionMessageConverter>(inputStream, decoded));
+    auto decoderContext = UnionMessageConverterContext::createDecoder(decoded);
+
+    TEST(NanoPb::decode<UnionMessageConverter>(inputStream, decoderContext));
 
     TEST(original == decoded);
 
@@ -270,19 +330,22 @@ int main() {
 
     COMMENT("LOCAL_InnerMessageOne");
 
-    status |= testMessage(LOCAL_UnionMessage(
-            std::unique_ptr<LOCAL_InnerMessageOne>(new LOCAL_InnerMessageOne(111))
-                    ));
+    auto msg1 = LOCAL_UnionMessage(std::unique_ptr<LOCAL_InnerMessageOne>(
+                    new LOCAL_InnerMessageOne(111)
+            ));
+    status |= testMessage(msg1);
 
     COMMENT("LOCAL_InnerMessageTwo");
-    status |= testMessage(LOCAL_UnionMessage(
-            std::unique_ptr<LOCAL_InnerMessageTwo>(new LOCAL_InnerMessageTwo("Message number two"))
+    auto msg2 = LOCAL_UnionMessage(std::unique_ptr<LOCAL_InnerMessageTwo>(
+            new LOCAL_InnerMessageTwo("Message number two")
     ));
+    status |= testMessage(msg2);
 
     COMMENT("LOCAL_InnerMessageThree");
-    status |= testMessage(LOCAL_UnionMessage(
-            std::unique_ptr<LOCAL_InnerMessageThree>(new LOCAL_InnerMessageThree({"string_1", "string_2"}))
+    auto msg3 = LOCAL_UnionMessage(std::unique_ptr<LOCAL_InnerMessageThree>(
+            new LOCAL_InnerMessageThree({"string_1", "string_2"})
     ));
+    status |= testMessage(msg3);
 
     return status;
 }
