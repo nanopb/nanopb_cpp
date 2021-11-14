@@ -219,18 +219,12 @@ struct UnionMessageConverterContext {
     std::unique_ptr<Encoder> encoder;
     std::unique_ptr<Decoder> decoder;
 
-private:
+public:
+    UnionMessageConverterContext(const UnionMessageConverterContext&) = delete;
+    UnionMessageConverterContext(UnionMessageConverterContext&& other) : encoder(std::move(other.encoder)), decoder(std::move(other.decoder)) {}
     UnionMessageConverterContext(std::unique_ptr<Encoder>&& encoder) : encoder(std::move(encoder)) {}
     UnionMessageConverterContext(std::unique_ptr<Decoder>&& decoder) : decoder(std::move(decoder)) {}
-public:
 
-    static UnionMessageConverterContext createEncoder(const LOCAL_UnionMessage& ctx){
-        return UnionMessageConverterContext(std::unique_ptr<Encoder>(new Encoder(ctx)));
-    }
-
-    static UnionMessageConverterContext createDecoder(LOCAL_UnionMessage& ctx){
-        return UnionMessageConverterContext(std::unique_ptr<Decoder>(new Decoder(ctx)));
-    }
 };
 
 class UnionMessageConverter : public AbstractMessageConverter<
@@ -241,6 +235,13 @@ class UnionMessageConverter : public AbstractMessageConverter<
         &PROTO_UnionMessage_msg>
 {
 public:
+    static Context createEncoderContext(const LocalType& local){
+        return UnionMessageConverterContext(std::unique_ptr<UnionMessageConverterContext::Encoder>(new UnionMessageConverterContext::Encoder(local)));
+    }
+
+    static Context createDecoderContext(LocalType& local){
+        return UnionMessageConverterContext(std::unique_ptr<UnionMessageConverterContext::Decoder>(new UnionMessageConverterContext::Decoder(local)));
+    }
     static ProtoType encoderInit(const Context& ctx) {
         auto& encoderCtx = ctx.encoder->ctx;
         ProtoType ret {};
@@ -300,7 +301,7 @@ int testMessage(const LOCAL_UnionMessage& original){
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    auto encoderContext = UnionMessageConverterContext::createEncoder(original);
+    auto encoderContext = UnionMessageConverter::createEncoderContext(original);
 
     TEST(NanoPb::encode<UnionMessageConverter>(outputStream, encoderContext));
 
@@ -308,7 +309,7 @@ int testMessage(const LOCAL_UnionMessage& original){
 
     LOCAL_UnionMessage decoded;
 
-    auto decoderContext = UnionMessageConverterContext::createDecoder(decoded);
+    auto decoderContext = UnionMessageConverter::createDecoderContext(decoded);
 
     TEST(NanoPb::decode<UnionMessageConverter>(inputStream, decoderContext));
 

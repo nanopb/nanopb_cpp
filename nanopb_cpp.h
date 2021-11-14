@@ -115,7 +115,7 @@ namespace NanoPb {
             static ProtoType decoderInit(Context& ctx);
             static bool decoderApply(const ProtoType& proto, Context& ctx);
 
-            static const Context createEncoderContext(const LocalType& local);
+            static Context createEncoderContext(const LocalType& local);
             static Context createDecoderContext(LocalType& local);
         };
 
@@ -125,9 +125,9 @@ namespace NanoPb {
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class BaseMessageConverter : public AbstractMessageConverter<CONVERTER, LOCAL_TYPE, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
         public:
-            using PARENT_CLASS = AbstractMessageConverter<CONVERTER, LOCAL_TYPE, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>;
+            using LocalType = LOCAL_TYPE;
         public:
-            static const LOCAL_TYPE createEncoderContext(const LOCAL_TYPE& local){ return local; }
+            static LOCAL_TYPE createEncoderContext(const LOCAL_TYPE& local){ return local; }
             static LOCAL_TYPE createDecoderContext(LOCAL_TYPE& local){ return local; }
         };
 
