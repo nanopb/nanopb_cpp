@@ -96,30 +96,11 @@ namespace NanoPb {
             static LocalType decode(const ProtoType& arg){ return CONVERTER::_decode(arg); };
         };
 
-
         /**
-         * Abstract proto message converter
-         */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class AbstractMessageConverter {
-        public:
-            using LocalType = LOCAL_TYPE;
-            using ProtoType = PROTO_TYPE;
-
-            using Context = LocalType;
-        public:
-            static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
-
-            static ProtoType encoderInit(const LocalType& local){ return CONVERTER::_encoderInit(local); };
-            static ProtoType decoderInit(LocalType& local){ return CONVERTER::_decoderInit(local); };
-            static bool decoderApply(const ProtoType& proto, LocalType& local){ return CONVERTER::_decoderApply(proto, local); };
-        };
-
-        /**
-         * Abstract proto message converter with custom context
+         * Abstract message converter
          */
         template<class CONVERTER, class CONTEXT, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class AbstractMessageContextConverter {
+        class AbstractMessageConverter {
         public:
             using Context = CONTEXT;
             using ProtoType = PROTO_TYPE;
@@ -129,6 +110,17 @@ namespace NanoPb {
             static ProtoType encoderInit(const Context& ctx){ return CONVERTER::_encoderInit(ctx); };
             static ProtoType decoderInit(Context& ctx){ return CONVERTER::_decoderInit(ctx); };
             static bool decoderApply(const ProtoType& proto, Context& ctx){ return CONVERTER::_decoderApply(proto, ctx); };
+        };
+
+        /**
+         * Single-arg Converter, used in containers.
+         * FIXME: Remove.
+         */
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
+        class SingleArgMessageConverter : public AbstractMessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG> {
+        public:
+            using LocalType = LOCAL_TYPE;
+        public:
         };
 
         /**

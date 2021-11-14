@@ -22,7 +22,7 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
+class TestMessageConverter : public SingleArgMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
 private:
     class ItemsConverter : public AbstractMapConverter<
             ItemsConverter,
