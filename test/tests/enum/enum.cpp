@@ -35,16 +35,16 @@ public:
 
 };
 
-int testEnumItem(SimpleEnum local, ProtoSimpleEnum proto){
+int testEnumItem(SimpleEnum ctx, ProtoSimpleEnum proto){
     int status = 0;
 
-    auto localToProto = SimpleEnumConverter::encode(local);
+    auto localToProto = SimpleEnumConverter::encode(ctx);
 
     TEST(localToProto == proto);
 
     auto protoToLocal = SimpleEnumConverter::decode(proto);
 
-    TEST(protoToLocal == local);
+    TEST(protoToLocal == ctx);
 
     return status;
 }

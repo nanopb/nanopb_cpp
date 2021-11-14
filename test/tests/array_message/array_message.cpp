@@ -35,21 +35,21 @@ private:
     {};
 
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType{
-                .number = local.number,
-                .items = ItemsConverter::encoder(local.items)
+                .number = ctx.number,
+                .items = ItemsConverter::encoder(ctx.items)
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoder(local.items)
+                .items = ItemsConverter::decoder(ctx.items)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
-        local.number = proto.number;
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+        ctx.number = proto.number;
         return true;
     }
 };

@@ -46,19 +46,19 @@ private:
     };
 
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType{
-                .items = ValuesConverter::encoder(local.items)
+                .items = ValuesConverter::encoder(ctx.items)
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .items = ValuesConverter::decoder(local.items)
+                .items = ValuesConverter::decoder(ctx.items)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };

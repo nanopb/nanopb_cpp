@@ -25,19 +25,19 @@ struct LOCAL_TestMessage {
 
 class TestMessageConverter : public SingleArgMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoder(local.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoder(ctx.values)
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoder(local.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoder(ctx.values)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };

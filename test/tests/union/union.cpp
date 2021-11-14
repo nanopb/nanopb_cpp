@@ -128,19 +128,19 @@ class InnerMessageOneConverter : public SingleArgMessageConverter<
         &PROTO_InnerMessageOne_msg>
 {
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType {
-            .number = local.number
+            .number = ctx.number
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
-        local.number = proto.number;
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+        ctx.number = proto.number;
         return true;
     }
 };
@@ -152,19 +152,19 @@ class InnerMessageTwoConverter : public SingleArgMessageConverter<
         &PROTO_InnerMessageTwo_msg>
 {
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType {
-                .str = StringConverter::encoder(local.str)
+                .str = StringConverter::encoder(ctx.str)
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .str = StringConverter::decoder(local.str)
+                .str = StringConverter::decoder(ctx.str)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };
@@ -176,19 +176,19 @@ class InnerMessageThreeConverter : public SingleArgMessageConverter<
         &PROTO_InnerMessageThree_msg>
 {
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType {
-                .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::encoder(local.values)
+                .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::encoder(ctx.values)
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::decoder(local.values)
+                .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::decoder(ctx.values)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };
@@ -196,19 +196,19 @@ public:
 
 struct UnionMessageConverterContext {
     struct Encoder {
-        const LOCAL_UnionMessage& local;
+        const LOCAL_UnionMessage& ctx;
 
-        Encoder(const LOCAL_UnionMessage &local) : local(local) {}
+        Encoder(const LOCAL_UnionMessage &ctx) : ctx(ctx) {}
     };
     struct Decoder {
-        LOCAL_UnionMessage& local;
+        LOCAL_UnionMessage& ctx;
         std::unique_ptr<LOCAL_InnerMessageOne> msg1;
         std::unique_ptr<LOCAL_InnerMessageTwo> msg2;
         std::unique_ptr<LOCAL_InnerMessageThree> msg3;
 
         Decoder(const Decoder&) = delete;
-        Decoder(LOCAL_UnionMessage &local) :
-            local(local),
+        Decoder(LOCAL_UnionMessage &ctx) :
+            ctx(ctx),
             msg1(new LOCAL_InnerMessageOne()),
             msg2(new LOCAL_InnerMessageTwo()),
             msg3(new LOCAL_InnerMessageThree())
@@ -224,12 +224,12 @@ private:
     UnionMessageConverterContext(std::unique_ptr<Decoder>&& decoder) : decoder(std::move(decoder)) {}
 public:
 
-    static UnionMessageConverterContext createEncoder(const LOCAL_UnionMessage& local){
-        return UnionMessageConverterContext(std::unique_ptr<Encoder>(new Encoder(local)));
+    static UnionMessageConverterContext createEncoder(const LOCAL_UnionMessage& ctx){
+        return UnionMessageConverterContext(std::unique_ptr<Encoder>(new Encoder(ctx)));
     }
 
-    static UnionMessageConverterContext createDecoder(LOCAL_UnionMessage& local){
-        return UnionMessageConverterContext(std::unique_ptr<Decoder>(new Decoder(local)));
+    static UnionMessageConverterContext createDecoder(LOCAL_UnionMessage& ctx){
+        return UnionMessageConverterContext(std::unique_ptr<Decoder>(new Decoder(ctx)));
     }
 };
 
@@ -241,24 +241,24 @@ class UnionMessageConverter : public AbstractMessageConverter<
 {
 public:
     static ProtoType _encoderInit(const Context& ctx) {
-        auto& local = ctx.encoder->local;
+        auto& encoderCtx = ctx.encoder->ctx;
         ProtoType ret {};
-        NANOPB_CPP_ASSERT(local.message);
-        if (!local.message) {
+        NANOPB_CPP_ASSERT(encoderCtx.message);
+        if (!encoderCtx.message) {
             return ret;
         }
-        switch (local.message->getType()) {
+        switch (encoderCtx.message->getType()) {
             case LOCAL_InnerMessage::Type::InnerMessageOne:
                 ret.has_msg1 = true;
-                ret.msg1 = InnerMessageOneConverter::encoderInit(*local.message->as<LOCAL_InnerMessageOne>());
+                ret.msg1 = InnerMessageOneConverter::encoderInit(*encoderCtx.message->as<LOCAL_InnerMessageOne>());
                 break;
             case LOCAL_InnerMessage::Type::InnerMessageTwo:
                 ret.has_msg2 = true;
-                ret.msg2 = InnerMessageTwoConverter::encoderInit(*local.message->as<LOCAL_InnerMessageTwo>());
+                ret.msg2 = InnerMessageTwoConverter::encoderInit(*encoderCtx.message->as<LOCAL_InnerMessageTwo>());
                 break;
             case LOCAL_InnerMessage::Type::InnerMessageThree:
                 ret.has_msg3 = true;
-                ret.msg3 = InnerMessageThreeConverter::encoderInit(*local.message->as<LOCAL_InnerMessageThree>());
+                ret.msg3 = InnerMessageThreeConverter::encoderInit(*encoderCtx.message->as<LOCAL_InnerMessageThree>());
                 break;
         }
         return ret;
@@ -275,15 +275,15 @@ public:
     static bool _decoderApply(const ProtoType& proto, Context& ctx){
         if (proto.has_msg1){
             InnerMessageOneConverter::decoderApply(proto.msg1,*ctx.decoder->msg1),
-            ctx.decoder->local.message = std::move(ctx.decoder->msg1);
+            ctx.decoder->ctx.message = std::move(ctx.decoder->msg1);
             return true;
         } else if (proto.has_msg2){
             InnerMessageTwoConverter::decoderApply(proto.msg2, *ctx.decoder->msg2),
-            ctx.decoder->local.message = std::move(ctx.decoder->msg2);
+            ctx.decoder->ctx.message = std::move(ctx.decoder->msg2);
             return true;
         } else if (proto.has_msg3){
             InnerMessageThreeConverter::decoderApply(proto.msg3, *ctx.decoder->msg3),
-            ctx.decoder->local.message = std::move(ctx.decoder->msg3);
+            ctx.decoder->ctx.message = std::move(ctx.decoder->msg3);
             return true;
         } else {
             NANOPB_CPP_ASSERT(0&&"Invalid msg");
