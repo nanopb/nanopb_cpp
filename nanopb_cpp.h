@@ -115,6 +115,21 @@ namespace NanoPb {
             static bool decoderApply(const ProtoType& proto, LocalType& local){ return CONVERTER::_decoderApply(proto, local); };
         };
 
+        /**
+         * Abstract proto message converter with custom context
+         */
+        template<class CONVERTER, class CONTEXT, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
+        class AbstractMessageContextConverter {
+        public:
+            using Context = CONTEXT;
+            using ProtoType = PROTO_TYPE;
+        public:
+            static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
+
+            static ProtoType encoderInit(const Context& ctx){ return CONVERTER::_encoderInit(ctx); };
+            static ProtoType decoderInit(Context& ctx){ return CONVERTER::_decoderInit(ctx); };
+            static bool decoderApply(const ProtoType& proto, Context& ctx){ return CONVERTER::_decoderApply(proto, ctx); };
+        };
 
         /**
          * Abstract Callback converter
