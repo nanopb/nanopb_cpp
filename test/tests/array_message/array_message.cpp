@@ -33,9 +33,8 @@ private:
             LOCAL_OuterMessage::ItemsContainer ,
             InnerMessageConverter>
     {};
-private:
-    friend class AbstractMessageConverter;
 
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,

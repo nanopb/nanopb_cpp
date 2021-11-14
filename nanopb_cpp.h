@@ -157,11 +157,6 @@ namespace NanoPb {
          * StringConverter
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
-        public:
-            class StringConverterFriend {};
-        private:
-            friend class AbstractCallbackConverter;
-
         public: // make public to use it from ArrayStringConverter
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
@@ -173,9 +168,7 @@ namespace NanoPb {
         template<class CONVERTER, class LOCAL_TYPE>
         class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>
         {
-        private:
-            friend class AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, LOCAL_TYPE>,LOCAL_TYPE>;
-
+        public:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_TYPE &arg){
                 for (auto &item: arg) {
                     if (!CONVERTER::_encodeItem(stream, field, item)){
@@ -203,9 +196,7 @@ namespace NanoPb {
         class ArrayUnsignedConverter  : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
             using LocalItemType = typename CONTAINER::value_type;
-        private:
-            friend class AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER>;
-
+        public:
             static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
@@ -245,9 +236,7 @@ namespace NanoPb {
         class ArraySignedConverter : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
             using LocalItemType = typename CONTAINER::value_type;
-        private:
-            friend class AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER>;
-
+        public:
             static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
@@ -281,9 +270,7 @@ namespace NanoPb {
         class ArrayStringConverter : public AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER> {
         private:
             using LocalItemType = typename CONTAINER::value_type;
-        private:
-            friend class AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER>;
-
+        public:
             static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
                 return StringConverter::_encode(stream, field, item);
             }
@@ -308,12 +295,7 @@ namespace NanoPb {
         {
         private:
             using LocalItemType = typename ITEM_MESSAGE_CONVERTER::LocalType;
-        private:
-            friend class AbstractCallbackConverter<
-                    ArrayMessageConverter<CONVERTER, LOCAL_CONTAINER_TYPE, ITEM_MESSAGE_CONVERTER>,
-                    LOCAL_CONTAINER_TYPE
-            >;
-
+        public:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
                 for (auto &item: container) {
                     if (!pb_encode_tag_for_field(stream, field))
@@ -350,13 +332,8 @@ namespace NanoPb {
             using LocalValueType = typename LOCAL_CONTAINER_TYPE::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
         private:
-            friend class AbstractCallbackConverter<
-                    AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
-                    LOCAL_CONTAINER_TYPE
-            >;
-        private:
             using LocalPairType = std::pair<LocalKeyType,LocalValueType>;
-
+        public:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
                 for (auto &pair: container) {
                     if (!pb_encode_tag_for_field(stream, field))

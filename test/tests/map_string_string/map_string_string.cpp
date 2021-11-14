@@ -20,18 +20,13 @@ struct LOCAL_TestMessage {
 
 class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
 private:
-    friend class AbstractMessageConverter;
-
-private:
     class ValuesConverter : public AbstractMapConverter<
             ValuesConverter,
             LOCAL_TestMessage::MapType,
             PROTO_TestMessage_ItemsEntry,
             &PROTO_TestMessage_ItemsEntry_msg>
     {
-    private:
-        friend class AbstractMapConverter;
-
+    public:
         static ProtoPairType _encoderInit(const LocalKeyType& key, const LocalValueType& value) {
             return ProtoPairType{
                     .key = StringConverter::encoder(key),
@@ -50,7 +45,7 @@ private:
         }
     };
 
-private:
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .items = ValuesConverter::encoder(local.items)

@@ -24,10 +24,7 @@ struct LOCAL_TestMessage {
 };
 
 class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
-private:
-    friend class AbstractMessageConverter;
-
-private:
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::encoder(local.values)

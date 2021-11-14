@@ -27,9 +27,7 @@ struct LOCAL_InnerMessage {
 };
 
 class InnerMessageConverter : public AbstractMessageConverter<InnerMessageConverter, LOCAL_InnerMessage, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
-private:
-    friend class AbstractMessageConverter;
-
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,

@@ -127,9 +127,7 @@ class InnerMessageOneConverter : public AbstractMessageConverter<
         PROTO_InnerMessageOne ,
         &PROTO_InnerMessageOne_msg>
 {
-private:
-    friend class AbstractMessageConverter;
-
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType {
             .number = local.number
@@ -153,9 +151,7 @@ class InnerMessageTwoConverter : public AbstractMessageConverter<
         PROTO_InnerMessageTwo ,
         &PROTO_InnerMessageTwo_msg>
 {
-private:
-    friend class AbstractMessageConverter;
-
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType {
                 .str = StringConverter::encoder(local.str)
@@ -179,9 +175,7 @@ class InnerMessageThreeConverter : public AbstractMessageConverter<
         PROTO_InnerMessageThree ,
         &PROTO_InnerMessageThree_msg>
 {
-private:
-    friend class AbstractMessageConverter;
-
+public:
     static ProtoType _encoderInit(const LocalType& local) {
         return ProtoType {
                 .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::encoder(local.values)
@@ -245,9 +239,7 @@ class UnionMessageConverter : public AbstractMessageContextConverter<
         PROTO_UnionMessage ,
         &PROTO_UnionMessage_msg>
 {
-private:
-    friend class AbstractMessageContextConverter;
-private:
+public:
     static ProtoType _encoderInit(const Context& ctx) {
         auto& local = ctx.encoder->local;
         ProtoType ret {};

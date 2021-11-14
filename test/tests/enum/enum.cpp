@@ -9,8 +9,7 @@ enum class SimpleEnum {
 
 
 class SimpleEnumConverter: public NanoPb::Converter::AbstractScalarConverter<SimpleEnumConverter, SimpleEnum, ProtoSimpleEnum> {
-private:
-    friend class AbstractScalarConverter;
+public:
     static ProtoType _encode(const LocalType& arg){
         switch (arg) {
             case SimpleEnum::Invalid:
