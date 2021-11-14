@@ -26,6 +26,7 @@ set (CMAKE_CXX_STANDARD 11)
 add_definitions(-Werror -Wall)
 
 add_subdirectory(tests/enum)
+add_subdirectory(tests/map_string_message)
 add_subdirectory(tests/map_string_string)
 add_subdirectory(tests/map_uint32_string)
 add_subdirectory(tests/array_message)

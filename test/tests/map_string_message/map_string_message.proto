@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "common_messages.proto";
+
+package PROTO;
+
+message TestMessage {
+  map<string, InnerMessage> items = 1;
+}
