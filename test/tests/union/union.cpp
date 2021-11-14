@@ -121,7 +121,12 @@ struct LOCAL_UnionMessage {
 
 /******************************************************************************************/
 
-class InnerMessageOneConverter : public AbstractMessageConverter<InnerMessageOneConverter, LOCAL_InnerMessageOne, PROTO_InnerMessageOne , &PROTO_InnerMessageOne_msg> {
+class InnerMessageOneConverter : public AbstractMessageConverter<
+        InnerMessageOneConverter,
+        LOCAL_InnerMessageOne,
+        PROTO_InnerMessageOne ,
+        &PROTO_InnerMessageOne_msg>
+{
 private:
     friend class AbstractMessageConverter;
 
@@ -142,7 +147,12 @@ private:
     }
 };
 
-class InnerMessageTwoConverter : public AbstractMessageConverter<InnerMessageTwoConverter, LOCAL_InnerMessageTwo, PROTO_InnerMessageTwo , &PROTO_InnerMessageTwo_msg> {
+class InnerMessageTwoConverter : public AbstractMessageConverter<
+        InnerMessageTwoConverter,
+        LOCAL_InnerMessageTwo,
+        PROTO_InnerMessageTwo ,
+        &PROTO_InnerMessageTwo_msg>
+{
 private:
     friend class AbstractMessageConverter;
 
@@ -163,7 +173,12 @@ private:
     }
 };
 
-class InnerMessageThreeConverter : public AbstractMessageConverter<InnerMessageThreeConverter, LOCAL_InnerMessageThree, PROTO_InnerMessageThree , &PROTO_InnerMessageThree_msg> {
+class InnerMessageThreeConverter : public AbstractMessageConverter<
+        InnerMessageThreeConverter,
+        LOCAL_InnerMessageThree,
+        PROTO_InnerMessageThree ,
+        &PROTO_InnerMessageThree_msg>
+{
 private:
     friend class AbstractMessageConverter;
 
@@ -185,7 +200,12 @@ private:
 };
 
 
-class UnionMessageConverter : public AbstractMessageConverter<UnionMessageConverter, LOCAL_UnionMessage, PROTO_UnionMessage , &PROTO_UnionMessage_msg> {
+class UnionMessageConverter : public AbstractMessageConverter<
+        UnionMessageConverter,
+        LOCAL_UnionMessage,
+        PROTO_UnionMessage ,
+        &PROTO_UnionMessage_msg>
+{
 private:
     friend class AbstractMessageConverter;
 private:
