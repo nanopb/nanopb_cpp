@@ -26,23 +26,23 @@ struct LOCAL_InnerMessage {
     }
 };
 
-class InnerMessageConverter : public SingleArgMessageConverter<InnerMessageConverter, LOCAL_InnerMessage, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
+class InnerMessageConverter : public AbstractMessageConverter<InnerMessageConverter, LOCAL_InnerMessage, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
 public:
-    static ProtoType _encoderInit(const LocalType& local) {
+    static ProtoType _encoderInit(const Context & ctx) {
         return ProtoType{
-                .number = local.number,
-                .text = StringConverter::encoder(local.text)
+                .number = ctx.number,
+                .text = StringConverter::encoder(ctx.text)
         };
     }
 
-    static ProtoType _decoderInit(LocalType& local){
+    static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .text = StringConverter::decoder(local.text)
+                .text = StringConverter::decoder(ctx.text)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, LocalType& local){
-        local.number = proto.number;
+    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+        ctx.number = proto.number;
         return true;
     }
 };

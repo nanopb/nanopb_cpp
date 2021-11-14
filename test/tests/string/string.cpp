@@ -15,7 +15,7 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public SingleArgMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
+class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
 public:
     static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType{

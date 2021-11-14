@@ -113,17 +113,6 @@ namespace NanoPb {
         };
 
         /**
-         * Single-arg Converter, used in containers.
-         * FIXME: Remove.
-         */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class SingleArgMessageConverter : public AbstractMessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG> {
-        public:
-            using LocalType = LOCAL_TYPE;
-        public:
-        };
-
-        /**
          * Abstract Callback converter
          *
          *  See StringConverter for the example implementation
@@ -285,7 +274,7 @@ namespace NanoPb {
         >
         {
         private:
-            using LocalItemType = typename ITEM_CONVERTER::LocalType;
+            using ContextItem = typename CONTEXT_CONTAINER::value_type;
         public:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
                 for (auto &item: container) {
@@ -300,8 +289,8 @@ namespace NanoPb {
             }
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
-                container.push_back(LocalItemType());
-                LocalItemType& localEntry = *container.rbegin();
+                container.push_back(ContextItem());
+                ContextItem& localEntry = *container.rbegin();
                 if (!decode<ITEM_CONVERTER>(*stream, localEntry)){
                     return false;
                 }
@@ -319,11 +308,11 @@ namespace NanoPb {
         >
         {
         protected:
-            using LocalKeyType = typename CONTEXT_CONTAINER::key_type;
-            using LocalValueType = typename CONTEXT_CONTAINER::mapped_type;
+            using ContextKeyType = typename CONTEXT_CONTAINER::key_type;
+            using ContextValueType = typename CONTEXT_CONTAINER::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
         private:
-            using LocalPairType = std::pair<LocalKeyType,LocalValueType>;
+            using ContextPairType = std::pair<ContextKeyType,ContextValueType>;
         public:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
                 for (auto &pair: container) {
@@ -340,8 +329,8 @@ namespace NanoPb {
             }
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
-                LocalKeyType key;
-                LocalValueType value;
+                ContextKeyType key;
+                ContextValueType value;
                 ProtoPairType protoPair = CONVERTER::_decoderInit(key, value);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
@@ -349,7 +338,7 @@ namespace NanoPb {
                 if (!CONVERTER::_decoderApply(protoPair, key, value))
                     return false;
 
-                container.insert(std::move(LocalPairType(std::move(key), std::move(value))));
+                container.insert(std::move(ContextPairType(std::move(key), std::move(value))));
                 return true;
             }
 
