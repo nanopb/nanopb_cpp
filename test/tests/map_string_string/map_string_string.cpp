@@ -18,7 +18,13 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
+class TestMessageConverter : public AbstractMessageConverter<
+        TestMessageConverter,
+        LOCAL_TestMessage,
+        LOCAL_TestMessage,
+        PROTO_TestMessage,
+        &PROTO_TestMessage_msg>
+{
 private:
     class ValuesConverter : public AbstractMapConverter<
             ValuesConverter,
