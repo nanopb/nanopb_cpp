@@ -146,11 +146,11 @@ namespace NanoPb {
         /**
          * Abstract repeated converter
          */
-        template<class CONVERTER, class CONTEXT_CONTAINER>
-        class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, CONTEXT_CONTAINER>,CONTEXT_CONTAINER> {
+        template<class CONVERTER, class CONTAINER>
+        class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, CONTAINER>,CONTAINER> {
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &ctx){
-                for (auto &item: ctx) {
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
+                for (auto &item: container) {
                     if (!CONVERTER::_encodeItem(stream, field, item)){
                         return false;
                     }
@@ -158,15 +158,15 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &ctx){
-                return CONVERTER::_decodeItem(stream, field, ctx);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
+                return CONVERTER::_decodeItem(stream, field, container);
             }
         };
 
         /**
          * Array unsigned converter.
          *
-         *  Value size depend o PB_WITHOUT_64BIT:
+         *  Value size depend on PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
          *
@@ -175,13 +175,13 @@ namespace NanoPb {
         template<class CONTAINER>
         class ArrayUnsignedConverter  : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
-            using LocalItemType = typename CONTAINER::value_type;
+            using UnsignedType = typename CONTAINER::value_type;
         public:
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const UnsignedType& number){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
-                if (!pb_encode_varint(stream, item))
+                if (!pb_encode_varint(stream, number))
                     return false;
                 return true;
             }
@@ -206,7 +206,7 @@ namespace NanoPb {
         /**
          * Array signed converter.
          *
-         *  Value size depend o PB_WITHOUT_64BIT:
+         *  Value size depend on PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
          *
@@ -215,13 +215,13 @@ namespace NanoPb {
         template<class CONTAINER>
         class ArraySignedConverter : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
         private:
-            using LocalItemType = typename CONTAINER::value_type;
+            using SignedType = typename CONTAINER::value_type;
         public:
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const SignedType& number){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
-                if (!pb_encode_varint(stream, item))
+                if (!pb_encode_varint(stream, number))
                     return false;
                 return true;
             }
@@ -245,14 +245,14 @@ namespace NanoPb {
 
         /**
          * Array string converter.
+         *
+         * @tparam CONTAINER - can be std::vector<std::string> or std::list<std::string>
          */
         template<class CONTAINER>
         class ArrayStringConverter : public AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER> {
-        private:
-            using LocalItemType = typename CONTAINER::value_type;
         public:
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const LocalItemType& item){
-                return StringConverter::_encode(stream, field, item);
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const std::string& str){
+                return StringConverter::_encode(stream, field, str);
             }
 
             static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
@@ -304,8 +304,7 @@ namespace NanoPb {
         template<class CONVERTER, class CONTEXT_CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class AbstractMapConverter : public AbstractCallbackConverter<
                 AbstractMapConverter<CONVERTER, CONTEXT_CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
-                CONTEXT_CONTAINER
-        >
+                CONTEXT_CONTAINER>
         {
         protected:
             using ContextKeyType = typename CONTEXT_CONTAINER::key_type;

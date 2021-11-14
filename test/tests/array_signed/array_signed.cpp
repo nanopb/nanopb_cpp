@@ -27,13 +27,13 @@ class TestMessageConverter : public AbstractMessageConverter<TestMessageConverte
 public:
     static ProtoType _encoderInit(const Context& ctx) {
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoder(ctx.values)
+                .values = ArraySignedConverter<LOCAL_TestMessage::ContainerType>::encoder(ctx.values)
         };
     }
 
     static ProtoType _decoderInit(Context& ctx){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoder(ctx.values)
+                .values = ArraySignedConverter<LOCAL_TestMessage::ContainerType>::decoder(ctx.values)
         };
     }
 
