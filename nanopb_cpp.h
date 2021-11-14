@@ -332,13 +332,14 @@ namespace NanoPb {
         protected:
             using LocalKeyType = typename LOCAL_CONTAINER_TYPE::key_type;
             using LocalValueType = typename LOCAL_CONTAINER_TYPE::mapped_type;
-            using LocalPairType = std::pair<LocalKeyType,LocalValueType>;
             using ProtoPairType = PROTO_PAIR_TYPE;
         private:
             friend class AbstractCallbackConverter<
                     AbstractMapConverter<CONVERTER, LOCAL_CONTAINER_TYPE, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                     LOCAL_CONTAINER_TYPE
             >;
+        private:
+            using LocalPairType = std::pair<LocalKeyType,LocalValueType>;
 
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const LOCAL_CONTAINER_TYPE &container){
                 for (auto &pair: container) {
