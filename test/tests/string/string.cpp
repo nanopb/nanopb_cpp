@@ -17,19 +17,19 @@ struct LOCAL_TestMessage {
 
 class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
 public:
-    static ProtoType _encoderInit(const Context& ctx) {
+    static ProtoType encoderInit(const Context& ctx) {
         return ProtoType{
                 .str = StringConverter::encoder(ctx.str)
         };
     }
 
-    static ProtoType _decoderInit(Context& ctx){
+    static ProtoType decoderInit(Context& ctx){
         return ProtoType{
                 .str = StringConverter::decoder(ctx.str)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };

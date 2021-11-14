@@ -31,39 +31,39 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-        static ProtoPairType _encoderInit(const ContextKeyType& key, const ContextValueType& value) {
+        static ProtoPairType encoderInit(const ContextKeyType& key, const ContextValueType& value) {
             return ProtoPairType{
                     .key = StringConverter::encoder(key),
                     .has_value = true,
                     .value = InnerMessageConverter::encoderInit(value),
             };
         }
-        static ProtoPairType _decoderInit(ContextKeyType& key, ContextValueType& value){
+        static ProtoPairType decoderInit(ContextKeyType& key, ContextValueType& value){
             return ProtoPairType{
                     .key = StringConverter::decoder(key),
                     .value = InnerMessageConverter::decoderInit(value)
             };
         }
-        static bool _decoderApply(const ProtoPairType& proto, ContextKeyType& key, ContextValueType& value){
+        static bool decoderApply(const ProtoPairType& proto, ContextKeyType& key, ContextValueType& value){
             InnerMessageConverter::decoderApply(proto.value, value);
             return true;
         }
     };
 
 public:
-    static ProtoType _encoderInit(const Context& ctx) {
+    static ProtoType encoderInit(const Context& ctx) {
         return ProtoType{
                 .items = ItemsConverter::encoder(ctx.items)
         };
     }
 
-    static ProtoType _decoderInit(Context& ctx){
+    static ProtoType decoderInit(Context& ctx){
         return ProtoType{
                 .items = ItemsConverter::decoder(ctx.items)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };

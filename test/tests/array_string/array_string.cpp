@@ -25,19 +25,19 @@ struct LOCAL_TestMessage {
 
 class TestMessageConverter : public AbstractMessageConverter<TestMessageConverter, LOCAL_TestMessage, PROTO_TestMessage , &PROTO_TestMessage_msg> {
 public:
-    static ProtoType _encoderInit(const Context& ctx) {
+    static ProtoType encoderInit(const Context& ctx) {
         return ProtoType{
                 .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::encoder(ctx.values)
         };
     }
 
-    static ProtoType _decoderInit(Context& ctx){
+    static ProtoType decoderInit(Context& ctx){
         return ProtoType{
                 .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::decoder(ctx.values)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, Context& ctx){
         return true;
     }
 };

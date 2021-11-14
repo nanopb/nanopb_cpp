@@ -10,7 +10,7 @@ enum class SimpleEnum {
 
 class SimpleEnumConverter: public NanoPb::Converter::AbstractScalarConverter<SimpleEnumConverter, SimpleEnum, ProtoSimpleEnum> {
 public:
-    static ProtoType _encode(const LocalType& arg){
+    static ProtoType encode(const LocalType& arg){
         switch (arg) {
             case SimpleEnum::Invalid:
                 return ProtoSimpleEnum_Invalid;
@@ -21,7 +21,7 @@ public:
         }
         return ProtoSimpleEnum_Invalid;
     };
-    static LocalType _decode(const ProtoType& arg){
+    static LocalType decode(const ProtoType& arg){
         switch (arg) {
             case ProtoSimpleEnum_Invalid:
                 return SimpleEnum::Invalid;

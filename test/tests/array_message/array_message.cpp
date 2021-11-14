@@ -35,20 +35,20 @@ private:
     {};
 
 public:
-    static ProtoType _encoderInit(const Context& ctx) {
+    static ProtoType encoderInit(const Context& ctx) {
         return ProtoType{
                 .number = ctx.number,
                 .items = ItemsConverter::encoder(ctx.items)
         };
     }
 
-    static ProtoType _decoderInit(Context& ctx){
+    static ProtoType decoderInit(Context& ctx){
         return ProtoType{
                 .items = ItemsConverter::decoder(ctx.items)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, Context& ctx){
         ctx.number = proto.number;
         return true;
     }

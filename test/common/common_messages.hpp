@@ -28,20 +28,20 @@ struct LOCAL_InnerMessage {
 
 class InnerMessageConverter : public AbstractMessageConverter<InnerMessageConverter, LOCAL_InnerMessage, PROTO_InnerMessage, &PROTO_InnerMessage_msg> {
 public:
-    static ProtoType _encoderInit(const Context & ctx) {
+    static ProtoType encoderInit(const Context & ctx) {
         return ProtoType{
                 .number = ctx.number,
                 .text = StringConverter::encoder(ctx.text)
         };
     }
 
-    static ProtoType _decoderInit(Context& ctx){
+    static ProtoType decoderInit(Context& ctx){
         return ProtoType{
                 .text = StringConverter::decoder(ctx.text)
         };
     }
 
-    static bool _decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, Context& ctx){
         ctx.number = proto.number;
         return true;
     }

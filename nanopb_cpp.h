@@ -91,9 +91,10 @@ namespace NanoPb {
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
-        public:
-            static ProtoType encode(const LocalType& arg){ return CONVERTER::_encode(arg); };
-            static LocalType decode(const ProtoType& arg){ return CONVERTER::_decode(arg); };
+        public:  // Should be overwritten in child class
+
+            static ProtoType encode(const LocalType& arg);
+            static LocalType decode(const ProtoType& arg);
         };
 
         /**
@@ -107,9 +108,11 @@ namespace NanoPb {
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
 
-            static ProtoType encoderInit(const Context& ctx){ return CONVERTER::_encoderInit(ctx); };
-            static ProtoType decoderInit(Context& ctx){ return CONVERTER::_decoderInit(ctx); };
-            static bool decoderApply(const ProtoType& proto, Context& ctx){ return CONVERTER::_decoderApply(proto, ctx); };
+        public:  // Should be overwritten in child class
+
+            static ProtoType encoderInit(const Context& ctx);
+            static ProtoType decoderInit(Context& ctx);
+            static bool decoderApply(const ProtoType& proto, Context& ctx);
         };
 
         /**
@@ -124,6 +127,11 @@ namespace NanoPb {
         public:
             static pb_callback_t encoder(const Context& ctx) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)&ctx }; }
             static pb_callback_t decoder(Context& ctx) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)&ctx }; }
+
+        public:  // Should be overwritten in child class
+
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, Context &arg);
 
         private:
             static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
@@ -148,6 +156,8 @@ namespace NanoPb {
          */
         template<class CONVERTER, class CONTAINER>
         class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, CONTAINER>,CONTAINER> {
+        private:
+            using ValueType = typename CONTAINER::value_type;
         public:
             static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &item: container) {
@@ -161,6 +171,10 @@ namespace NanoPb {
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
                 return CONVERTER::_decodeItem(stream, field, container);
             }
+
+        public:  // Should be overwritten in child class
+            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& item);
+            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container);
         };
 
         /**
@@ -270,8 +284,7 @@ namespace NanoPb {
         template<class CONVERTER, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
         class ArrayMessageConverter : public AbstractCallbackConverter<
                 ArrayMessageConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
-                CONTEXT_CONTAINER
-        >
+                CONTEXT_CONTAINER>
         {
         private:
             using ContextItem = typename CONTEXT_CONTAINER::value_type;
@@ -318,7 +331,7 @@ namespace NanoPb {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    ProtoPairType protoPair = CONVERTER::_encoderInit(pair.first, pair.second);
+                    ProtoPairType protoPair = CONVERTER::encoderInit(pair.first, pair.second);
 
                     if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair)) {
                         return false;
@@ -330,11 +343,11 @@ namespace NanoPb {
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
                 ContextKeyType key;
                 ContextValueType value;
-                ProtoPairType protoPair = CONVERTER::_decoderInit(key, value);
+                ProtoPairType protoPair = CONVERTER::decoderInit(key, value);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                if (!CONVERTER::_decoderApply(protoPair, key, value))
+                if (!CONVERTER::decoderApply(protoPair, key, value))
                     return false;
 
                 container.insert(std::move(ContextPairType(std::move(key), std::move(value))));
