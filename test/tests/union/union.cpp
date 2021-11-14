@@ -121,9 +121,8 @@ struct LOCAL_UnionMessage {
 
 /******************************************************************************************/
 
-class InnerMessageOneConverter : public AbstractMessageConverter<
+class InnerMessageOneConverter : public BaseMessageConverter<
         InnerMessageOneConverter,
-        LOCAL_InnerMessageOne,
         LOCAL_InnerMessageOne,
         PROTO_InnerMessageOne,
         &PROTO_InnerMessageOne_msg>
@@ -146,9 +145,8 @@ public:
     }
 };
 
-class InnerMessageTwoConverter : public AbstractMessageConverter<
+class InnerMessageTwoConverter : public BaseMessageConverter<
         InnerMessageTwoConverter,
-        LOCAL_InnerMessageTwo,
         LOCAL_InnerMessageTwo,
         PROTO_InnerMessageTwo,
         &PROTO_InnerMessageTwo_msg>
@@ -171,9 +169,8 @@ public:
     }
 };
 
-class InnerMessageThreeConverter : public AbstractMessageConverter<
+class InnerMessageThreeConverter : public BaseMessageConverter<
         InnerMessageThreeConverter,
-        LOCAL_InnerMessageThree,
         LOCAL_InnerMessageThree,
         PROTO_InnerMessageThree,
         &PROTO_InnerMessageThree_msg>
