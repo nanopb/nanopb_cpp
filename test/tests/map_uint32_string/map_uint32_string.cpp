@@ -52,19 +52,19 @@ private:
     };
 
 public:
-    static ProtoType encoderInit(const Context& ctx) {
+    static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .items = ItemsConverter::encoder(ctx.items)
+                .items = ItemsConverter::encoder(ctx.local.items)
         };
     }
 
-    static ProtoType decoderInit(Context& ctx){
+    static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoder(ctx.items)
+                .items = ItemsConverter::decoder(ctx.local.items)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
         return true;
     }
 };

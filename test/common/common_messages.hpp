@@ -33,21 +33,21 @@ class InnerMessageConverter : public BaseMessageConverter<
         &PROTO_InnerMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const Context & ctx) {
+    static ProtoType encoderInit(const EncoderContext & ctx) {
         return ProtoType{
-                .number = ctx.number,
-                .text = StringConverter::encoder(ctx.text)
+                .number = ctx.local.number,
+                .text = StringConverter::encoder(ctx.local.text)
         };
     }
 
-    static ProtoType decoderInit(Context& ctx){
+    static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .text = StringConverter::decoder(ctx.text)
+                .text = StringConverter::decoder(ctx.local.text)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, Context& ctx){
-        ctx.number = proto.number;
+    static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
+        ctx.local.number = proto.number;
         return true;
     }
 };

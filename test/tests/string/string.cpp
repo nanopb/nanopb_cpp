@@ -22,19 +22,19 @@ class TestMessageConverter : public BaseMessageConverter<
         &PROTO_TestMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const Context& ctx) {
+    static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .str = StringConverter::encoder(ctx.str)
+                .str = StringConverter::encoder(ctx.local.str)
         };
     }
 
-    static ProtoType decoderInit(Context& ctx){
+    static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .str = StringConverter::decoder(ctx.str)
+                .str = StringConverter::decoder(ctx.local.str)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, Context& ctx){
+    static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
         return true;
     }
 };

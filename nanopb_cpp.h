@@ -52,9 +52,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using ContextType = typename MESSAGE_CONVERTER::Context;
+        using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        ContextType ctx = MESSAGE_CONVERTER::createEncoderContext(local);
+        EncoderContext ctx = MESSAGE_CONVERTER::createEncoderContext(local);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -66,9 +66,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool encodeSubMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using ContextType = typename MESSAGE_CONVERTER::Context;
+        using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        ContextType ctx = MESSAGE_CONVERTER::createEncoderContext(local);
+        EncoderContext ctx = MESSAGE_CONVERTER::createEncoderContext(local);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -80,9 +80,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using ContextType = typename MESSAGE_CONVERTER::Context;
+        using DecoderContext = typename MESSAGE_CONVERTER::DecoderContext;
 
-        ContextType ctx = MESSAGE_CONVERTER::createDecoderContext(local);
+        DecoderContext ctx = MESSAGE_CONVERTER::createDecoderContext(local);
         ProtoType proto = MESSAGE_CONVERTER::decoderInit(ctx);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
@@ -112,10 +112,11 @@ namespace NanoPb {
         /**
          * Abstract message converter
          */
-        template<class CONVERTER, class CONTEXT, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
+        template<class CONVERTER, class ENCODER_CONTEXT, class DECODER_CONTEXT, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class AbstractMessageConverter {
         public:
-            using Context = CONTEXT;
+            using EncoderContext = ENCODER_CONTEXT;
+            using DecoderContext = DECODER_CONTEXT;
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
         public:
@@ -123,24 +124,56 @@ namespace NanoPb {
 
         public:  // Should be overwritten in child class
 
-            static ProtoType encoderInit(const Context& ctx);
-            static ProtoType decoderInit(Context& ctx);
-            static bool decoderApply(const ProtoType& proto, Context& ctx);
+            static ProtoType encoderInit(const EncoderContext& ctx);
+            static ProtoType decoderInit(DecoderContext& ctx);
+            static bool decoderApply(const ProtoType& proto, DecoderContext& ctx);
 
-            static Context createEncoderContext(const LocalType& local);
-            static Context createDecoderContext(LocalType& local);
+            static EncoderContext createEncoderContext(const LocalType& local);
+            static DecoderContext createDecoderContext(LocalType& local);
+        };
+
+
+        /**
+         * Base encoder context
+         */
+        template<class LOCAL_TYPE>
+        struct BaseEncoderContext {
+            const LOCAL_TYPE& local;
+            BaseEncoderContext(const LOCAL_TYPE &local) : local(local) {}
         };
 
         /**
-         * Converter for case when context is arg itself.
+         * Base decoder context
+         */
+        template<class LOCAL_TYPE>
+        struct BaseDecoderContext {
+            LOCAL_TYPE& local;
+            BaseDecoderContext(LOCAL_TYPE &local) : local(local) {}
+        };
+
+        /**
+         * Simple converter
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class BaseMessageConverter : public AbstractMessageConverter<CONVERTER, LOCAL_TYPE, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
+        class BaseMessageConverter : public AbstractMessageConverter<
+                CONVERTER,
+                BaseEncoderContext<LOCAL_TYPE>,
+                BaseDecoderContext<LOCAL_TYPE>,
+                LOCAL_TYPE,
+                PROTO_TYPE,
+                PROTO_TYPE_MSG>
+        {
         public:
             using LocalType = LOCAL_TYPE;
+            using EncoderContext = BaseEncoderContext<LOCAL_TYPE>;
+            using DecoderContext = BaseDecoderContext<LOCAL_TYPE>;
         public:
-            static LOCAL_TYPE createEncoderContext(const LOCAL_TYPE& local){ return local; }
-            static LOCAL_TYPE createDecoderContext(LOCAL_TYPE& local){ return local; }
+            static EncoderContext createEncoderContext(const LocalType& local){
+                return EncoderContext(local);
+            }
+            static DecoderContext createDecoderContext(LocalType& local){
+                return DecoderContext(local);
+            }
         };
 
         /**
