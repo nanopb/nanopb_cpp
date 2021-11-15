@@ -1,3 +1,5 @@
+#pragma once
+
 #include "tests_common.h"
 #include "inner_message.pb.h"
 
