@@ -29,7 +29,7 @@ function(nanopb_cpp_add_test TEST)
             PROTO_SRCS
             PROTO_HDRS
             ${TEST_PROTOS}
-            ${TEST_COMMON_DIR}/common_messages.proto
+            ${TEST_COMMON_DIR}/inner_message.proto
     )
 
     add_executable(${EXECUTABLE}

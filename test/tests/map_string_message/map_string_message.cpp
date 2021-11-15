@@ -2,7 +2,7 @@
 
 #include "tests_common.h"
 #include "map_string_message.pb.h"
-#include "common_messages.hpp"
+#include "inner_message.hpp"
 
 using namespace NanoPb::Converter;
 
