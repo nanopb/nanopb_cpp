@@ -1,8 +1,8 @@
 #include <map>
 
 #include "tests_common.h"
-#include "map_string_message.pb.h"
 #include "inner_message.hpp"
+#include "map_string_message.pb.h"
 
 using namespace NanoPb::Converter;
 
