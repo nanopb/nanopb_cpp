@@ -26,7 +26,7 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 private:
-    class ItemsConverter : public AbstractMapConverter<
+    class ItemsConverter : public MapConverter<
             ItemsConverter,
             LOCAL_TestMessage::MapType,
             PROTO_TestMessage_ItemsEntry,

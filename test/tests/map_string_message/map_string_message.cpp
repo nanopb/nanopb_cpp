@@ -29,18 +29,18 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 private:
-    class ItemsConverter : public AbstractMapConverter<
+    class ItemsConverter : public MapConverter<
             ItemsConverter,
             LOCAL_TestMessage::MapType,
             PROTO_TestMessage_ItemsEntry,
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-    struct DecoderContext: public AbstractMapConverter::DecoderContext {
+    struct DecoderContext: public MapConverter::DecoderContext {
         InnerMessageConverter::DecoderContext valueCtx;
 
         DecoderContext(KeyType &key, ValueType &value) :
-            AbstractMapConverter::DecoderContext(key, value), valueCtx(value)
+                MapConverter::DecoderContext(key, value), valueCtx(value)
         {}
     };
     public:

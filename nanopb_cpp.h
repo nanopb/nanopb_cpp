@@ -338,8 +338,8 @@ namespace NanoPb {
          * Converter for map
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
-        class AbstractMapConverter : public AbstractCallbackConverter<
-                AbstractMapConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
+        class MapConverter : public AbstractCallbackConverter<
+                MapConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                 CONTAINER>
         {
         protected:
