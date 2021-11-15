@@ -54,7 +54,7 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        EncoderContext ctx = EncoderContext(local);
+        EncoderContext ctx(local);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -68,7 +68,7 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        EncoderContext ctx = EncoderContext(local);
+        EncoderContext ctx(local);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -82,7 +82,7 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using DecoderContext = typename MESSAGE_CONVERTER::DecoderContext;
 
-        DecoderContext ctx = DecoderContext(local);
+        DecoderContext ctx(local);
         ProtoType proto = MESSAGE_CONVERTER::decoderInit(ctx);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
