@@ -1,7 +1,7 @@
 #pragma once
 
-#include "union_container_no_union.pb.h"
-#include "union_inner_messages.hpp"
+#include "container_no_union.pb.h"
+#include "inner_messages.hpp"
 
 
 struct LOCAL_UnionContainer {

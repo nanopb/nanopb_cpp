@@ -1,7 +1,7 @@
 #pragma once
 
-#include "union_container_no_union.pb.h"
-#include "union_container.hpp"
+#include "container_no_union.pb.h"
+#include "container.hpp"
 
 using namespace NanoPb::Converter;
 

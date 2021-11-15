@@ -2,7 +2,7 @@
 #include <memory>
 
 #include "tests_common.h"
-#include "union_container_no_union.hpp"
+#include "converter_no_union.hpp"
 
 using namespace NanoPb::Converter;
 
