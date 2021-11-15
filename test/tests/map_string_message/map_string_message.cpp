@@ -11,6 +11,8 @@ struct LOCAL_TestMessage {
     MapType items;
 
     LOCAL_TestMessage() = default;
+    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
+    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
     LOCAL_TestMessage(MapType &&items) : items(std::move(items)) {}
 
     bool operator==(const LOCAL_TestMessage &rhs) const {

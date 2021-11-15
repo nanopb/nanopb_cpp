@@ -29,6 +29,9 @@ struct LOCAL_UnionInnerOne : public LOCAL_InnerMessage {
     int number = 0;
 
     LOCAL_UnionInnerOne() = default;
+    LOCAL_UnionInnerOne(const LOCAL_UnionInnerOne&) = delete;
+    LOCAL_UnionInnerOne(LOCAL_UnionInnerOne&&) = default;
+
     LOCAL_UnionInnerOne(int number) : number(number) {}
 
     Type getType() const override { return Type::UnionInnerOne; }
@@ -47,6 +50,9 @@ struct LOCAL_UnionInnerTwo : public LOCAL_InnerMessage {
     std::string str;
 
     LOCAL_UnionInnerTwo() = default;
+    LOCAL_UnionInnerTwo(const LOCAL_UnionInnerTwo&) = delete;
+    LOCAL_UnionInnerTwo(LOCAL_UnionInnerTwo&&) = default;
+
     LOCAL_UnionInnerTwo(const std::string &str) : str(str) {}
 
     Type getType() const override { return Type::UnionInnerTwo; }
@@ -66,6 +72,9 @@ struct LOCAL_UnionInnerThree : public LOCAL_InnerMessage {
     ValuesContainer values;
 
     LOCAL_UnionInnerThree() = default;
+    LOCAL_UnionInnerThree(const LOCAL_UnionInnerThree&) = delete;
+    LOCAL_UnionInnerThree(LOCAL_UnionInnerThree&&) = default;
+
     LOCAL_UnionInnerThree(const ValuesContainer &values) : values(values) {}
 
     Type getType() const override { return Type::UnionInnerThree; }

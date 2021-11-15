@@ -12,6 +12,8 @@ struct LOCAL_TestMessage {
     ContainerType values;
 
     LOCAL_TestMessage() = default;
+    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
+    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
     LOCAL_TestMessage(ContainerType values) : values(std::move(values)) {}
 
     bool operator==(const LOCAL_TestMessage &rhs) const {

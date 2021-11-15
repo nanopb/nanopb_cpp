@@ -13,6 +13,8 @@ struct LOCAL_OuterMessage {
     ItemsContainer items;
 
     LOCAL_OuterMessage() = default;
+    LOCAL_OuterMessage(const LOCAL_OuterMessage&) = delete;
+    LOCAL_OuterMessage(LOCAL_OuterMessage&&) = default;
 
     LOCAL_OuterMessage(int32_t number, ItemsContainer &&items) : number(number), items(std::move(items)) {}
 

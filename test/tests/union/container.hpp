@@ -10,6 +10,8 @@ struct LOCAL_UnionContainer {
     int suffix = 0;
 
     LOCAL_UnionContainer() = default;
+    LOCAL_UnionContainer(const LOCAL_UnionContainer&) = delete;
+    LOCAL_UnionContainer(LOCAL_UnionContainer&&) = default;
     LOCAL_UnionContainer(int prefix, std::unique_ptr<LOCAL_InnerMessage> &&message, int suffix) :
         prefix(prefix), message(std::move(message)), suffix(suffix)
         {}

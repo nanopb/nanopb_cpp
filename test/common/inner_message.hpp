@@ -15,7 +15,7 @@ struct LOCAL_InnerMessage {
     // Remove copy constructor and add move constructor
     // to ensure that all can work without copy constructor
     LOCAL_InnerMessage(const LOCAL_InnerMessage&) = delete;
-    LOCAL_InnerMessage(LOCAL_InnerMessage&& other) : number(other.number), text(std::move(other.text)) {};
+    LOCAL_InnerMessage(LOCAL_InnerMessage&& other) = default;
 
     LOCAL_InnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
 

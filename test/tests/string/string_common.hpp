@@ -7,6 +7,10 @@ using namespace NanoPb::Converter;
 struct LOCAL_TestMessage {
     std::string str;
 
+    LOCAL_TestMessage() = default;
+    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
+    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
+
     bool operator==(const LOCAL_TestMessage &rhs) const {
         return str == rhs.str;
     }
