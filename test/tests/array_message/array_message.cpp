@@ -26,7 +26,7 @@ struct LOCAL_OuterMessage {
     }
 };
 
-class OuterMessageConverter : public BaseMessageConverter<
+class OuterMessageConverter : public AbstractMessageConverter<
         OuterMessageConverter,
         LOCAL_OuterMessage,
         PROTO_OuterMessage,

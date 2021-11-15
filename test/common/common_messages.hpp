@@ -26,7 +26,7 @@ struct LOCAL_InnerMessage {
     }
 };
 
-class InnerMessageConverter : public BaseMessageConverter<
+class InnerMessageConverter : public AbstractMessageConverter<
         InnerMessageConverter,
         LOCAL_InnerMessage,
         PROTO_InnerMessage,
