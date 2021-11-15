@@ -6,8 +6,8 @@
 using namespace NanoPb::Converter;
 
 struct LOCAL_TestMessage {
-    using MapType = std::map<std::string, std::string>;
-    MapType items;
+    using SimpleMapType = std::map<std::string, std::string>;
+    SimpleMapType items;
 
     bool operator==(const LOCAL_TestMessage &rhs) const {
         return items == rhs.items;
@@ -27,7 +27,7 @@ class TestMessageConverter : public AbstractMessageConverter<
 private:
     class ValuesConverter : public MapConverter<
             ValuesConverter,
-            LOCAL_TestMessage::MapType,
+            LOCAL_TestMessage::SimpleMapType,
             PROTO_TestMessage_ItemsEntry,
             &PROTO_TestMessage_ItemsEntry_msg>
     {

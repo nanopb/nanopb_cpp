@@ -20,6 +20,23 @@ struct LOCAL_TestMessage {
     bool operator!=(const LOCAL_TestMessage &rhs) const {
         return !(rhs == *this);
     }
+
+    static std::vector<LOCAL_TestMessage> createTestMessages() {
+        std::vector<LOCAL_TestMessage> ret;
+        auto innerMessages = LOCAL_InnerMessage::createTestMessages();
+
+        LOCAL_TestMessage::MapType items;
+
+        uint32_t key = 0;
+        for (auto& m: innerMessages){
+            items.emplace("key_" + std::to_string(key), std::move(m));
+            key++;
+        }
+
+        ret.push_back(LOCAL_TestMessage(std::move(items)));
+
+        return ret;
+    }
 };
 
 class TestMessageConverter : public AbstractMessageConverter<
@@ -85,26 +102,22 @@ public:
 int main() {
     int status = 0;
 
-    LOCAL_TestMessage::MapType items;
-    items.emplace("msg1", LOCAL_InnerMessage(1, "entry_1"));
-    items.emplace("msg2", LOCAL_InnerMessage(2, "entry_2"));
-    items.emplace("msg3", LOCAL_InnerMessage(3, "entry_3"));
+    const auto messages = LOCAL_TestMessage::createTestMessages();
 
-    const LOCAL_TestMessage original(
-            std::move(items)
-    );
+    for (auto& original : messages){
 
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+        NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
+        TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
 
-    auto inputStream = NanoPb::StringInputStream(outputStream.release());
+        auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_TestMessage decoded;
+        LOCAL_TestMessage decoded;
 
-    TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
+        TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
 
-    TEST(original == decoded);
+        TEST(original == decoded);
+    }
 
     return status;
 }

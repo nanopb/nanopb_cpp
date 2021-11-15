@@ -114,6 +114,20 @@ struct LOCAL_UnionContainer {
     bool operator!=(const LOCAL_UnionContainer &rhs) const {
         return !(rhs == *this);
     }
+
+    static std::vector<LOCAL_UnionContainer> createTestMessages(){
+        std::vector<LOCAL_UnionContainer> ret;
+        ret.push_back(LOCAL_UnionContainer(std::unique_ptr<LOCAL_UnionInnerOne>(
+                new LOCAL_UnionInnerOne(111)
+        )));
+        ret.push_back(LOCAL_UnionContainer(std::unique_ptr<LOCAL_UnionInnerTwo>(
+                new LOCAL_UnionInnerTwo("Message number two")
+        )));
+        ret.push_back(LOCAL_UnionContainer(std::unique_ptr<LOCAL_UnionInnerThree>(
+                new LOCAL_UnionInnerThree({0, 1, 2, 3, UINT32_MAX})
+        )));
+        return ret;
+    }
 };
 
 /******************************************************************************************/

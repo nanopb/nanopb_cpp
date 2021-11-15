@@ -6,9 +6,9 @@
 using namespace NanoPb::Converter;
 
 struct LOCAL_TestMessage {
-    using MapType = std::map<uint32_t, std::string>;
+    using SimpleMapType = std::map<uint32_t, std::string>;
 
-    MapType items;
+    SimpleMapType items;
 
     bool operator==(const LOCAL_TestMessage &rhs) const {
         return items == rhs.items;
@@ -26,9 +26,9 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 private:
-    class ItemsConverter : public MapConverter<
-            ItemsConverter,
-            LOCAL_TestMessage::MapType,
+    class SimpleItemsConverter : public MapConverter<
+            SimpleItemsConverter,
+            LOCAL_TestMessage::SimpleMapType,
             PROTO_TestMessage_ItemsEntry,
             &PROTO_TestMessage_ItemsEntry_msg>
     {
@@ -54,13 +54,13 @@ private:
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .items = ItemsConverter::encoder(ctx.local.items)
+                .items = SimpleItemsConverter::encoder(ctx.local.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoder(ctx.local.items)
+                .items = SimpleItemsConverter::decoder(ctx.local.items)
         };
     }
 

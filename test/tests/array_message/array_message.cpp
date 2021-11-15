@@ -24,6 +24,21 @@ struct LOCAL_OuterMessage {
     bool operator!=(const LOCAL_OuterMessage &rhs) const {
         return !(rhs == *this);
     }
+
+    static std::vector<LOCAL_OuterMessage> createTestMessages(){
+        std::vector<LOCAL_OuterMessage> ret;
+        {
+            std::vector<LOCAL_InnerMessage> items;
+            items.push_back(LOCAL_InnerMessage(1, "entry_1"));
+            items.push_back(LOCAL_InnerMessage(2, "entry_1"));
+            items.push_back(LOCAL_InnerMessage(UINT32_MAX, "entry_max"));
+
+            ret.push_back(
+                    LOCAL_OuterMessage(INT32_MIN, std::move(items))
+                    );
+        }
+        return ret;
+    }
 };
 
 class OuterMessageConverter : public AbstractMessageConverter<
@@ -63,27 +78,22 @@ public:
 int main() {
     int status = 0;
 
-    LOCAL_OuterMessage::ItemsContainer items;
-    items.push_back(LOCAL_InnerMessage(1, "entry_1"));
-    items.push_back(LOCAL_InnerMessage(2, "entry_1"));
-    items.push_back(LOCAL_InnerMessage(UINT32_MAX, "entry_max"));
+    const auto messages = LOCAL_OuterMessage::createTestMessages();
 
-    const LOCAL_OuterMessage original (
-            INT32_MIN,
-            std::move(items)
-    );
+    for (auto& original : messages) {
 
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+        NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    TEST(NanoPb::encode<OuterMessageConverter>(outputStream, original));
+        TEST(NanoPb::encode<OuterMessageConverter>(outputStream, original));
 
-    auto inputStream = NanoPb::StringInputStream(outputStream.release());
+        auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_OuterMessage decoded;
+        LOCAL_OuterMessage decoded;
 
-    TEST(NanoPb::decode<OuterMessageConverter>(inputStream, decoded));
+        TEST(NanoPb::decode<OuterMessageConverter>(inputStream, decoded));
 
-    TEST(original == decoded);
+        TEST(original == decoded);
+    }
 
     return status;
 }
