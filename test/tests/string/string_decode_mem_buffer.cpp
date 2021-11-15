@@ -6,17 +6,17 @@ int main() {
 
     const LOCAL_TestMessage original(
             {"My super string"}
-            );
+    );
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
 
-    auto inputStream = NanoPb::StringInputStream(outputStream.release());
+    auto buffer = outputStream.release();
 
     LOCAL_TestMessage decoded;
 
-    TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
+    TEST(NanoPb::decode<TestMessageConverter>(buffer->data(), buffer->size(), decoded));
 
     TEST(original == decoded);
     return status;

@@ -105,7 +105,7 @@ namespace NanoPb {
     }
 
     /**
-     * Decode message
+     * Decode message from stream
      */
     template<class MESSAGE_CONVERTER>
     bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
@@ -120,6 +120,15 @@ namespace NanoPb {
         if (!MESSAGE_CONVERTER::decoderApply(proto, ctx))
             return false;
         return true;
+    }
+
+    /**
+     * Decode from buffer in memory
+     */
+    template<class MESSAGE_CONVERTER>
+    bool decode(const void* data, const pb_size_t dataSize, typename MESSAGE_CONVERTER::LocalType& local){
+        pb_istream_t stream = pb_istream_from_buffer((pb_byte_t*)data, dataSize);
+        return decode<MESSAGE_CONVERTER>(stream, local);
     }
 
     /**
