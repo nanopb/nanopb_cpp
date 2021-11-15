@@ -6,25 +6,26 @@
 
 using namespace NanoPb::Converter;
 
-
+template <class UNION_CONVERTER>
 int test_standard(const LOCAL_UnionContainer& original){
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    TEST(NanoPb::encode<UnionContainerNoUnionConverter>(outputStream, original));
+    TEST(NanoPb::encode<UNION_CONVERTER>(outputStream, original));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
     LOCAL_UnionContainer decoded;
 
-    TEST(NanoPb::decode<UnionContainerNoUnionConverter>(inputStream, decoded));
+    TEST(NanoPb::decode<UNION_CONVERTER>(inputStream, decoded));
 
     TEST(original == decoded);
 
     return status;
 }
 
+template <class UNION_CONVERTER>
 int test_manual_encode(const LOCAL_UnionContainer& original) {
     int status = 0;
 
@@ -52,7 +53,7 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
 
     LOCAL_UnionContainer decoded;
 
-    TEST(NanoPb::decode<UnionContainerNoUnionConverter>(inputStream, decoded));
+    TEST(NanoPb::decode<UNION_CONVERTER>(inputStream, decoded));
 
     TEST(original == decoded);
 
@@ -60,13 +61,14 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
     return status;
 }
 
+template <class UNION_CONVERTER>
 int test_manual_decode(const LOCAL_UnionContainer& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     // Encode with standard way
-    TEST(NanoPb::encode<UnionContainerNoUnionConverter>(outputStream, original));
+    TEST(NanoPb::encode<UNION_CONVERTER>(outputStream, original));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
@@ -104,9 +106,11 @@ int main() {
     const auto messages = LOCAL_UnionContainer::createTestMessages();
 
     for (auto& original : messages){
-        status |= test_standard(original);
-        status |= test_manual_encode(original);
-        status |= test_manual_decode(original);
+        {
+            status |= test_standard<UnionContainerNoUnionConverter>(original);
+            status |= test_manual_encode<UnionContainerNoUnionConverter>(original);
+            status |= test_manual_decode<UnionContainerNoUnionConverter>(original);
+        }
     }
 
     return status;
