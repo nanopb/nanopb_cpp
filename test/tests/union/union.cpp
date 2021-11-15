@@ -67,7 +67,7 @@ struct LOCAL_InnerMessageTwo : public LOCAL_InnerMessage {
 };
 
 struct LOCAL_InnerMessageThree : public LOCAL_InnerMessage {
-    using ValuesContainer = std::vector<std::string>;
+    using ValuesContainer = std::vector<uint32_t>;
     ValuesContainer values;
 
     LOCAL_InnerMessageThree() = default;
@@ -178,13 +178,13 @@ class InnerMessageThreeConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType {
-                .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::encoder(ctx.local.values)
+                .values = ArrayUnsignedConverter<LOCAL_InnerMessageThree::ValuesContainer>::encoder(ctx.local.values)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .values = ArrayStringConverter<LOCAL_InnerMessageThree::ValuesContainer>::decoder(ctx.local.values)
+                .values = ArrayUnsignedConverter<LOCAL_InnerMessageThree::ValuesContainer>::decoder(ctx.local.values)
         };
     }
 
@@ -317,7 +317,7 @@ int main() {
 
     COMMENT("LOCAL_InnerMessageThree");
     auto msg3 = LOCAL_UnionMessage(std::unique_ptr<LOCAL_InnerMessageThree>(
-            new LOCAL_InnerMessageThree({"string_1", "string_2"})
+            new LOCAL_InnerMessageThree({0, 1, 2, 3, UINT32_MAX})
     ));
     status |= testMessage(msg3);
 
