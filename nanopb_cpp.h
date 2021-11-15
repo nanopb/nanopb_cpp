@@ -141,9 +141,9 @@ namespace NanoPb {
     }
 
     /**
-     * Decode first tag from the stream.
+     * Decode union message type
      */
-    bool decodeTag(pb_istream_t &stream, uint32_t& tag);
+    const pb_msgdesc_t* decodeUnionMessageType(pb_istream_t &stream, const pb_msgdesc_t* unionContainer);
 
 
     namespace Converter {

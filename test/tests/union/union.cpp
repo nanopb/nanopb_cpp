@@ -70,34 +70,28 @@ int test_manual_decode(const LOCAL_UnionContainer& original) {
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    uint32_t tag;
+    const pb_msgdesc_t* type = NanoPb::decodeUnionMessageType(inputStream, &PROTO_UnionContainer_msg);
 
-    bool tagDecodeSuccess = NanoPb::decodeTag(inputStream, tag);
-
-    TEST(tagDecodeSuccess);
-    if (tagDecodeSuccess){
-        switch (original.message->getType()) {
-            case LOCAL_InnerMessage::Type::UnionInnerOne: {
-                TEST(tag == PROTO_UnionContainer_msg1_tag);
-
-                LOCAL_UnionInnerOne decodedMessage;
-                TEST(NanoPb::decodeSubMessage<UnionInnerOneConverter>(inputStream, decodedMessage))
-                break;
-            }
-            case LOCAL_InnerMessage::Type::UnionInnerTwo: {
-                TEST(tag == PROTO_UnionContainer_msg2_tag);
-
-                LOCAL_UnionInnerTwo decodedMessage;
-                TEST(NanoPb::decodeSubMessage<UnionInnerTwoConverter>(inputStream, decodedMessage))
-                break;
-            }
-            case LOCAL_InnerMessage::Type::UnionInnerThree: {
-                TEST(tag == PROTO_UnionContainer_msg3_tag);
-
-                LOCAL_UnionInnerThree decodedMessage;
-                TEST(NanoPb::decodeSubMessage<UnionInnerThreeConverter>(inputStream, decodedMessage))
-                break;
-            }
+    TEST(type);
+    if (type){
+        if (type == UnionInnerOneConverter::getMsgType())
+        {
+            LOCAL_UnionInnerOne decodedMessage;
+            TEST(NanoPb::decodeSubMessage<UnionInnerOneConverter>(inputStream, decodedMessage))
+        }
+        else if (type == UnionInnerTwoConverter::getMsgType())
+        {
+            LOCAL_UnionInnerTwo decodedMessage;
+            TEST(NanoPb::decodeSubMessage<UnionInnerTwoConverter>(inputStream, decodedMessage))
+        }
+        else if (type == UnionInnerThreeConverter::getMsgType())
+        {
+            LOCAL_UnionInnerThree decodedMessage;
+            TEST(NanoPb::decodeSubMessage<UnionInnerThreeConverter>(inputStream, decodedMessage))
+        }
+        else
+        {
+            TEST(0&&"Invalid type");
         }
     }
 
