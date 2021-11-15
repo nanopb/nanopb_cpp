@@ -8,7 +8,7 @@ enum class SimpleEnum {
 };
 
 
-class SimpleEnumConverter: public NanoPb::Converter::AbstractScalarConverter<SimpleEnumConverter, SimpleEnum, ProtoSimpleEnum> {
+class SimpleEnumConverter: public NanoPb::Converter::AbstractScalarConverter<SimpleEnum, ProtoSimpleEnum> {
 public:
     static ProtoType encode(const LocalType& arg){
         switch (arg) {

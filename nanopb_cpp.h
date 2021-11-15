@@ -97,7 +97,7 @@ namespace NanoPb {
         /**
          * Abstract converter for basic scalar types like enum
          */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
+        template<class LOCAL_TYPE, class PROTO_TYPE>
         class AbstractScalarConverter {
         protected:
             using LocalType = LOCAL_TYPE;
