@@ -4,6 +4,7 @@ Extends C++ support for the [NanoPb](https://github.com/nanopb/nanopb).
 
 ## Features
 
+* Template-based static methods for converters.
 * One-line call encode/decode for complicated messages.
 * Support for custom union inner message encode/decode with some [limitations](#limitations).
 
@@ -25,7 +26,9 @@ Extends C++ support for the [NanoPb](https://github.com/nanopb/nanopb).
 * Define converter for each local/protobuf message pair, inherit from `NanoPb::AbstractMessageConverter`.
 * Define callback converters for callback field, inherit from `NanoPb::AbstractCallbackConverter`.
 
-See [tests](test/tests) folder for examples.
+## Examples
+
+See [tests](test/tests) folder for the examples.
 
 
 ## Limitations
