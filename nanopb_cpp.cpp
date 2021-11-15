@@ -48,6 +48,14 @@ NanoPb::StringInputStream::StringInputStream(BufferPtr &&buffer) : _buffer(std::
 #endif
 }
 
+bool NanoPb::decodeTag(pb_istream_t &stream, uint32_t &tag) {
+    pb_wire_type_t wire_type;
+    bool eof;
+
+    return pb_decode_tag(&stream, &wire_type, &tag, &eof);
+}
+
+
 bool NanoPb::Converter::StringConverter::_encode(pb_ostream_t *stream, const pb_field_t *field, const Context &arg) {
     NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
     if (!pb_encode_tag_for_field(stream, field))

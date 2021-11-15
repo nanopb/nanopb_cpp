@@ -7,6 +7,7 @@
 #include "pb.h"
 #include "pb_encode.h"
 #include "pb_decode.h"
+#include "pb_common.h"
 
 #ifndef NANOPB_CPP_ASSERT
 #ifndef NDEBUG
@@ -91,6 +92,30 @@ namespace NanoPb {
             return false;
         return true;
     }
+
+    /**
+     * Decode sub message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool decodeSubMessage(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
+        pb_istream_t subStream;
+
+        if (!pb_make_string_substream(&stream, &subStream))
+            return false;
+
+        if (!decode<MESSAGE_CONVERTER>(subStream, local))
+            return false;
+
+        if (!pb_close_string_substream(&stream, &subStream))
+            return false;
+        return true;
+    }
+
+    /**
+     * Decode first tag from the stream.
+     */
+    bool decodeTag(pb_istream_t &stream, uint32_t& tag);
+
 
     namespace Converter {
 
