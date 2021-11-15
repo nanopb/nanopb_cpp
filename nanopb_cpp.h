@@ -76,6 +76,35 @@ namespace NanoPb {
     }
 
     /**
+     * Encode union message
+     */
+    template<class MESSAGE_CONVERTER>
+    bool encodeUnionMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local, const pb_msgdesc_t* unionContainer){
+        using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
+        using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
+
+        pb_field_iter_t iter;
+
+        EncoderContext ctx(local);
+        ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
+
+        if (!pb_field_iter_begin(&iter, unionContainer, &proto))
+            return false;
+        do
+        {
+            if (iter.submsg_desc == MESSAGE_CONVERTER::getMsgType()){
+                /* This is our field, encode the message using it. */
+                if (!pb_encode_tag_for_field(&stream, &iter))
+                    return false;
+                return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
+            }
+        } while (pb_field_iter_next(&iter));
+
+        /* Didn't find the field for messagetype */
+        return false;
+    }
+
+    /**
      * Decode message
      */
     template<class MESSAGE_CONVERTER>

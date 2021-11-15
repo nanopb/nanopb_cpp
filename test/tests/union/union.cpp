@@ -25,6 +25,41 @@ int test_standard(const LOCAL_UnionContainer& original){
     return status;
 }
 
+int test_manual_encode(const LOCAL_UnionContainer& original) {
+    int status = 0;
+
+    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+
+    switch (original.message->getType()) {
+        case LOCAL_InnerMessage::Type::UnionInnerOne: {
+            auto& local = *original.message->as<LOCAL_UnionInnerOne>();
+            TEST(NanoPb::encodeUnionMessage<UnionInnerOneConverter>(outputStream, local, &PROTO_UnionContainer_msg));
+            break;
+        }
+        case LOCAL_InnerMessage::Type::UnionInnerTwo: {
+            auto& local = *original.message->as<LOCAL_UnionInnerTwo>();
+            TEST(NanoPb::encodeUnionMessage<UnionInnerTwoConverter>(outputStream, local, &PROTO_UnionContainer_msg));
+            break;
+        }
+        case LOCAL_InnerMessage::Type::UnionInnerThree: {
+            auto& local = *original.message->as<LOCAL_UnionInnerThree>();
+            TEST(NanoPb::encodeUnionMessage<UnionInnerThreeConverter>(outputStream, local, &PROTO_UnionContainer_msg));
+            break;
+        }
+    }
+
+    auto inputStream = NanoPb::StringInputStream(outputStream.release());
+
+    LOCAL_UnionContainer decoded;
+
+    TEST(NanoPb::decode<UnionContainerConverter>(inputStream, decoded));
+
+    TEST(original == decoded);
+
+
+    return status;
+}
+
 int test_manual_decode(const LOCAL_UnionContainer& original) {
     int status = 0;
 
@@ -76,6 +111,7 @@ int main() {
 
     for (auto& original : messages){
         status |= test_standard(original);
+        status |= test_manual_encode(original);
         status |= test_manual_decode(original);
     }
 
