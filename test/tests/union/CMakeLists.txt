@@ -1,3 +1,6 @@
 include(nanopb_cpp_tests)
 
-nanopb_cpp_add_test(union)
+nanopb_cpp_add_test(union
+        SRC union.cpp
+        PROTO union.proto
+        )

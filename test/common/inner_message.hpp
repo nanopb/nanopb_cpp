@@ -1,5 +1,5 @@
 #include "tests_common.h"
-#include "common_messages.pb.h"
+#include "inner_message.pb.h"
 
 using namespace NanoPb::Converter;
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "common_messages.proto";
+import "inner_message.proto";
 
 package PROTO;
 
