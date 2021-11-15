@@ -25,6 +25,7 @@ int test_standard(const LOCAL_UnionContainer& original){
     return status;
 }
 
+// *** ENCODE ONLY union message, without prefix/suffix ***
 template <class UNION_CONVERTER>
 int test_manual_encode(const LOCAL_UnionContainer& original) {
     int status = 0;
@@ -55,8 +56,8 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
 
     TEST(NanoPb::decode<UNION_CONVERTER>(inputStream, decoded));
 
-    TEST(original == decoded);
-
+    // Compare only message
+    TEST(*original.message ==* decoded.message);
 
     return status;
 }

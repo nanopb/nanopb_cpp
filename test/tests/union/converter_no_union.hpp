@@ -40,7 +40,10 @@ public:
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
 
-        ProtoType ret {};
+        ProtoType ret {
+            .prefix = ctx.local.prefix,
+            .suffix = ctx.local.suffix
+        };
         NANOPB_CPP_ASSERT(ctx.local.message);
         if (!ctx.local.message) {
             return ret;
@@ -71,6 +74,9 @@ public:
     }
 
     static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
+        ctx.local.prefix = proto.prefix;
+        ctx.local.suffix = proto.suffix;
+
         if (proto.has_msg1){
             UnionInnerOneConverter::decoderApply(proto.msg1,ctx.messageContexts.msg1);
             ctx.local.message = std::move(ctx.msg1);

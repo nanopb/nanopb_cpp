@@ -5,9 +5,11 @@ import "inner_messages.proto";
 package PROTO;
 
 message UnionContainerNoUnion {
+  int32 prefix = 1;
   oneof msg {
-      UnionInnerOne msg1 = 1;
-      UnionInnerTwo msg2 = 2;
-      UnionInnerThree msg3 = 3;
+      UnionInnerOne msg1 = 10;
+      UnionInnerTwo msg2 = 11;
+      UnionInnerThree msg3 = 12;
   }
+  int32 suffix = 99;
 }
