@@ -1,17 +1,17 @@
 #pragma once
 
-#include "union_message.pb.h"
+#include "union_container_no_union.pb.h"
 #include "union_inner_messages.hpp"
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_UnionContainer {
+struct LOCAL_UnionContainerNoUnion {
     std::unique_ptr<LOCAL_InnerMessage> message;
 
-    LOCAL_UnionContainer() = default;
-    LOCAL_UnionContainer(std::unique_ptr<LOCAL_InnerMessage> &&message) : message(std::move(message)) {}
+    LOCAL_UnionContainerNoUnion() = default;
+    LOCAL_UnionContainerNoUnion(std::unique_ptr<LOCAL_InnerMessage> &&message) : message(std::move(message)) {}
 
-    bool operator==(const LOCAL_UnionContainer &rhs) const {
+    bool operator==(const LOCAL_UnionContainerNoUnion &rhs) const {
         if (!rhs.message && !message){
             return true;
         }
@@ -33,30 +33,30 @@ struct LOCAL_UnionContainer {
         return false;
     }
 
-    bool operator!=(const LOCAL_UnionContainer &rhs) const {
+    bool operator!=(const LOCAL_UnionContainerNoUnion &rhs) const {
         return !(rhs == *this);
     }
 
-    static std::vector<LOCAL_UnionContainer> createTestMessages(){
-        std::vector<LOCAL_UnionContainer> ret;
-        ret.push_back(LOCAL_UnionContainer(std::unique_ptr<LOCAL_UnionInnerOne>(
+    static std::vector<LOCAL_UnionContainerNoUnion> createTestMessages(){
+        std::vector<LOCAL_UnionContainerNoUnion> ret;
+        ret.push_back(LOCAL_UnionContainerNoUnion(std::unique_ptr<LOCAL_UnionInnerOne>(
                 new LOCAL_UnionInnerOne(111)
         )));
-        ret.push_back(LOCAL_UnionContainer(std::unique_ptr<LOCAL_UnionInnerTwo>(
+        ret.push_back(LOCAL_UnionContainerNoUnion(std::unique_ptr<LOCAL_UnionInnerTwo>(
                 new LOCAL_UnionInnerTwo("Message number two")
         )));
-        ret.push_back(LOCAL_UnionContainer(std::unique_ptr<LOCAL_UnionInnerThree>(
+        ret.push_back(LOCAL_UnionContainerNoUnion(std::unique_ptr<LOCAL_UnionInnerThree>(
                 new LOCAL_UnionInnerThree({0, 1, 2, 3, UINT32_MAX})
         )));
         return ret;
     }
 };
 
-class UnionContainerConverter : public AbstractMessageConverter<
-        UnionContainerConverter,
-        LOCAL_UnionContainer,
-        PROTO_UnionContainer,
-        &PROTO_UnionContainer_msg>
+class UnionContainerNoUnionConverter : public AbstractMessageConverter<
+        UnionContainerNoUnionConverter,
+        LOCAL_UnionContainerNoUnion,
+        PROTO_UnionContainerNoUnion,
+        &PROTO_UnionContainerNoUnion_msg>
 {
 public:
     struct DecoderContext : public AbstractMessageConverter::DecoderContext {

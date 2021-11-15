@@ -7,25 +7,25 @@
 using namespace NanoPb::Converter;
 
 
-int test_standard(const LOCAL_UnionContainer& original){
+int test_standard(const LOCAL_UnionContainerNoUnion& original){
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    TEST(NanoPb::encode<UnionContainerConverter>(outputStream, original));
+    TEST(NanoPb::encode<UnionContainerNoUnionConverter>(outputStream, original));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_UnionContainer decoded;
+    LOCAL_UnionContainerNoUnion decoded;
 
-    TEST(NanoPb::decode<UnionContainerConverter>(inputStream, decoded));
+    TEST(NanoPb::decode<UnionContainerNoUnionConverter>(inputStream, decoded));
 
     TEST(original == decoded);
 
     return status;
 }
 
-int test_manual_encode(const LOCAL_UnionContainer& original) {
+int test_manual_encode(const LOCAL_UnionContainerNoUnion& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
@@ -33,26 +33,26 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
     switch (original.message->getType()) {
         case LOCAL_InnerMessage::Type::UnionInnerOne: {
             auto& local = *original.message->as<LOCAL_UnionInnerOne>();
-            TEST(NanoPb::encodeUnionMessage<UnionInnerOneConverter>(outputStream, local, &PROTO_UnionContainer_msg));
+            TEST(NanoPb::encodeUnionMessage<UnionInnerOneConverter>(outputStream, local, &PROTO_UnionContainerNoUnion_msg));
             break;
         }
         case LOCAL_InnerMessage::Type::UnionInnerTwo: {
             auto& local = *original.message->as<LOCAL_UnionInnerTwo>();
-            TEST(NanoPb::encodeUnionMessage<UnionInnerTwoConverter>(outputStream, local, &PROTO_UnionContainer_msg));
+            TEST(NanoPb::encodeUnionMessage<UnionInnerTwoConverter>(outputStream, local, &PROTO_UnionContainerNoUnion_msg));
             break;
         }
         case LOCAL_InnerMessage::Type::UnionInnerThree: {
             auto& local = *original.message->as<LOCAL_UnionInnerThree>();
-            TEST(NanoPb::encodeUnionMessage<UnionInnerThreeConverter>(outputStream, local, &PROTO_UnionContainer_msg));
+            TEST(NanoPb::encodeUnionMessage<UnionInnerThreeConverter>(outputStream, local, &PROTO_UnionContainerNoUnion_msg));
             break;
         }
     }
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_UnionContainer decoded;
+    LOCAL_UnionContainerNoUnion decoded;
 
-    TEST(NanoPb::decode<UnionContainerConverter>(inputStream, decoded));
+    TEST(NanoPb::decode<UnionContainerNoUnionConverter>(inputStream, decoded));
 
     TEST(original == decoded);
 
@@ -60,17 +60,17 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
     return status;
 }
 
-int test_manual_decode(const LOCAL_UnionContainer& original) {
+int test_manual_decode(const LOCAL_UnionContainerNoUnion& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     // Encode with standard way
-    TEST(NanoPb::encode<UnionContainerConverter>(outputStream, original));
+    TEST(NanoPb::encode<UnionContainerNoUnionConverter>(outputStream, original));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    const pb_msgdesc_t* type = NanoPb::decodeUnionMessageType(inputStream, &PROTO_UnionContainer_msg);
+    const pb_msgdesc_t* type = NanoPb::decodeUnionMessageType(inputStream, &PROTO_UnionContainerNoUnion_msg);
 
     TEST(type);
     if (type){
@@ -101,7 +101,7 @@ int test_manual_decode(const LOCAL_UnionContainer& original) {
 int main() {
     int status = 0;
 
-    const auto messages = LOCAL_UnionContainer::createTestMessages();
+    const auto messages = LOCAL_UnionContainerNoUnion::createTestMessages();
 
     for (auto& original : messages){
         status |= test_standard(original);

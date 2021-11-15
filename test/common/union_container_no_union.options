@@ -1,1 +1,1 @@
-PROTO.UnionContainer.msg no_unions:true
+PROTO.UnionContainerNoUnion.msg no_unions:true

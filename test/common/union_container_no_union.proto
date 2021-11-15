@@ -4,7 +4,7 @@ import "union_inner_messages.proto";
 
 package PROTO;
 
-message UnionContainer {
+message UnionContainerNoUnion {
   oneof msg {
       UnionInnerOne msg1 = 1;
       UnionInnerTwo msg2 = 2;
