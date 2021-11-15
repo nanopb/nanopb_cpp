@@ -4,7 +4,7 @@ Extends C++ support for the [NanoPb](https://github.com/nanopb/nanopb).
 
 ## Features
 
-* Template-based static methods for converters.
+* Template-based classes with static methods for converters.
 * One-line call encode/decode for complicated messages.
 * Support for custom union inner message encode/decode with some [limitations](#limitations).
 
