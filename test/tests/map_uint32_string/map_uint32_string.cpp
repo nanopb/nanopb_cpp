@@ -33,20 +33,20 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-        static ProtoPairType encoderInit(const ContextKeyType& key, const ContextValueType& value) {
+        static ProtoPairType encoderInit(const EncoderContext& ctx) {
             return ProtoPairType{
-                    .key = key,
-                    .value = StringConverter::encoder(value)
+                    .key = ctx.key,
+                    .value = StringConverter::encoder(ctx.value)
             };
         }
-        static ProtoPairType decoderInit(ContextKeyType& key, ContextValueType& value){
+        static ProtoPairType decoderInit(DecoderContext& ctx){
             return ProtoPairType{
                     // no need to set key decoder because it is scalar type, not callback
-                    .value = StringConverter::decoder(value)
+                    .value = StringConverter::decoder(ctx.value)
             };
         }
-        static bool decoderApply(const ProtoPairType& proto, ContextKeyType& key, ContextValueType& value){
-            key = proto.key;
+        static bool decoderApply(const ProtoPairType& proto, DecoderContext& ctx){
+            ctx.key = proto.key;
             return true;
         }
     };

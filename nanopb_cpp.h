@@ -337,40 +337,56 @@ namespace NanoPb {
         /**
          * Converter for map
          */
-        template<class CONVERTER, class CONTEXT_CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
+        template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class AbstractMapConverter : public AbstractCallbackConverter<
-                AbstractMapConverter<CONVERTER, CONTEXT_CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
-                CONTEXT_CONTAINER>
+                AbstractMapConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
+                CONTAINER>
         {
         protected:
-            using ContextKeyType = typename CONTEXT_CONTAINER::key_type;
-            using ContextValueType = typename CONTEXT_CONTAINER::mapped_type;
+            using KeyType = typename CONTAINER::key_type;
+            using ValueType = typename CONTAINER::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
+
+            struct EncoderContext {
+                const KeyType& key;
+                const ValueType& value;
+                EncoderContext(const KeyType &key, const ValueType &value) : key(key), value(value) {}
+            };
+
+            struct DecoderContext {
+                KeyType& key;
+                ValueType& value;
+                DecoderContext(KeyType &key, ValueType &value) : key(key), value(value) {}
+            };
         private:
-            using ContextPairType = std::pair<ContextKeyType,ContextValueType>;
+            using ContextPairType = std::pair<KeyType,ValueType>;
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
+            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &pair: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    ProtoPairType protoPair = CONVERTER::encoderInit(pair.first, pair.second);
+                    typename CONVERTER::EncoderContext ctx(pair.first, pair.second);
 
-                    if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair)) {
+                    ProtoPairType protoPair = CONVERTER::encoderInit(ctx);
+
+                    if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                         return false;
-                    }
                 }
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
-                ContextKeyType key;
-                ContextValueType value;
-                ProtoPairType protoPair = CONVERTER::decoderInit(key, value);
+            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
+                KeyType key;
+                ValueType value;
+
+                typename CONVERTER::DecoderContext ctx(key, value);
+
+                ProtoPairType protoPair = CONVERTER::decoderInit(ctx);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                if (!CONVERTER::decoderApply(protoPair, key, value))
+                if (!CONVERTER::decoderApply(protoPair, ctx))
                     return false;
 
                 container.insert(std::move(ContextPairType(std::move(key), std::move(value))));

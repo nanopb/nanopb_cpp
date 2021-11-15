@@ -36,17 +36,25 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-        static ProtoPairType encoderInit(const ContextKeyType& key, const ContextValueType& value) {
+    struct DecoderContext: public AbstractMapConverter::DecoderContext {
+        InnerMessageConverter::DecoderContext valueCtx;
+
+        DecoderContext(KeyType &key, ValueType &value) :
+            AbstractMapConverter::DecoderContext(key, value), valueCtx(value)
+        {}
+    };
+    public:
+        static ProtoPairType encoderInit(const EncoderContext& ctx) {
             return ProtoPairType{
-                    .key = StringConverter::encoder(key),
+                    .key = StringConverter::encoder(ctx.key),
                     .has_value = true,
-                    .value = InnerMessageConverter::encoderInit(value),
+                    .value = InnerMessageConverter::encoderInit(ctx.value),
             };
         }
-        static ProtoPairType decoderInit(ContextKeyType& key, ContextValueType& value){
+        static ProtoPairType decoderInit(DecoderContext& ctx){
             return ProtoPairType{
-                    .key = StringConverter::decoder(key),
-                    .value = InnerMessageConverter::decoderInit(value)
+                    .key = StringConverter::decoder(ctx.key),
+                    .value = InnerMessageConverter::decoderInit(ctx.valueCtx)
             };
         }
         static bool decoderApply(const ProtoPairType& proto, ContextKeyType& key, ContextValueType& value){

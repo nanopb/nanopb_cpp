@@ -32,19 +32,19 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-        static ProtoPairType encoderInit(const ContextKeyType& key, const ContextValueType& value) {
+        static ProtoPairType encoderInit(const EncoderContext& ctx) {
             return ProtoPairType{
-                    .key = StringConverter::encoder(key),
-                    .value = StringConverter::encoder(value)
+                    .key = StringConverter::encoder(ctx.key),
+                    .value = StringConverter::encoder(ctx.value)
             };
         }
-        static ProtoPairType decoderInit(ContextKeyType& key, ContextValueType& value){
+        static ProtoPairType decoderInit(DecoderContext& ctx){
             return ProtoPairType{
-                    .key = StringConverter::decoder(key),
-                    .value = StringConverter::decoder(value)
+                    .key = StringConverter::decoder(ctx.key),
+                    .value = StringConverter::decoder(ctx.value)
             };
         }
-        static bool decoderApply(const ProtoPairType& proto, ContextKeyType& key, ContextValueType& value){
+        static bool decoderApply(const ProtoPairType& proto, DecoderContext& ctx){
             //nothing to apply
             return true;
         }
