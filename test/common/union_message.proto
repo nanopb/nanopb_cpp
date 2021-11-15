@@ -2,22 +2,22 @@ syntax = "proto3";
 
 package PROTO;
 
-message InnerMessageOne {
+message UnionInnerOne {
   int32 number = 1;
 }
 
-message InnerMessageTwo {
+message UnionInnerTwo {
   string str = 1;
 }
 
-message InnerMessageThree {
+message UnionInnerThree {
   repeated uint32 values = 1;
 }
 
-message UnionMessage {
+message UnionContainer {
   oneof msg {
-      InnerMessageOne msg1 = 1;
-      InnerMessageTwo msg2 = 2;
-      InnerMessageThree msg3 = 3;
+      UnionInnerOne msg1 = 1;
+      UnionInnerTwo msg2 = 2;
+      UnionInnerThree msg3 = 3;
   }
 }
