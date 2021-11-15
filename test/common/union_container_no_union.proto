@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "union_inner_messages.proto";
+
+package PROTO;
+
+message UnionContainer {
+  oneof msg {
+      UnionInnerOne msg1 = 1;
+      UnionInnerTwo msg2 = 2;
+      UnionInnerThree msg3 = 3;
+  }
+}
