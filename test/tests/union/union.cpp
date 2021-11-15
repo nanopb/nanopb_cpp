@@ -7,7 +7,7 @@
 using namespace NanoPb::Converter;
 
 
-int test_standard(const LOCAL_UnionContainerNoUnion& original){
+int test_standard(const LOCAL_UnionContainer& original){
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
@@ -16,7 +16,7 @@ int test_standard(const LOCAL_UnionContainerNoUnion& original){
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_UnionContainerNoUnion decoded;
+    LOCAL_UnionContainer decoded;
 
     TEST(NanoPb::decode<UnionContainerNoUnionConverter>(inputStream, decoded));
 
@@ -25,7 +25,7 @@ int test_standard(const LOCAL_UnionContainerNoUnion& original){
     return status;
 }
 
-int test_manual_encode(const LOCAL_UnionContainerNoUnion& original) {
+int test_manual_encode(const LOCAL_UnionContainer& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
@@ -50,7 +50,7 @@ int test_manual_encode(const LOCAL_UnionContainerNoUnion& original) {
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_UnionContainerNoUnion decoded;
+    LOCAL_UnionContainer decoded;
 
     TEST(NanoPb::decode<UnionContainerNoUnionConverter>(inputStream, decoded));
 
@@ -60,7 +60,7 @@ int test_manual_encode(const LOCAL_UnionContainerNoUnion& original) {
     return status;
 }
 
-int test_manual_decode(const LOCAL_UnionContainerNoUnion& original) {
+int test_manual_decode(const LOCAL_UnionContainer& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
@@ -101,7 +101,7 @@ int test_manual_decode(const LOCAL_UnionContainerNoUnion& original) {
 int main() {
     int status = 0;
 
-    const auto messages = LOCAL_UnionContainerNoUnion::createTestMessages();
+    const auto messages = LOCAL_UnionContainer::createTestMessages();
 
     for (auto& original : messages){
         status |= test_standard(original);
