@@ -176,7 +176,8 @@ namespace NanoPb {
          * Abstract message converter
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class AbstractMessageConverter {public:
+        class AbstractMessageConverter {
+        public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
