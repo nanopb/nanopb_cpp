@@ -108,8 +108,11 @@ int main() {
 
     for (auto& original : messages){
         {
+            COMMENT("test_standard, type: %d", (int)original.message->getType());
             status |= test_standard<UnionContainerNoUnionConverter>(original);
+            COMMENT("test_manual_encode, type: %d", (int)original.message->getType());
             status |= test_manual_encode<UnionContainerNoUnionConverter>(original);
+            COMMENT("test_manual_decode, type: %d", (int)original.message->getType());
             status |= test_manual_decode<UnionContainerNoUnionConverter>(original);
         }
     }
