@@ -213,15 +213,15 @@ namespace NanoPb {
 
         public:  // Should be overwritten in child class
 
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, Context &arg);
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, Context &arg);
 
         private:
             static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return CONVERTER::_encode(stream, field, *(static_cast<const Context*>(*arg)));
+                return CONVERTER::encodeCallback(stream, field, *(static_cast<const Context *>(*arg)));
             };
             static bool _decodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::_decode(stream, field, *(static_cast<Context*>(*arg)));
+                return CONVERTER::decodeCallback(stream, field, *(static_cast<Context *>(*arg)));
             };
         };
 
@@ -230,8 +230,8 @@ namespace NanoPb {
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, Context &arg);
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, Context &arg);
         };
 
         /**
@@ -242,7 +242,7 @@ namespace NanoPb {
         private:
             using ValueType = typename CONTAINER::value_type;
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &item: container) {
                     if (!CONVERTER::_encodeItem(stream, field, item)){
                         return false;
@@ -251,7 +251,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
                 return CONVERTER::_decodeItem(stream, field, container);
             }
 
@@ -349,12 +349,12 @@ namespace NanoPb {
         class ArrayStringConverter : public AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER> {
         public:
             static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const std::string& str){
-                return StringConverter::_encode(stream, field, str);
+                return StringConverter::encodeCallback(stream, field, str);
             }
 
             static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
                 std::string str;
-                if  (!StringConverter::_decode(stream, field, str))
+                if  (!StringConverter::decodeCallback(stream, field, str))
                     return false;
                 container.push_back(str);
                 return true;
@@ -372,7 +372,7 @@ namespace NanoPb {
         private:
             using ContextItem = typename CONTEXT_CONTAINER::value_type;
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
                 for (auto &item: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -384,7 +384,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
                 container.push_back(ContextItem());
                 ContextItem& v = *container.rbegin();
                 if (!decode<ITEM_CONVERTER>(*stream, v)){
@@ -421,7 +421,7 @@ namespace NanoPb {
         private:
             using ContextPairType = std::pair<KeyType,ValueType>;
         public:
-            static bool _encode(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &pair: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
@@ -436,7 +436,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
                 KeyType key;
                 ValueType value;
 
