@@ -407,28 +407,35 @@ namespace NanoPb {
             using ValueType = typename CONTAINER::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
 
-            struct EncoderContext {
+            struct ItemEncoderContext {
                 const KeyType& key;
                 const ValueType& value;
-                EncoderContext(const KeyType &key, const ValueType &value) : key(key), value(value) {}
+                ItemEncoderContext(const KeyType &key, const ValueType &value) : key(key), value(value) {}
             };
 
-            struct DecoderContext {
+            struct ItemDecoderContext {
                 KeyType& key;
                 ValueType& value;
-                DecoderContext(KeyType &key, ValueType &value) : key(key), value(value) {}
+                ItemDecoderContext(KeyType &key, ValueType &value) : key(key), value(value) {}
             };
         private:
             using ContextPairType = std::pair<KeyType,ValueType>;
+
+        public:
+
+            static ProtoPairType itemEncoderInit(const ItemEncoderContext& ctx);
+            static ProtoPairType itemDecoderInit(ItemDecoderContext& ctx);
+            static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& ctx);
+
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &pair: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    typename CONVERTER::EncoderContext ctx(pair.first, pair.second);
+                    typename CONVERTER::ItemEncoderContext ctx(pair.first, pair.second);
 
-                    ProtoPairType protoPair = CONVERTER::encoderInit(ctx);
+                    ProtoPairType protoPair = CONVERTER::itemEncoderInit(ctx);
 
                     if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                         return false;
@@ -440,13 +447,13 @@ namespace NanoPb {
                 KeyType key;
                 ValueType value;
 
-                typename CONVERTER::DecoderContext ctx(key, value);
+                typename CONVERTER::ItemDecoderContext ctx(key, value);
 
-                ProtoPairType protoPair = CONVERTER::decoderInit(ctx);
+                ProtoPairType protoPair = CONVERTER::itemDecoderInit(ctx);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                if (!CONVERTER::decoderApply(protoPair, ctx))
+                if (!CONVERTER::itemDecoderApply(protoPair, ctx))
                     return false;
 
                 container.insert(std::move(ContextPairType(std::move(key), std::move(value))));

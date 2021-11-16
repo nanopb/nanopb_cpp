@@ -55,28 +55,28 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-    struct DecoderContext: public MapConverter::DecoderContext {
+    struct ItemDecoderContext: public MapConverter::ItemDecoderContext {
         InnerMessageConverter::DecoderContext valueCtx;
 
-        DecoderContext(KeyType &key, ValueType &value) :
-                MapConverter::DecoderContext(key, value), valueCtx(value)
+        ItemDecoderContext(KeyType &key, ValueType &value) :
+                MapConverter::ItemDecoderContext(key, value), valueCtx(value)
         {}
     };
     public:
-        static ProtoPairType encoderInit(const EncoderContext& ctx) {
+        static ProtoPairType itemEncoderInit(const ItemEncoderContext& ctx) {
             return ProtoPairType{
                     .key = StringConverter::encoder(ctx.key),
                     .has_value = true,
                     .value = InnerMessageConverter::encoderInit(ctx.value),
             };
         }
-        static ProtoPairType decoderInit(DecoderContext& ctx){
+        static ProtoPairType itemDecoderInit(ItemDecoderContext& ctx){
             return ProtoPairType{
                     .key = StringConverter::decoder(ctx.key),
                     .value = InnerMessageConverter::decoderInit(ctx.valueCtx)
             };
         }
-        static bool decoderApply(const ProtoPairType& proto, DecoderContext& ctx){
+        static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& ctx){
             InnerMessageConverter::decoderApply(proto.value, ctx.valueCtx);
             return true;
         }
