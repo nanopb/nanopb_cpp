@@ -1,3 +1,5 @@
+# WARNING: project is not production ready until it is in `main` branch.
+
 # NanoPb C++ 
 
 Extends C++ support for the [nanopb].
