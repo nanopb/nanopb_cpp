@@ -196,9 +196,6 @@ namespace NanoPb {
             static ProtoType encoderInit(const EncoderContext& ctx);
             static ProtoType decoderInit(DecoderContext& ctx);
             static bool decoderApply(const ProtoType& proto, DecoderContext& ctx);
-
-            static EncoderContext createEncoderContext(const LocalType& local);
-            static DecoderContext createDecoderContext(LocalType& local);
         };
 
         /**
