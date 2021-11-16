@@ -244,7 +244,7 @@ namespace NanoPb {
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &item: container) {
-                    if (!CONVERTER::_encodeItem(stream, field, item)){
+                    if (!CONVERTER::encodeItem(stream, field, item)){
                         return false;
                     }
                 }
@@ -252,12 +252,12 @@ namespace NanoPb {
             }
 
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
-                return CONVERTER::_decodeItem(stream, field, container);
+                return CONVERTER::decodeItem(stream, field, container);
             }
 
         public:  // Should be overwritten in child class
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& item);
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container);
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& item);
+            static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container);
         };
 
         /**
@@ -274,7 +274,7 @@ namespace NanoPb {
         private:
             using UnsignedType = typename CONTAINER::value_type;
         public:
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const UnsignedType& number){
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const UnsignedType& number){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
@@ -283,7 +283,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container){
+            static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container){
 #ifdef PB_WITHOUT_64BIT
                 uint32_t value;
                 if (!pb_decode_varint32(stream, &value)) {
@@ -314,7 +314,7 @@ namespace NanoPb {
         private:
             using SignedType = typename CONTAINER::value_type;
         public:
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const SignedType& number){
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const SignedType& number){
                 if (!pb_encode_tag_for_field(stream, field)) {
                     return false;
                 }
@@ -323,7 +323,7 @@ namespace NanoPb {
                 return true;
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
+            static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
 #ifdef PB_WITHOUT_64BIT
                 int32_t value;
                 if (!pb_decode_svarint32(stream, &value)) {
@@ -348,11 +348,11 @@ namespace NanoPb {
         template<class CONTAINER>
         class ArrayStringConverter : public AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER> {
         public:
-            static bool _encodeItem(pb_ostream_t *stream, const pb_field_t *field, const std::string& str){
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const std::string& str){
                 return StringConverter::encodeCallback(stream, field, str);
             }
 
-            static bool _decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
+            static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
                 std::string str;
                 if  (!StringConverter::decodeCallback(stream, field, str))
                     return false;
