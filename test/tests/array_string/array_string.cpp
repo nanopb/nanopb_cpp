@@ -34,13 +34,13 @@ class TestMessageConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::encoder(ctx.local.values)
+                .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::encoder(ctx.v.values)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::decoder(ctx.local.values)
+                .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::decoder(ctx.v.values)
         };
     }
 

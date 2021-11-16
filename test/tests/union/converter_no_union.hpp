@@ -28,8 +28,8 @@ public:
         } messageContexts;
 
         DecoderContext(const DecoderContext&) = delete;
-        DecoderContext(LocalType& local) :
-                AbstractMessageConverter::DecoderContext(local),
+        DecoderContext(LocalType& v) :
+                AbstractMessageConverter::DecoderContext(v),
                 msg1(new LOCAL_UnionInnerOne()),
                 msg2(new LOCAL_UnionInnerTwo()),
                 msg3(new LOCAL_UnionInnerThree()),
@@ -41,25 +41,25 @@ public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
 
         ProtoType ret {
-            .prefix = ctx.local.prefix,
-            .suffix = ctx.local.suffix
+            .prefix = ctx.v.prefix,
+            .suffix = ctx.v.suffix
         };
-        NANOPB_CPP_ASSERT(ctx.local.message);
-        if (!ctx.local.message) {
+        NANOPB_CPP_ASSERT(ctx.v.message);
+        if (!ctx.v.message) {
             return ret;
         }
-        switch (ctx.local.message->getType()) {
+        switch (ctx.v.message->getType()) {
             case LOCAL_InnerMessage::Type::UnionInnerOne:
                 ret.has_msg1 = true;
-                ret.msg1 = UnionInnerOneConverter::encoderInit(*ctx.local.message->as<LOCAL_UnionInnerOne>());
+                ret.msg1 = UnionInnerOneConverter::encoderInit(*ctx.v.message->as<LOCAL_UnionInnerOne>());
                 break;
             case LOCAL_InnerMessage::Type::UnionInnerTwo:
                 ret.has_msg2 = true;
-                ret.msg2 = UnionInnerTwoConverter::encoderInit(*ctx.local.message->as<LOCAL_UnionInnerTwo>());
+                ret.msg2 = UnionInnerTwoConverter::encoderInit(*ctx.v.message->as<LOCAL_UnionInnerTwo>());
                 break;
             case LOCAL_InnerMessage::Type::UnionInnerThree:
                 ret.has_msg3 = true;
-                ret.msg3 = UnionInnerThreeConverter::encoderInit(*ctx.local.message->as<LOCAL_UnionInnerThree>());
+                ret.msg3 = UnionInnerThreeConverter::encoderInit(*ctx.v.message->as<LOCAL_UnionInnerThree>());
                 break;
         }
         return ret;
@@ -74,20 +74,20 @@ public:
     }
 
     static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
-        ctx.local.prefix = proto.prefix;
-        ctx.local.suffix = proto.suffix;
+        ctx.v.prefix = proto.prefix;
+        ctx.v.suffix = proto.suffix;
 
         if (proto.has_msg1){
             UnionInnerOneConverter::decoderApply(proto.msg1,ctx.messageContexts.msg1);
-            ctx.local.message = std::move(ctx.msg1);
+            ctx.v.message = std::move(ctx.msg1);
             return true;
         } else if (proto.has_msg2){
             UnionInnerTwoConverter::decoderApply(proto.msg2, ctx.messageContexts.msg2);
-            ctx.local.message = std::move(ctx.msg2);
+            ctx.v.message = std::move(ctx.msg2);
             return true;
         } else if (proto.has_msg3){
             UnionInnerThreeConverter::decoderApply(proto.msg3, ctx.messageContexts.msg3);
-            ctx.local.message = std::move(ctx.msg3);
+            ctx.v.message = std::move(ctx.msg3);
             return true;
         } else {
             NANOPB_CPP_ASSERT(0&&"Invalid msg");

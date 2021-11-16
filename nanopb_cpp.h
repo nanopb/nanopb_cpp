@@ -51,11 +51,11 @@ namespace NanoPb {
      * Encode message
      */
     template<class MESSAGE_CONVERTER>
-    bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
+    bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        EncoderContext ctx(local);
+        EncoderContext ctx(v);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -65,11 +65,11 @@ namespace NanoPb {
      * Encode sub message
      */
     template<class MESSAGE_CONVERTER>
-    bool encodeSubMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local){
+    bool encodeSubMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        EncoderContext ctx(local);
+        EncoderContext ctx(v);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -79,13 +79,13 @@ namespace NanoPb {
      * Encode union message
      */
     template<class MESSAGE_CONVERTER>
-    bool encodeUnionMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& local, const pb_msgdesc_t* unionContainer){
+    bool encodeUnionMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& v, const pb_msgdesc_t* unionContainer){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
         pb_field_iter_t iter;
 
-        EncoderContext ctx(local);
+        EncoderContext ctx(v);
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         if (!pb_field_iter_begin(&iter, unionContainer, &proto))
@@ -108,11 +108,11 @@ namespace NanoPb {
      * Decode message from stream
      */
     template<class MESSAGE_CONVERTER>
-    bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
+    bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using DecoderContext = typename MESSAGE_CONVERTER::DecoderContext;
 
-        DecoderContext ctx(local);
+        DecoderContext ctx(v);
         ProtoType proto = MESSAGE_CONVERTER::decoderInit(ctx);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
@@ -126,22 +126,22 @@ namespace NanoPb {
      * Decode from buffer in memory
      */
     template<class MESSAGE_CONVERTER>
-    bool decode(const void* data, const pb_size_t dataSize, typename MESSAGE_CONVERTER::LocalType& local){
+    bool decode(const void* data, const pb_size_t dataSize, typename MESSAGE_CONVERTER::LocalType& v){
         pb_istream_t stream = pb_istream_from_buffer((pb_byte_t*)data, dataSize);
-        return decode<MESSAGE_CONVERTER>(stream, local);
+        return decode<MESSAGE_CONVERTER>(stream, v);
     }
 
     /**
      * Decode sub message
      */
     template<class MESSAGE_CONVERTER>
-    bool decodeSubMessage(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& local){
+    bool decodeSubMessage(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& v){
         pb_istream_t subStream;
 
         if (!pb_make_string_substream(&stream, &subStream))
             return false;
 
-        if (!decode<MESSAGE_CONVERTER>(subStream, local))
+        if (!decode<MESSAGE_CONVERTER>(subStream, v))
             return false;
 
         if (!pb_close_string_substream(&stream, &subStream))
@@ -181,12 +181,12 @@ namespace NanoPb {
             using ProtoType = PROTO_TYPE;
 
             struct EncoderContext {
-                const LocalType& local;
-                EncoderContext(const LocalType &local) : local(local) {}
+                const LocalType& v;
+                EncoderContext(const LocalType &v) : v(v) {}
             };
             struct DecoderContext {
-                LocalType& local;
-                DecoderContext(LocalType &local) : local(local) {}
+                LocalType& v;
+                DecoderContext(LocalType &v) : v(v) {}
             };
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
@@ -386,8 +386,8 @@ namespace NanoPb {
 
             static bool _decode(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
                 container.push_back(ContextItem());
-                ContextItem& localEntry = *container.rbegin();
-                if (!decode<ITEM_CONVERTER>(*stream, localEntry)){
+                ContextItem& v = *container.rbegin();
+                if (!decode<ITEM_CONVERTER>(*stream, v)){
                     return false;
                 }
                 return true;

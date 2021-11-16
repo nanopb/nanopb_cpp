@@ -46,19 +46,19 @@ class InnerMessageConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const EncoderContext & ctx) {
         return ProtoType{
-                .number = ctx.local.number,
-                .text = StringConverter::encoder(ctx.local.text)
+                .number = ctx.v.number,
+                .text = StringConverter::encoder(ctx.v.text)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .text = StringConverter::decoder(ctx.local.text)
+                .text = StringConverter::decoder(ctx.v.text)
         };
     }
 
     static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
-        ctx.local.number = proto.number;
+        ctx.v.number = proto.number;
         return true;
     }
 };

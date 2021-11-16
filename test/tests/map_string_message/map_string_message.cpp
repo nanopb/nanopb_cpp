@@ -85,13 +85,13 @@ private:
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .items = ItemsConverter::encoder(ctx.local.items)
+                .items = ItemsConverter::encoder(ctx.v.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoder(ctx.local.items)
+                .items = ItemsConverter::decoder(ctx.v.items)
         };
     }
 
