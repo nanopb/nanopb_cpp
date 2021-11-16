@@ -23,6 +23,8 @@ public:
             UnionInnerTwoConverter::DecoderContext msg2;
             UnionInnerThreeConverter::DecoderContext msg3;
 
+            MessageContexts(const MessageContexts&) = delete;
+            MessageContexts(MessageContexts&&) = default;
             MessageContexts(LOCAL_UnionInnerOne& msg1, LOCAL_UnionInnerTwo& msg2, LOCAL_UnionInnerThree& msg3) :
                     msg1(msg1), msg2(msg2), msg3(msg3)
             {}
