@@ -32,15 +32,15 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoderInit(ctx.v.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoderInit(ctx.values)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoderInit(ctx.v.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoderInit(ctx.values)
         };
     }
 

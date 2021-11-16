@@ -55,7 +55,7 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        EncoderContext ctx(v);
+        EncoderContext ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -69,7 +69,7 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
 
-        EncoderContext ctx(v);
+        EncoderContext ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -85,7 +85,7 @@ namespace NanoPb {
 
         pb_field_iter_t iter;
 
-        EncoderContext ctx(v);
+        EncoderContext ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         if (!pb_field_iter_begin(&iter, unionContainer, &proto))
@@ -112,7 +112,7 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using DecoderContext = typename MESSAGE_CONVERTER::DecoderContext;
 
-        DecoderContext ctx(v);
+        DecoderContext ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::decoderInit(ctx);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
@@ -181,20 +181,14 @@ namespace NanoPb {
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
-            struct EncoderContext {
-                const LocalType& v;
-                EncoderContext(const LocalType &v) : v(v) {}
-            };
-            struct DecoderContext {
-                LocalType& v;
-                DecoderContext(LocalType &v) : v(v) {}
-            };
+            using EncoderContext = const LocalType&;
+            using DecoderContext = LocalType&; // Can be overwritten in child class. See tests/converter_no_union.hpp for example
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
 
         public:  // Should be overwritten in child class
 
-            static ProtoType encoderInit(const EncoderContext& ctx);
+            static ProtoType encoderInit(EncoderContext& ctx);
             static ProtoType decoderInit(DecoderContext& ctx);
             static bool decoderApply(const ProtoType& proto, DecoderContext& ctx);
         };

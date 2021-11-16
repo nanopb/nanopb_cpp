@@ -98,9 +98,9 @@ class UnionInnerOneConverter : public AbstractMessageConverter<
         &PROTO_UnionInnerOne_msg>
 {
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
         return ProtoType {
-                .number = ctx.v.number
+                .number = ctx.number
         };
     }
 
@@ -110,7 +110,7 @@ public:
     }
 
     static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
-        ctx.v.number = proto.number;
+        ctx.number = proto.number;
         return true;
     }
 };
@@ -122,15 +122,15 @@ class UnionInnerTwoConverter : public AbstractMessageConverter<
         &PROTO_UnionInnerTwo_msg>
 {
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
         return ProtoType {
-                .str = StringConverter::encoderInit(ctx.v.str)
+                .str = StringConverter::encoderInit(ctx.str)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .str = StringConverter::decoderInit(ctx.v.str)
+                .str = StringConverter::decoderInit(ctx.str)
         };
     }
 
@@ -146,15 +146,15 @@ class UnionInnerThreeConverter : public AbstractMessageConverter<
         &PROTO_UnionInnerThree_msg>
 {
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
         return ProtoType {
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(ctx.v.values)
+                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(ctx.values)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(ctx.v.values)
+                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(ctx.values)
         };
     }
 

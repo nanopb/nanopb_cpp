@@ -27,15 +27,15 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
         return ProtoType{
-                .str = StringConverter::encoderInit(ctx.v.str)
+                .str = StringConverter::encoderInit(ctx.str)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .str = StringConverter::decoderInit(ctx.v.str)
+                .str = StringConverter::decoderInit(ctx.str)
         };
     }
 

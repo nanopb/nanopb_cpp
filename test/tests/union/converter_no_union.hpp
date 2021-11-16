@@ -12,7 +12,8 @@ class UnionContainerNoUnionConverter : public AbstractMessageConverter<
         &PROTO_UnionContainerNoUnion_msg>
 {
 public:
-    struct DecoderContext : public AbstractMessageConverter::DecoderContext {
+    struct DecoderContext {
+        LocalType& v;
         std::unique_ptr<LOCAL_UnionInnerOne> msg1;
         std::unique_ptr<LOCAL_UnionInnerTwo> msg2;
         std::unique_ptr<LOCAL_UnionInnerThree> msg3;
@@ -28,8 +29,9 @@ public:
         } messageContexts;
 
         DecoderContext(const DecoderContext&) = delete;
+        DecoderContext(DecoderContext&&) = default;
         DecoderContext(LocalType& v) :
-                AbstractMessageConverter::DecoderContext(v),
+                v(v),
                 msg1(new LOCAL_UnionInnerOne()),
                 msg2(new LOCAL_UnionInnerTwo()),
                 msg3(new LOCAL_UnionInnerThree()),
@@ -38,28 +40,28 @@ public:
         }
     };
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
 
         ProtoType ret {
-            .prefix = ctx.v.prefix,
-            .suffix = ctx.v.suffix
+            .prefix = ctx.prefix,
+            .suffix = ctx.suffix
         };
-        NANOPB_CPP_ASSERT(ctx.v.message);
-        if (!ctx.v.message) {
+        NANOPB_CPP_ASSERT(ctx.message);
+        if (!ctx.message) {
             return ret;
         }
-        switch (ctx.v.message->getType()) {
+        switch (ctx.message->getType()) {
             case LOCAL_InnerMessage::Type::UnionInnerOne:
                 ret.has_msg1 = true;
-                ret.msg1 = UnionInnerOneConverter::encoderInit(*ctx.v.message->as<LOCAL_UnionInnerOne>());
+                ret.msg1 = UnionInnerOneConverter::encoderInit(*ctx.message->as<LOCAL_UnionInnerOne>());
                 break;
             case LOCAL_InnerMessage::Type::UnionInnerTwo:
                 ret.has_msg2 = true;
-                ret.msg2 = UnionInnerTwoConverter::encoderInit(*ctx.v.message->as<LOCAL_UnionInnerTwo>());
+                ret.msg2 = UnionInnerTwoConverter::encoderInit(*ctx.message->as<LOCAL_UnionInnerTwo>());
                 break;
             case LOCAL_InnerMessage::Type::UnionInnerThree:
                 ret.has_msg3 = true;
-                ret.msg3 = UnionInnerThreeConverter::encoderInit(*ctx.v.message->as<LOCAL_UnionInnerThree>());
+                ret.msg3 = UnionInnerThreeConverter::encoderInit(*ctx.message->as<LOCAL_UnionInnerThree>());
                 break;
         }
         return ret;

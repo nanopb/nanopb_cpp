@@ -57,21 +57,21 @@ private:
     {};
 
 public:
-    static ProtoType encoderInit(const EncoderContext& ctx) {
+    static ProtoType encoderInit(EncoderContext& ctx) {
         return ProtoType{
-                .number = ctx.v.number,
-                .items = ItemsConverter::encoderInit(ctx.v.items)
+                .number = ctx.number,
+                .items = ItemsConverter::encoderInit(ctx.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoderInit(ctx.v.items)
+                .items = ItemsConverter::decoderInit(ctx.items)
         };
     }
 
     static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
-        ctx.v.number = proto.number;
+        ctx.number = proto.number;
         return true;
     }
 };
