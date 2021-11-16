@@ -40,13 +40,13 @@ private:
         static ProtoPairType itemEncoderInit(const ItemEncoderContext& ctx) {
             return ProtoPairType{
                     .key = ctx.key,
-                    .value = StringConverter::encoder(ctx.value)
+                    .value = StringConverter::encoderInit(ctx.value)
             };
         }
         static ProtoPairType itemDecoderInit(ItemDecoderContext& ctx){
             return ProtoPairType{
                     // no need to set key decoder because it is scalar type, not callback
-                    .value = StringConverter::decoder(ctx.value)
+                    .value = StringConverter::decoderInit(ctx.value)
             };
         }
         static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& ctx){
@@ -58,13 +58,13 @@ private:
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .items = SimpleItemsConverter::encoder(ctx.v.items)
+                .items = SimpleItemsConverter::encoderInit(ctx.v.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = SimpleItemsConverter::decoder(ctx.v.items)
+                .items = SimpleItemsConverter::decoderInit(ctx.v.items)
         };
     }
 

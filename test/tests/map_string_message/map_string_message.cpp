@@ -65,14 +65,14 @@ private:
     public:
         static ProtoPairType itemEncoderInit(const ItemEncoderContext& ctx) {
             return ProtoPairType{
-                    .key = StringConverter::encoder(ctx.key),
+                    .key = StringConverter::encoderInit(ctx.key),
                     .has_value = true,
                     .value = InnerMessageConverter::encoderInit(ctx.value),
             };
         }
         static ProtoPairType itemDecoderInit(ItemDecoderContext& ctx){
             return ProtoPairType{
-                    .key = StringConverter::decoder(ctx.key),
+                    .key = StringConverter::decoderInit(ctx.key),
                     .value = InnerMessageConverter::decoderInit(ctx.valueCtx)
             };
         }
@@ -85,13 +85,13 @@ private:
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .items = ItemsConverter::encoder(ctx.v.items)
+                .items = ItemsConverter::encoderInit(ctx.v.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoder(ctx.v.items)
+                .items = ItemsConverter::decoderInit(ctx.v.items)
         };
     }
 

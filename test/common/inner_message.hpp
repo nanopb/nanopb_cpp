@@ -47,13 +47,13 @@ public:
     static ProtoType encoderInit(const EncoderContext & ctx) {
         return ProtoType{
                 .number = ctx.v.number,
-                .text = StringConverter::encoder(ctx.v.text)
+                .text = StringConverter::encoderInit(ctx.v.text)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .text = StringConverter::decoder(ctx.v.text)
+                .text = StringConverter::decoderInit(ctx.v.text)
         };
     }
 

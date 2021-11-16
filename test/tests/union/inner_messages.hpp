@@ -124,13 +124,13 @@ class UnionInnerTwoConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType {
-                .str = StringConverter::encoder(ctx.v.str)
+                .str = StringConverter::encoderInit(ctx.v.str)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .str = StringConverter::decoder(ctx.v.str)
+                .str = StringConverter::decoderInit(ctx.v.str)
         };
     }
 
@@ -148,13 +148,13 @@ class UnionInnerThreeConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType {
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoder(ctx.v.values)
+                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(ctx.v.values)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoder(ctx.v.values)
+                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(ctx.v.values)
         };
     }
 

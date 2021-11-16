@@ -60,13 +60,13 @@ public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
                 .number = ctx.v.number,
-                .items = ItemsConverter::encoder(ctx.v.items)
+                .items = ItemsConverter::encoderInit(ctx.v.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ItemsConverter::decoder(ctx.v.items)
+                .items = ItemsConverter::decoderInit(ctx.v.items)
         };
     }
 

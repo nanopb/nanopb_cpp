@@ -208,8 +208,8 @@ namespace NanoPb {
         protected:
             using Context = CONTEXT;
         public:
-            static pb_callback_t encoder(const Context& ctx) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)&ctx }; }
-            static pb_callback_t decoder(Context& ctx) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)&ctx }; }
+            static pb_callback_t encoderInit(const Context& ctx) { return { .funcs = { .encode = _encodeCallback }, .arg = (void*)&ctx }; }
+            static pb_callback_t decoderInit(Context& ctx) { return { .funcs = { .decode = _decodeCallback }, .arg = (void*)&ctx }; }
 
         public:  // Should be overwritten in child class
 

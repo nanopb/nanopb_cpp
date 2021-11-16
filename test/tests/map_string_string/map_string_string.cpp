@@ -38,14 +38,14 @@ private:
     public:
         static ProtoPairType itemEncoderInit(const ItemEncoderContext& ctx) {
             return ProtoPairType{
-                    .key = StringConverter::encoder(ctx.key),
-                    .value = StringConverter::encoder(ctx.value)
+                    .key = StringConverter::encoderInit(ctx.key),
+                    .value = StringConverter::encoderInit(ctx.value)
             };
         }
         static ProtoPairType itemDecoderInit(ItemDecoderContext& ctx){
             return ProtoPairType{
-                    .key = StringConverter::decoder(ctx.key),
-                    .value = StringConverter::decoder(ctx.value)
+                    .key = StringConverter::decoderInit(ctx.key),
+                    .value = StringConverter::decoderInit(ctx.value)
             };
         }
         static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& ctx){
@@ -57,13 +57,13 @@ private:
 public:
     static ProtoType encoderInit(const EncoderContext& ctx) {
         return ProtoType{
-                .items = ValuesConverter::encoder(ctx.v.items)
+                .items = ValuesConverter::encoderInit(ctx.v.items)
         };
     }
 
     static ProtoType decoderInit(DecoderContext& ctx){
         return ProtoType{
-                .items = ValuesConverter::decoder(ctx.v.items)
+                .items = ValuesConverter::decoderInit(ctx.v.items)
         };
     }
 
