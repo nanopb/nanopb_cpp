@@ -174,6 +174,10 @@ namespace NanoPb {
 
         /**
          * Abstract message converter
+         *
+         *  EncoderContext/DecoderContext used as initializers inside NanoPb::decode().
+         *      This contexts can be overwritten for complicated types in child classed.
+         *      See tests/converter_no_union.hpp for example
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class AbstractMessageConverter {
@@ -182,15 +186,15 @@ namespace NanoPb {
             using ProtoType = PROTO_TYPE;
 
             using EncoderContext = const LocalType&;
-            using DecoderContext = LocalType&; // Can be overwritten in child class. See tests/converter_no_union.hpp for example
+            using DecoderContext = LocalType&;
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
 
         public:  // Should be overwritten in child class
 
-            static ProtoType encoderInit(EncoderContext& ctx);
-            static ProtoType decoderInit(DecoderContext& ctx);
-            static bool decoderApply(const ProtoType& proto, DecoderContext& ctx);
+            static ProtoType encoderInit(const LocalType& ctx);
+            static ProtoType decoderInit(LocalType& ctx);
+            static bool decoderApply(const ProtoType& proto, LocalType& ctx);
         };
 
         /**
@@ -391,6 +395,9 @@ namespace NanoPb {
 
         /**
          * Converter for map
+         *
+         *  ItemEncoderContext/ItemDecoderContext used as initializers inside NanoPb::decode().
+         *      This contexts can be overwritten for complicated types in child classed.
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class MapConverter : public AbstractCallbackConverter<

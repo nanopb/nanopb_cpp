@@ -42,7 +42,7 @@ public:
         }
     };
 public:
-    static ProtoType encoderInit(EncoderContext& ctx) {
+    static ProtoType encoderInit(const LocalType& ctx) {
 
         ProtoType ret {
             .prefix = ctx.prefix,

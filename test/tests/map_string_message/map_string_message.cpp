@@ -83,19 +83,19 @@ private:
     };
 
 public:
-    static ProtoType encoderInit(EncoderContext& ctx) {
+    static ProtoType encoderInit(const LocalType& ctx) {
         return ProtoType{
                 .items = ItemsConverter::encoderInit(ctx.items)
         };
     }
 
-    static ProtoType decoderInit(DecoderContext& ctx){
+    static ProtoType decoderInit(LocalType& ctx){
         return ProtoType{
                 .items = ItemsConverter::decoderInit(ctx.items)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, DecoderContext& ctx){
+    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
         return true;
     }
 };
