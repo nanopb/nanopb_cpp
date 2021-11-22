@@ -40,7 +40,7 @@ See [tests](test/tests) folder for the examples.
 
 * All C++ classes should have default constructor 
 * All C++ classes should have copy constructor or move constructor
-* Union messages are supported ony with `no_unions:true` option (see [union_message.options](test/common/union_message.options)) for the example.
+* Union messages are supported ony with `no_unions:true` option (see [union_message.options](test/tests/union/container_no_union.options)) for the example.
 
 
 [nanopb]: https://github.com/nanopb/nanopb
