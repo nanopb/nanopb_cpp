@@ -226,6 +226,7 @@ namespace NanoPb {
 
         /**
          * StringConverter
+         * Can be used to encode/decode string and bytes fields to/from std::string
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         public:
