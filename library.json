@@ -23,7 +23,6 @@
   },
   "srcDir": "",
   "srcFilter": [
-    "-<**>",
     "+<nanopb_cpp.cpp>"
   ],
   "examples": [
