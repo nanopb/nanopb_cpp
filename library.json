@@ -1,6 +1,6 @@
 {
   "name": "Nanopb_Cpp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": "protocol buffers, protobuf, google",
   "description": "Nanopb_Cpp is a wrapper to use Nanopb in C++ projects",
   "repository": {
@@ -18,10 +18,14 @@
       "test"
     ],
     "exclude": [
-      "test/cmake",
-      "**/CMakeLists.txt"
+      "test"
     ]
   },
+  "srcDir": "",
+  "srcFilter": [
+    "-<**>",
+    "+<nanopb_cpp.cpp>"
+  ],
   "examples": [
   ],
   "frameworks": "*",
