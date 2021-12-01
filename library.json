@@ -1,0 +1,29 @@
+{
+  "name": "Nanopb_Cpp",
+  "version": "0.1.0",
+  "keywords": "protocol buffers, protobuf, google",
+  "description": "Nanopb_Cpp is a wrapper to use Nanopb in C++ projects",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hacker-CB/nanopb_cpp"
+  },
+  "authors": [{
+    "name": "Pavel Sokolov",
+    "email": "pavel@sokolov.me"
+  }],
+  "export": {
+    "include": [
+      "*.cpp",
+      "*.h",
+      "test"
+    ],
+    "exclude": [
+      "test/cmake",
+      "**/CMakeLists.txt"
+    ]
+  },
+  "examples": [
+  ],
+  "frameworks": "*",
+  "platforms": "*"
+}
