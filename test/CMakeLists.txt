@@ -1,9 +1,6 @@
 
 option(NANOPB_CPP_ENABLE_TESTS_SANITIZE "Enable -fsanitize=address in tests" ON)
 
-
-option(NANOPB_ROOT "nanopb root dir")
-
 if (NOT NANOPB_ROOT)
     message(FATAL_ERROR "NANOPB_ROOT should be defined")
 endif()
