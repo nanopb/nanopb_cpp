@@ -40,5 +40,5 @@ if (BUILD_TESTS)
 endif()
 
 if (BUILD_EXAMPLES)
-    # FIXME: TODO
+    add_subdirectory(examples)
 endif()
