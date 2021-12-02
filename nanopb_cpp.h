@@ -168,8 +168,8 @@ namespace NanoPb {
 
         public:  // Should be overwritten in child class
 
-            static ProtoType encode(const LocalType& arg);
-            static LocalType decode(const ProtoType& arg);
+            static ProtoType encode(const LocalType& local);
+            static LocalType decode(const ProtoType& local);
         };
 
         /**
@@ -230,8 +230,8 @@ namespace NanoPb {
 
         public:  // Should be overwritten in child class
 
-            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
-            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
 
         private:
             static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
@@ -248,8 +248,8 @@ namespace NanoPb {
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         public:
-            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
-            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
         };
 
         /**
