@@ -2,7 +2,7 @@
 
 # NanoPb C++ 
 
-![ci](https://github.com/hacker-cb/nanopb_cpp/actions/workflows/ci/badge.svg)
+![ci](https://github.com/hacker-cb/nanopb_cpp/actions/workflows/ci.yaml/badge.svg)
 
 Extends C++ support for the [nanopb] and [protobuf].
 
