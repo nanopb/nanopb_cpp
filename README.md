@@ -8,12 +8,12 @@ Extends C++ support for the [nanopb].
 
 * Template-based classes with static methods for converters.
 * One-line call encode/decode for complicated messages.
-* Support for custom union inner message encode/decode with some [limitations](#limitations).
 
 ## Supported types:
 
 * `NanoPb::AbstractScalarConverter` - Basic scalar type like `enum`.
 * `NanoPb::AbstractMessageConverter` - Converter for messages.
+* `NanoPb::AbstractUnionMessageConverter` - Converter for union (oneof) messages.
 * `NanoPb::AbstractCallbackConverter` - Converter for callbacks.
 * `NanoPb::StringConverter` - Converter for variable size string, mapped to `std::string`.
 * `NanoPb::ArrayUnsignedConverter` - Repeated convertor for `std::vector<unsigned>` or `std::list<unsigned>` (Also support other signed types: `uint64_t`, `uint32_t`, etc).
@@ -40,7 +40,6 @@ See [tests](test/tests) folder for the examples.
 
 * All C++ classes should have default constructor 
 * All C++ classes should have copy constructor or move constructor
-* Union messages are supported ony with `no_unions:true` option (see [union_message.options](test/tests/union/container_no_union.options)) for the example.
 
 
 [nanopb]: https://github.com/nanopb/nanopb

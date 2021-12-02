@@ -4,7 +4,7 @@ import "inner_messages.proto";
 
 package PROTO;
 
-message UnionContainerNoUnion {
+message UnionContainer {
   int32 prefix = 1;
   oneof msg {
       UnionInnerOne msg1 = 10;
