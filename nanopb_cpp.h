@@ -53,9 +53,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool encode(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
+        using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
-        EncoderContext ctx = v;
+        const LocalType& ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -67,9 +67,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool encodeSubMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
+        using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
-        EncoderContext ctx = v;
+        const LocalType& ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
@@ -81,11 +81,11 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool encodeUnionMessage(pb_ostream_t &stream, const typename MESSAGE_CONVERTER::LocalType& v, const pb_msgdesc_t* unionContainer){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using EncoderContext = typename MESSAGE_CONVERTER::EncoderContext;
+        using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
         pb_field_iter_t iter;
 
-        EncoderContext ctx = v;
+        const LocalType& ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
 
         if (!pb_field_iter_begin(&iter, unionContainer, &proto))
@@ -110,9 +110,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using DecoderContext = typename MESSAGE_CONVERTER::DecoderContext;
+        using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
-        DecoderContext ctx = v;
+        LocalType& ctx = v;
         ProtoType proto = MESSAGE_CONVERTER::decoderInit(ctx);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
@@ -174,9 +174,6 @@ namespace NanoPb {
 
         /**
          * Abstract message converter
-         *
-         *  EncoderContext/DecoderContext used as initializers inside NanoPb::decode().
-         *      This contexts can be overwritten for complicated types in child classed.
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class AbstractMessageConverter {
@@ -184,8 +181,6 @@ namespace NanoPb {
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
-            using EncoderContext = const LocalType&; //FIXME: Remove, use LocalType&
-            using DecoderContext = LocalType&; //FIXME: Remove, use LocalType&
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
 
