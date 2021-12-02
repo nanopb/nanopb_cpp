@@ -428,25 +428,25 @@ namespace NanoPb {
             using ValueType = typename CONTAINER::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
 
-            struct ItemEncoderContext {
+            struct LocalPairConst {
                 const KeyType& key;
                 const ValueType& value;
-                ItemEncoderContext(const KeyType &key, const ValueType &value) : key(key), value(value) {}
+                LocalPairConst(const KeyType &key, const ValueType &value) : key(key), value(value) {}
             };
 
-            struct ItemDecoderContext {
+            struct LocalPair {
                 KeyType& key;
                 ValueType& value;
-                ItemDecoderContext(KeyType &key, ValueType &value) : key(key), value(value) {}
+                LocalPair(KeyType &key, ValueType &value) : key(key), value(value) {}
             };
         private:
             using ContextPairType = std::pair<KeyType,ValueType>;
 
         public:
 
-            static ProtoPairType itemEncoderInit(const ItemEncoderContext& localPair);
-            static ProtoPairType itemDecoderInit(ItemDecoderContext& localPair);
-            static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& localPair);
+            static ProtoPairType itemEncoderInit(const LocalPairConst& localPair);
+            static ProtoPairType itemDecoderInit(LocalPair& localPair);
+            static bool itemDecoderApply(const ProtoPairType& proto, LocalPair& localPair);
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
@@ -454,7 +454,7 @@ namespace NanoPb {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    typename CONVERTER::ItemEncoderContext localPair(pair.first, pair.second);
+                    typename CONVERTER::LocalPairConst localPair(pair.first, pair.second);
 
                     ProtoPairType protoPair = CONVERTER::itemEncoderInit(localPair);
 
@@ -468,7 +468,7 @@ namespace NanoPb {
                 KeyType key;
                 ValueType value;
 
-                typename CONVERTER::ItemDecoderContext localPair(key, value);
+                typename CONVERTER::LocalPair localPair(key, value);
 
                 ProtoPairType protoPair = CONVERTER::itemDecoderInit(localPair);
 
