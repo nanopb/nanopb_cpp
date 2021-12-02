@@ -444,9 +444,9 @@ namespace NanoPb {
 
         public:
 
-            static ProtoPairType itemEncoderInit(const ItemEncoderContext& local);
-            static ProtoPairType itemDecoderInit(ItemDecoderContext& local);
-            static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& local);
+            static ProtoPairType itemEncoderInit(const ItemEncoderContext& localPair);
+            static ProtoPairType itemDecoderInit(ItemDecoderContext& localPair);
+            static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& localPair);
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
