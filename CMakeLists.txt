@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
 project(nanopb_cpp)
 
-set(NANOPB_VERSION 0.4.5)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-include(CPM)
-
+#
+# Options
+#
+set(NANOPB_VERSION 0.4.5 CACHE FILEPATH "nanopb version")
 option(BUILD_SHARED "Build shared instead of static" OFF)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+include(CPM)
 
 # Custom nanopb location
 if (NANOPB_ROOT)
