@@ -169,7 +169,7 @@ namespace NanoPb {
         public:  // Should be overwritten in child class
 
             static ProtoType encode(const LocalType& local);
-            static LocalType decode(const ProtoType& local);
+            static LocalType decode(const ProtoType& proto);
         };
 
         /**

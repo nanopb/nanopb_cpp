@@ -21,8 +21,8 @@ public:
         }
         return ProtoSimpleEnum_Invalid;
     };
-    static LocalType decode(const ProtoType& local){
-        switch (local) {
+    static LocalType decode(const ProtoType& proto){
+        switch (proto) {
             case ProtoSimpleEnum_Invalid:
                 return SimpleEnum::Invalid;
             case ProtoSimpleEnum_ValueOne:
