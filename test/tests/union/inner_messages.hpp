@@ -98,19 +98,19 @@ class UnionInnerOneConverter : public AbstractMessageConverter<
         &PROTO_UnionInnerOne_msg>
 {
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .number = ctx.number
+                .number = local.number
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
-        ctx.number = proto.number;
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
+        local.number = proto.number;
         return true;
     }
 };
@@ -122,19 +122,19 @@ class UnionInnerTwoConverter : public AbstractMessageConverter<
         &PROTO_UnionInnerTwo_msg>
 {
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .str = StringConverter::encoderInit(ctx.str)
+                .str = StringConverter::encoderInit(local.str)
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .str = StringConverter::decoderInit(ctx.str)
+                .str = StringConverter::decoderInit(local.str)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
         return true;
     }
 };
@@ -146,19 +146,19 @@ class UnionInnerThreeConverter : public AbstractMessageConverter<
         &PROTO_UnionInnerThree_msg>
 {
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(ctx.values)
+                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(local.values)
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(ctx.values)
+                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(local.values)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
         return true;
     }
 };

@@ -32,19 +32,19 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoderInit(ctx.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::encoderInit(local.values)
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoderInit(ctx.values)
+                .values = ArrayUnsignedConverter<LOCAL_TestMessage::ContainerType>::decoderInit(local.values)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
         return true;
     }
 };

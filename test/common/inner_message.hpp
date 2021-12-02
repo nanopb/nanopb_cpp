@@ -44,21 +44,21 @@ class InnerMessageConverter : public AbstractMessageConverter<
         &PROTO_InnerMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .number = ctx.number,
-                .text = StringConverter::encoderInit(ctx.text)
+                .number = local.number,
+                .text = StringConverter::encoderInit(local.text)
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .text = StringConverter::decoderInit(ctx.text)
+                .text = StringConverter::decoderInit(local.text)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
-        ctx.number = proto.number;
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
+        local.number = proto.number;
         return true;
     }
 };

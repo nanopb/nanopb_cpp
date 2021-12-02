@@ -73,14 +73,14 @@ const pb_msgdesc_t *NanoPb::decodeUnionMessageType(pb_istream_t &stream, const p
     return NULL;
 }
 
-bool NanoPb::Converter::StringConverter::encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const Context &arg) {
+bool NanoPb::Converter::StringConverter::encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg) {
     NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING || PB_LTYPE(field->type) == PB_LTYPE_BYTES);
     if (!pb_encode_tag_for_field(stream, field))
         return false;
     return pb_encode_string(stream, (const pb_byte_t *) arg.c_str(), arg.size());
 }
 
-bool NanoPb::Converter::StringConverter::decodeCallback(pb_istream_t *stream, const pb_field_t *field, Context &arg) {
+bool NanoPb::Converter::StringConverter::decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &arg) {
     NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING || PB_LTYPE(field->type) == PB_LTYPE_BYTES);
     size_t len = stream->bytes_left;
     arg.resize(len);

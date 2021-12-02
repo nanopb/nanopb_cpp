@@ -27,19 +27,19 @@ class TestMessageConverter : public AbstractMessageConverter<
         &PROTO_TestMessage_msg>
 {
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .str = StringConverter::encoderInit(ctx.str)
+                .str = StringConverter::encoderInit(local.str)
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .str = StringConverter::decoderInit(ctx.str)
+                .str = StringConverter::decoderInit(local.str)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
         return true;
     }
 };

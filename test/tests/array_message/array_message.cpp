@@ -57,21 +57,21 @@ private:
     {};
 
 public:
-    static ProtoType encoderInit(const LocalType& ctx) {
+    static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .number = ctx.number,
-                .items = ItemsConverter::encoderInit(ctx.items)
+                .number = local.number,
+                .items = ItemsConverter::encoderInit(local.items)
         };
     }
 
-    static ProtoType decoderInit(LocalType& ctx){
+    static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .items = ItemsConverter::decoderInit(ctx.items)
+                .items = ItemsConverter::decoderInit(local.items)
         };
     }
 
-    static bool decoderApply(const ProtoType& proto, LocalType& ctx){
-        ctx.number = proto.number;
+    static bool decoderApply(const ProtoType& proto, LocalType& local){
+        local.number = proto.number;
         return true;
     }
 };

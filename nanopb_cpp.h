@@ -55,8 +55,8 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
-        const LocalType& ctx = v;
-        ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
+        const LocalType& local = v;
+        ProtoType proto = MESSAGE_CONVERTER::encoderInit(local);
 
         return pb_encode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
     }
@@ -69,8 +69,8 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
-        const LocalType& ctx = v;
-        ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
+        const LocalType& local = v;
+        ProtoType proto = MESSAGE_CONVERTER::encoderInit(local);
 
         return pb_encode_submessage(&stream, MESSAGE_CONVERTER::getMsgType(), &proto);
     }
@@ -85,8 +85,8 @@ namespace NanoPb {
 
         pb_field_iter_t iter;
 
-        const LocalType& ctx = v;
-        ProtoType proto = MESSAGE_CONVERTER::encoderInit(ctx);
+        const LocalType& local = v;
+        ProtoType proto = MESSAGE_CONVERTER::encoderInit(local);
 
         if (!pb_field_iter_begin(&iter, unionContainer, &proto))
             return false;
@@ -112,12 +112,12 @@ namespace NanoPb {
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
         using LocalType = typename MESSAGE_CONVERTER::LocalType;
 
-        LocalType& ctx = v;
-        ProtoType proto = MESSAGE_CONVERTER::decoderInit(ctx);
+        LocalType& local = v;
+        ProtoType proto = MESSAGE_CONVERTER::decoderInit(local);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
             return false;
-        if (!MESSAGE_CONVERTER::decoderApply(proto, ctx))
+        if (!MESSAGE_CONVERTER::decoderApply(proto, local))
             return false;
         return true;
     }
@@ -186,9 +186,9 @@ namespace NanoPb {
 
         public:  // Should be overwritten in child class
 
-            static ProtoType encoderInit(const LocalType& ctx);
-            static ProtoType decoderInit(LocalType& ctx);
-            static bool decoderApply(const ProtoType& proto, LocalType& ctx);
+            static ProtoType encoderInit(const LocalType& local);
+            static ProtoType decoderInit(LocalType& local);
+            static bool decoderApply(const ProtoType& proto, LocalType& local);
         };
 
         /**
@@ -200,14 +200,14 @@ namespace NanoPb {
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
-            static pb_callback_t unionDecoderInit(LocalType& ctx) { return pb_callback_t{ .funcs = { .decode = _unionDecodeCallback }, .arg = (void*)&ctx }; }
+            static pb_callback_t unionDecoderInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _unionDecodeCallback }, .arg = (void*)&local }; }
 
         public:  // Should be overwritten in child class
 
-            static ProtoType encoderInit(const LocalType& ctx);
-            static ProtoType decoderInit(LocalType& ctx);
-            static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &ctx);
-            static bool decoderApply(const ProtoType& proto, LocalType& ctx);
+            static ProtoType encoderInit(const LocalType& local);
+            static ProtoType decoderInit(LocalType& local);
+            static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
+            static bool decoderApply(const ProtoType& proto, LocalType& local);
 
         private:
             static bool _unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
@@ -220,25 +220,25 @@ namespace NanoPb {
          *
          *  See StringConverter for the example implementation
          */
-        template<class CONVERTER, class CONTEXT>
+        template<class CONVERTER, class LOCAL_TYPE>
         class AbstractCallbackConverter {
         protected:
-            using Context = CONTEXT;
+            using LocalType = LOCAL_TYPE;
         public:
-            static pb_callback_t encoderInit(const Context& ctx) { return pb_callback_t{ .funcs = { .encode = _encodeCallback }, .arg = (void*)&ctx }; }
-            static pb_callback_t decoderInit(Context& ctx) { return pb_callback_t{ .funcs = { .decode = _decodeCallback }, .arg = (void*)&ctx }; }
+            static pb_callback_t encoderInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _encodeCallback }, .arg = (void*)&local }; }
+            static pb_callback_t decoderInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _decodeCallback }, .arg = (void*)&local }; }
 
         public:  // Should be overwritten in child class
 
-            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
-            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, Context &arg);
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
 
         private:
             static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return CONVERTER::encodeCallback(stream, field, *(static_cast<const Context *>(*arg)));
+                return CONVERTER::encodeCallback(stream, field, *(static_cast<const LocalType *>(*arg)));
             };
             static bool _decodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::decodeCallback(stream, field, *(static_cast<Context *>(*arg)));
+                return CONVERTER::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
             };
         };
 
@@ -248,8 +248,8 @@ namespace NanoPb {
          */
         class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
         public:
-            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const Context &arg);
-            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, Context &arg);
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &arg);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &arg);
         };
 
         /**
@@ -444,9 +444,9 @@ namespace NanoPb {
 
         public:
 
-            static ProtoPairType itemEncoderInit(const ItemEncoderContext& ctx);
-            static ProtoPairType itemDecoderInit(ItemDecoderContext& ctx);
-            static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& ctx);
+            static ProtoPairType itemEncoderInit(const ItemEncoderContext& local);
+            static ProtoPairType itemDecoderInit(ItemDecoderContext& local);
+            static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& local);
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
@@ -454,9 +454,9 @@ namespace NanoPb {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    typename CONVERTER::ItemEncoderContext ctx(pair.first, pair.second);
+                    typename CONVERTER::ItemEncoderContext localPair(pair.first, pair.second);
 
-                    ProtoPairType protoPair = CONVERTER::itemEncoderInit(ctx);
+                    ProtoPairType protoPair = CONVERTER::itemEncoderInit(localPair);
 
                     if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                         return false;
@@ -468,13 +468,13 @@ namespace NanoPb {
                 KeyType key;
                 ValueType value;
 
-                typename CONVERTER::ItemDecoderContext ctx(key, value);
+                typename CONVERTER::ItemDecoderContext localPair(key, value);
 
-                ProtoPairType protoPair = CONVERTER::itemDecoderInit(ctx);
+                ProtoPairType protoPair = CONVERTER::itemDecoderInit(localPair);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                if (!CONVERTER::itemDecoderApply(protoPair, ctx))
+                if (!CONVERTER::itemDecoderApply(protoPair, localPair))
                     return false;
 
                 container.insert(std::move(ContextPairType(std::move(key), std::move(value))));
