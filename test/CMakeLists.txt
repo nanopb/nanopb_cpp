@@ -1,13 +1,7 @@
 
 option(NANOPB_CPP_ENABLE_TESTS_SANITIZE "Enable -fsanitize=address in tests" ON)
 
-if (NOT NANOPB_ROOT)
-    message(FATAL_ERROR "NANOPB_ROOT should be defined")
-endif()
-
-
 list(APPEND CMAKE_MODULE_PATH
-        CMAKE_MODULE_PATH ${NANOPB_ROOT}/extra
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake
         )
 

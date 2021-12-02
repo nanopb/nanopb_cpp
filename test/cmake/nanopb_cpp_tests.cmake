@@ -44,7 +44,7 @@ function(nanopb_cpp_add_test TEST)
     target_include_directories(${EXECUTABLE} PRIVATE
             ${TEST_FOLDER}
             ${TEST_COMMON_DIR}
-            ${NANOPB_ROOT}
+            ${lib_nanopb_SOURCE_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}
             )
 
