@@ -18,8 +18,6 @@ if (NANOPB_ROOT)
     set(CPM_lib_nanopb_SOURCE ${NANOPB_ROOT})
 endif()
 
-set(NANOPB_CPP_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
 CPMAddPackage(NAME lib_nanopb GITHUB_REPOSITORY nanopb/nanopb GIT_TAG ${NANOPB_VERSION} DOWNLOAD_ONLY YES)
 set(NANOPB_ROOT ${lib_nanopb_SOURCE_DIR})
 
