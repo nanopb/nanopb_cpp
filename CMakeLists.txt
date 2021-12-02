@@ -4,7 +4,7 @@ project(nanopb_cpp)
 #
 # Options
 #
-set(NANOPB_VERSION 0.4.5 CACHE FILEPATH "nanopb version")
+set(NANOPB_VERSION 0.4.5 CACHE STRING "nanopb version")
 option(BUILD_SHARED "Build shared instead of static" OFF)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
