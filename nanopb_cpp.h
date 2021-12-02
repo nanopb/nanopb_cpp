@@ -177,7 +177,6 @@ namespace NanoPb {
          *
          *  EncoderContext/DecoderContext used as initializers inside NanoPb::decode().
          *      This contexts can be overwritten for complicated types in child classed.
-         *      See tests/converter_no_union.hpp for example
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class AbstractMessageConverter {
@@ -185,8 +184,8 @@ namespace NanoPb {
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
-            using EncoderContext = const LocalType&;
-            using DecoderContext = LocalType&;
+            using EncoderContext = const LocalType&; //FIXME: Remove, use LocalType&
+            using DecoderContext = LocalType&; //FIXME: Remove, use LocalType&
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
 
@@ -195,6 +194,30 @@ namespace NanoPb {
             static ProtoType encoderInit(const LocalType& ctx);
             static ProtoType decoderInit(LocalType& ctx);
             static bool decoderApply(const ProtoType& proto, LocalType& ctx);
+        };
+
+        /**
+         * Abstract union message converter
+         */
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
+        class AbstractUnionMessageConverter : public AbstractMessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
+        public:
+            using LocalType = LOCAL_TYPE;
+            using ProtoType = PROTO_TYPE;
+
+            static pb_callback_t unionDecoderInit(LocalType& ctx) { return pb_callback_t{ .funcs = { .decode = _unionDecodeCallback }, .arg = (void*)&ctx }; }
+
+        public:  // Should be overwritten in child class
+
+            static ProtoType encoderInit(const LocalType& ctx);
+            static ProtoType decoderInit(LocalType& ctx);
+            static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &ctx);
+            static bool decoderApply(const ProtoType& proto, LocalType& ctx);
+
+        private:
+            static bool _unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
+                return CONVERTER::unionDecodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
+            }
         };
 
         /**
