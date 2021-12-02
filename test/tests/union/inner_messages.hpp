@@ -91,7 +91,7 @@ struct LOCAL_UnionInnerThree : public LOCAL_InnerMessage {
 
 /******************************************************************************************/
 
-class UnionInnerOneConverter : public AbstractMessageConverter<
+class UnionInnerOneConverter : public MessageConverter<
         UnionInnerOneConverter,
         LOCAL_UnionInnerOne,
         PROTO_UnionInnerOne,
@@ -115,7 +115,7 @@ public:
     }
 };
 
-class UnionInnerTwoConverter : public AbstractMessageConverter<
+class UnionInnerTwoConverter : public MessageConverter<
         UnionInnerTwoConverter,
         LOCAL_UnionInnerTwo,
         PROTO_UnionInnerTwo,
@@ -124,13 +124,13 @@ class UnionInnerTwoConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .str = StringConverter::encoderInit(local.str)
+                .str = StringCallbackConverter::encoderInit(local.str)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .str = StringConverter::decoderInit(local.str)
+                .str = StringCallbackConverter::decoderInit(local.str)
         };
     }
 
@@ -139,7 +139,7 @@ public:
     }
 };
 
-class UnionInnerThreeConverter : public AbstractMessageConverter<
+class UnionInnerThreeConverter : public MessageConverter<
         UnionInnerThreeConverter,
         LOCAL_UnionInnerThree,
         PROTO_UnionInnerThree,
@@ -148,13 +148,13 @@ class UnionInnerThreeConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(local.values)
+                .values = ArrayUnsignedCallbackConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayUnsignedConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(local.values)
+                .values = ArrayUnsignedCallbackConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderInit(local.values)
         };
     }
 

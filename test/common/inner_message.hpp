@@ -37,7 +37,7 @@ struct LOCAL_InnerMessage {
     }
 };
 
-class InnerMessageConverter : public AbstractMessageConverter<
+class InnerMessageConverter : public MessageConverter<
         InnerMessageConverter,
         LOCAL_InnerMessage,
         PROTO_InnerMessage,
@@ -47,13 +47,13 @@ public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,
-                .text = StringConverter::encoderInit(local.text)
+                .text = StringCallbackConverter::encoderInit(local.text)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .text = StringConverter::decoderInit(local.text)
+                .text = StringCallbackConverter::decoderInit(local.text)
         };
     }
 

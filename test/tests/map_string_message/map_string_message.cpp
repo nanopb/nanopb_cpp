@@ -41,14 +41,14 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public AbstractMessageConverter<
+class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
         LOCAL_TestMessage,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {
 private:
-    class ItemsConverter : public MapConverter<
+    class ItemsConverter : public MapCallbackConverter<
             ItemsConverter,
             LOCAL_TestMessage::MapType,
             PROTO_TestMessage_ItemsEntry,
@@ -57,14 +57,14 @@ private:
     public:
         static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
-                    .key = StringConverter::encoderInit(localKey),
+                    .key = StringCallbackConverter::encoderInit(localKey),
                     .has_value = true,
                     .value = InnerMessageConverter::encoderInit(localValue),
             };
         }
         static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
-                    .key = StringConverter::decoderInit(localKey),
+                    .key = StringCallbackConverter::decoderInit(localKey),
                     .value = InnerMessageConverter::decoderInit(localValue)
             };
         }

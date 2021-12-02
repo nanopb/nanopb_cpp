@@ -25,7 +25,7 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public AbstractMessageConverter<
+class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
         LOCAL_TestMessage,
         PROTO_TestMessage,
@@ -34,13 +34,13 @@ class TestMessageConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::encoderInit(local.values)
+                .values = ArrayStringCallbackConverter<LOCAL_TestMessage::ContainerType>::encoderInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayStringConverter<LOCAL_TestMessage::ContainerType>::decoderInit(local.values)
+                .values = ArrayStringCallbackConverter<LOCAL_TestMessage::ContainerType>::decoderInit(local.values)
         };
     }
 

@@ -43,14 +43,14 @@ struct LOCAL_OuterMessage {
     }
 };
 
-class OuterMessageConverter : public AbstractMessageConverter<
+class OuterMessageConverter : public MessageConverter<
         OuterMessageConverter,
         LOCAL_OuterMessage,
         PROTO_OuterMessage,
         &PROTO_OuterMessage_msg>
 {
 private:
-    class ItemsConverter : public ArrayMessageConverter<
+    class ItemsConverter : public ArrayMessageCallbackConverter<
             ItemsConverter,
             LOCAL_OuterMessage::ItemsContainer ,
             InnerMessageConverter>

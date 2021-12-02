@@ -20,7 +20,7 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public AbstractMessageConverter<
+class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
         LOCAL_TestMessage,
         PROTO_TestMessage,
@@ -29,13 +29,13 @@ class TestMessageConverter : public AbstractMessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .str = StringConverter::encoderInit(local.str)
+                .str = StringCallbackConverter::encoderInit(local.str)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .str = StringConverter::decoderInit(local.str)
+                .str = StringCallbackConverter::decoderInit(local.str)
         };
     }
 

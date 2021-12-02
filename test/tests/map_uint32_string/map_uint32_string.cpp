@@ -23,14 +23,14 @@ struct LOCAL_TestMessage {
     }
 };
 
-class TestMessageConverter : public AbstractMessageConverter<
+class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
         LOCAL_TestMessage,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {
 private:
-    class SimpleItemsConverter : public MapConverter<
+    class SimpleItemsConverter : public MapCallbackConverter<
             SimpleItemsConverter,
             LOCAL_TestMessage::SimpleMapType,
             PROTO_TestMessage_ItemsEntry,
@@ -40,13 +40,13 @@ private:
         static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
                     .key = localKey,
-                    .value = StringConverter::encoderInit(localValue)
+                    .value = StringCallbackConverter::encoderInit(localValue)
             };
         }
         static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
                     // no need to set key decoder because it is scalar type, not callback
-                    .value = StringConverter::decoderInit(localValue)
+                    .value = StringCallbackConverter::decoderInit(localValue)
             };
         }
         static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){

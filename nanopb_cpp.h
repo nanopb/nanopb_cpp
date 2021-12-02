@@ -218,7 +218,7 @@ namespace NanoPb {
         /**
          * Abstract Callback converter
          *
-         *  See StringConverter for the example implementation
+         *  See StringCallbackConverter for the example implementation
          */
         template<class CONVERTER, class LOCAL_TYPE>
         class CallbackConverter {
@@ -243,7 +243,7 @@ namespace NanoPb {
         };
 
         /**
-         * StringConverter
+         * StringCallbackConverter
          * Can be used to encode/decode string and bytes fields to/from std::string
          */
         class StringCallbackConverter : public CallbackConverter<StringCallbackConverter, std::string> {

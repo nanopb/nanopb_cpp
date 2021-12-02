@@ -5,7 +5,7 @@
 
 using namespace NanoPb::Converter;
 
-class UnionContainerNoUnionConverter : public AbstractUnionMessageConverter<
+class UnionContainerNoUnionConverter : public UnionMessageConverter<
         UnionContainerNoUnionConverter,
         LOCAL_UnionContainer,
         PROTO_UnionContainer,
