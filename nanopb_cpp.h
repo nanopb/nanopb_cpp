@@ -161,7 +161,7 @@ namespace NanoPb {
          * Abstract converter for basic scalar types like enum
          */
         template<class LOCAL_TYPE, class PROTO_TYPE>
-        class AbstractScalarConverter {
+        class ScalarConverter {
         protected:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
@@ -176,7 +176,7 @@ namespace NanoPb {
          * Abstract message converter
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class AbstractMessageConverter {
+        class MessageConverter {
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
@@ -195,7 +195,7 @@ namespace NanoPb {
          * Abstract union message converter
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class AbstractUnionMessageConverter : public AbstractMessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
+        class UnionMessageConverter : public MessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
@@ -221,7 +221,7 @@ namespace NanoPb {
          *  See StringConverter for the example implementation
          */
         template<class CONVERTER, class LOCAL_TYPE>
-        class AbstractCallbackConverter {
+        class CallbackConverter {
         protected:
             using LocalType = LOCAL_TYPE;
         public:
@@ -246,7 +246,7 @@ namespace NanoPb {
          * StringConverter
          * Can be used to encode/decode string and bytes fields to/from std::string
          */
-        class StringConverter : public AbstractCallbackConverter<StringConverter, std::string> {
+        class StringCallbackConverter : public CallbackConverter<StringCallbackConverter, std::string> {
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
@@ -256,7 +256,7 @@ namespace NanoPb {
          * Abstract repeated converter
          */
         template<class CONVERTER, class CONTAINER>
-        class AbstractRepeatedConverter : public AbstractCallbackConverter<AbstractRepeatedConverter<CONVERTER, CONTAINER>,CONTAINER> {
+        class RepeatedCallbackConverter : public CallbackConverter<RepeatedCallbackConverter<CONVERTER, CONTAINER>,CONTAINER> {
         private:
             using ValueType = typename CONTAINER::value_type;
         public:
@@ -288,7 +288,7 @@ namespace NanoPb {
          * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
          */
         template<class CONTAINER>
-        class ArrayUnsignedConverter  : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
+        class ArrayUnsignedCallbackConverter  : public RepeatedCallbackConverter<ArrayUnsignedCallbackConverter<CONTAINER>,CONTAINER> {
         private:
             using UnsignedType = typename CONTAINER::value_type;
         public:
@@ -328,7 +328,7 @@ namespace NanoPb {
          * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
          */
         template<class CONTAINER>
-        class ArraySignedConverter : public AbstractRepeatedConverter<ArrayUnsignedConverter<CONTAINER>,CONTAINER> {
+        class ArraySignedCallbackConverter : public RepeatedCallbackConverter<ArrayUnsignedCallbackConverter<CONTAINER>,CONTAINER> {
         private:
             using SignedType = typename CONTAINER::value_type;
         public:
@@ -364,15 +364,15 @@ namespace NanoPb {
          * @tparam CONTAINER - can be std::vector<std::string> or std::list<std::string>
          */
         template<class CONTAINER>
-        class ArrayStringConverter : public AbstractRepeatedConverter<ArrayStringConverter<CONTAINER>,CONTAINER> {
+        class ArrayStringCallbackConverter : public RepeatedCallbackConverter<ArrayStringCallbackConverter<CONTAINER>,CONTAINER> {
         public:
             static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const std::string& str){
-                return StringConverter::encodeCallback(stream, field, str);
+                return StringCallbackConverter::encodeCallback(stream, field, str);
             }
 
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
                 std::string str;
-                if  (!StringConverter::decodeCallback(stream, field, str))
+                if  (!StringCallbackConverter::decodeCallback(stream, field, str))
                     return false;
                 container.push_back(str);
                 return true;
@@ -383,8 +383,8 @@ namespace NanoPb {
          * Converter for vector/list
          */
         template<class CONVERTER, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
-        class ArrayMessageConverter : public AbstractCallbackConverter<
-                ArrayMessageConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
+        class ArrayMessageCallbackConverter : public CallbackConverter<
+                ArrayMessageCallbackConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
                 CONTEXT_CONTAINER>
         {
         private:
@@ -416,8 +416,8 @@ namespace NanoPb {
          * Converter for map
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
-        class MapConverter : public AbstractCallbackConverter<
-                MapConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
+        class MapCallbackConverter : public CallbackConverter<
+                MapCallbackConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                 CONTAINER>
         {
         protected:
