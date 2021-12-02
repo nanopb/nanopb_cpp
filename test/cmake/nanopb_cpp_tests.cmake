@@ -39,13 +39,13 @@ function(nanopb_cpp_add_test TEST)
 
     add_executable(${EXECUTABLE}
             ${TEST_SOURCES}
-            ${PROJECT_SOURCE_DIR}/nanopb_cpp.cpp
+            ${NANOPB_CPP_ROOT}/nanopb_cpp.cpp
             )
 
     target_include_directories(${EXECUTABLE} PRIVATE
             ${TEST_FOLDER}
-            ${PROJECT_SOURCE_DIR}
             ${TEST_COMMON_DIR}
+            ${NANOPB_CPP_ROOT}
             ${NANOPB_ROOT}
             ${CMAKE_CURRENT_BINARY_DIR}
             )

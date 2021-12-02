@@ -26,13 +26,6 @@ jobs:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v2.3.4
 
-      - name: ⤵️ Check out nanopb
-        uses: actions/checkout@v2.3.4
-        with:
-          repository: nanopb/nanopb
-          ref: nanopb-0.4.5
-          path: 'nanopb_src'
-
       - name: Installing dependencies for local act
         if: ${{ env.ACT }}
         run: |
@@ -47,20 +40,16 @@ jobs:
       - name: Setup build vars
         run: |
           echo '::set-output name=BUILD_DIR::${{ matrix.config.dir }}'
-          echo '::set-output name=NANOPB_ROOT::'$(pwd)'/nanopb_src'
         id: build_vars
 
       - name: 🏗 Configure
         shell: bash
         run: |
           mkdir ${{ steps.build_vars.outputs.BUILD_DIR }}
-          echo "ROOT: ${{ steps.build_vars.outputs.NANOPB_ROOT }}"
-          ls ${{ steps.build_vars.outputs.NANOPB_ROOT }}
           cmake \
             -S . \
             -B ${{ steps.build_vars.outputs.BUILD_DIR }} \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            -DNANOPB_ROOT="${{ steps.build_vars.outputs.NANOPB_ROOT }}"
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
 
       - name: 🚀 Build
         shell: bash
