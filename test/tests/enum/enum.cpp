@@ -8,26 +8,26 @@ enum class SimpleEnum {
 };
 
 
-class SimpleEnumConverter: public NanoPb::Converter::AbstractScalarConverter<SimpleEnum, ProtoSimpleEnum> {
+class SimpleEnumConverter: public NanoPb::Converter::AbstractScalarConverter<SimpleEnum, PROTO_SimpleEnum> {
 public:
     static ProtoType encode(const LocalType& local){
         switch (local) {
             case SimpleEnum::Invalid:
-                return ProtoSimpleEnum_Invalid;
+                return PROTO_SimpleEnum_Invalid;
             case SimpleEnum::ValueOne:
-                return ProtoSimpleEnum_ValueOne;
+                return PROTO_SimpleEnum_ValueOne;
             case SimpleEnum::ValueTwo:
-                return ProtoSimpleEnum_ValueTwo;
+                return PROTO_SimpleEnum_ValueTwo;
         }
-        return ProtoSimpleEnum_Invalid;
+        return PROTO_SimpleEnum_Invalid;
     };
     static LocalType decode(const ProtoType& proto){
         switch (proto) {
-            case ProtoSimpleEnum_Invalid:
+            case PROTO_SimpleEnum_Invalid:
                 return SimpleEnum::Invalid;
-            case ProtoSimpleEnum_ValueOne:
+            case PROTO_SimpleEnum_ValueOne:
                 return SimpleEnum::ValueOne;
-            case ProtoSimpleEnum_ValueTwo:
+            case PROTO_SimpleEnum_ValueTwo:
                 return SimpleEnum::ValueTwo;
         }
         return SimpleEnum::Invalid;
@@ -35,7 +35,7 @@ public:
 
 };
 
-int testEnumItem(SimpleEnum local, ProtoSimpleEnum proto){
+int testEnumItem(SimpleEnum local, PROTO_SimpleEnum proto){
     int status = 0;
 
     auto localToProto = SimpleEnumConverter::encode(local);
@@ -53,9 +53,9 @@ int testEnumItem(SimpleEnum local, ProtoSimpleEnum proto){
 int main() {
     int status = 0;
 
-    status |= testEnumItem(SimpleEnum::Invalid,ProtoSimpleEnum_Invalid);
-    status |= testEnumItem(SimpleEnum::ValueOne,ProtoSimpleEnum_ValueOne);
-    status |= testEnumItem(SimpleEnum::ValueTwo,ProtoSimpleEnum_ValueTwo);
+    status |= testEnumItem(SimpleEnum::Invalid,PROTO_SimpleEnum_Invalid);
+    status |= testEnumItem(SimpleEnum::ValueOne,PROTO_SimpleEnum_ValueOne);
+    status |= testEnumItem(SimpleEnum::ValueTwo,PROTO_SimpleEnum_ValueTwo);
 
 
     return status;
