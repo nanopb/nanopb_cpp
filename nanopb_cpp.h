@@ -414,9 +414,6 @@ namespace NanoPb {
 
         /**
          * Converter for map
-         *
-         *  ItemEncoderContext/ItemDecoderContext used as initializers inside NanoPb::decode().
-         *      This contexts can be overwritten for complicated types in child classed.
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class MapConverter : public AbstractCallbackConverter<
