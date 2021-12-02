@@ -36,19 +36,19 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-        static ProtoPairType itemEncoderInit(const ItemEncoderContext& localPair) {
+        static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
-                    .key = StringConverter::encoderInit(localPair.key),
-                    .value = StringConverter::encoderInit(localPair.value)
+                    .key = StringConverter::encoderInit(localKey),
+                    .value = StringConverter::encoderInit(localValue)
             };
         }
-        static ProtoPairType itemDecoderInit(ItemDecoderContext& localPair){
+        static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
-                    .key = StringConverter::decoderInit(localPair.key),
-                    .value = StringConverter::decoderInit(localPair.value)
+                    .key = StringConverter::decoderInit(localKey),
+                    .value = StringConverter::decoderInit(localValue)
             };
         }
-        static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& localPair){
+        static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){
             //nothing to apply
             return true;
         }

@@ -424,29 +424,18 @@ namespace NanoPb {
                 CONTAINER>
         {
         protected:
-            using KeyType = typename CONTAINER::key_type;
-            using ValueType = typename CONTAINER::mapped_type;
+            using LocalKeyType = typename CONTAINER::key_type;
+            using LocalValueType = typename CONTAINER::mapped_type;
             using ProtoPairType = PROTO_PAIR_TYPE;
 
-            struct LocalPairConst {
-                const KeyType& key;
-                const ValueType& value;
-                LocalPairConst(const KeyType &key, const ValueType &value) : key(key), value(value) {}
-            };
-
-            struct LocalPair {
-                KeyType& key;
-                ValueType& value;
-                LocalPair(KeyType &key, ValueType &value) : key(key), value(value) {}
-            };
         private:
-            using ContextPairType = std::pair<KeyType,ValueType>;
+            using ContextPairType = std::pair<LocalKeyType,LocalValueType>;
 
         public:
 
-            static ProtoPairType itemEncoderInit(const LocalPairConst& localPair);
-            static ProtoPairType itemDecoderInit(LocalPair& localPair);
-            static bool itemDecoderApply(const ProtoPairType& proto, LocalPair& localPair);
+            static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue);
+            static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue);
+            static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue);
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
@@ -454,9 +443,10 @@ namespace NanoPb {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
 
-                    typename CONVERTER::LocalPairConst localPair(pair.first, pair.second);
+                    const LocalKeyType& localKey = pair.first;
+                    const LocalValueType& localValue = pair.second;
 
-                    ProtoPairType protoPair = CONVERTER::itemEncoderInit(localPair);
+                    ProtoPairType protoPair = CONVERTER::itemEncoderInit(localKey, localValue);
 
                     if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                         return false;
@@ -465,19 +455,17 @@ namespace NanoPb {
             }
 
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
-                KeyType key;
-                ValueType value;
+                LocalKeyType localKey;
+                LocalValueType localValue;
 
-                typename CONVERTER::LocalPair localPair(key, value);
-
-                ProtoPairType protoPair = CONVERTER::itemDecoderInit(localPair);
+                ProtoPairType protoPair = CONVERTER::itemDecoderInit(localKey, localValue);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                if (!CONVERTER::itemDecoderApply(protoPair, localPair))
+                if (!CONVERTER::itemDecoderApply(protoPair, localKey, localValue))
                     return false;
 
-                container.insert(std::move(ContextPairType(std::move(key), std::move(value))));
+                container.insert(std::move(ContextPairType(std::move(localKey), std::move(localValue))));
                 return true;
             }
 

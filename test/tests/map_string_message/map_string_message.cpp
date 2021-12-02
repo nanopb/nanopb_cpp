@@ -55,21 +55,21 @@ private:
             &PROTO_TestMessage_ItemsEntry_msg>
     {
     public:
-        static ProtoPairType itemEncoderInit(const ItemEncoderContext& localPair) {
+        static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
-                    .key = StringConverter::encoderInit(localPair.key),
+                    .key = StringConverter::encoderInit(localKey),
                     .has_value = true,
-                    .value = InnerMessageConverter::encoderInit(localPair.value),
+                    .value = InnerMessageConverter::encoderInit(localValue),
             };
         }
-        static ProtoPairType itemDecoderInit(ItemDecoderContext& localPair){
+        static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
-                    .key = StringConverter::decoderInit(localPair.key),
-                    .value = InnerMessageConverter::decoderInit(localPair.value)
+                    .key = StringConverter::decoderInit(localKey),
+                    .value = InnerMessageConverter::decoderInit(localValue)
             };
         }
-        static bool itemDecoderApply(const ProtoPairType& proto, ItemDecoderContext& localPair){
-            InnerMessageConverter::decoderApply(proto.value, localPair.value);
+        static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){
+            InnerMessageConverter::decoderApply(proto.value, localValue);
             return true;
         }
     };
