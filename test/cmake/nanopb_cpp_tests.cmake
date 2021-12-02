@@ -39,16 +39,16 @@ function(nanopb_cpp_add_test TEST)
 
     add_executable(${EXECUTABLE}
             ${TEST_SOURCES}
-            ${NANOPB_CPP_ROOT}/nanopb_cpp.cpp
             )
 
     target_include_directories(${EXECUTABLE} PRIVATE
             ${TEST_FOLDER}
             ${TEST_COMMON_DIR}
-            ${NANOPB_CPP_ROOT}
             ${NANOPB_ROOT}
             ${CMAKE_CURRENT_BINARY_DIR}
             )
+
+    target_link_libraries(${EXECUTABLE} nanopb_cpp)
 
     if (NANOPB_CPP_ENABLE_TESTS_SANITIZE)
         target_link_libraries(${EXECUTABLE}  -fsanitize=address)
