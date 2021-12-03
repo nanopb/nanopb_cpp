@@ -47,13 +47,13 @@ public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,
-                .text = StringCallbackConverter::encoderInit(local.text)
+                .text = StringCallbackConverter::encoderCallbackInit(local.text)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .text = StringCallbackConverter::decoderInit(local.text)
+                .text = StringCallbackConverter::decoderCallbackInit(local.text)
         };
     }
 

@@ -114,13 +114,13 @@ class TestMessageConverter : public MessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .str = StringCallbackConverter::encoderInit(local.str)
+                .str = StringCallbackConverter::encoderCallbackInit(local.str)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .str = StringCallbackConverter::decoderInit(local.str)
+                .str = StringCallbackConverter::decoderCallbackInit(local.str)
         };
     }
 

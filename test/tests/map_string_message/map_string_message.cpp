@@ -57,14 +57,14 @@ private:
     public:
         static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
-                    .key = StringCallbackConverter::encoderInit(localKey),
+                    .key = StringCallbackConverter::encoderCallbackInit(localKey),
                     .has_value = true,
                     .value = InnerMessageConverter::encoderInit(localValue),
             };
         }
         static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
-                    .key = StringCallbackConverter::decoderInit(localKey),
+                    .key = StringCallbackConverter::decoderCallbackInit(localKey),
                     .value = InnerMessageConverter::decoderInit(localValue)
             };
         }
@@ -77,13 +77,13 @@ private:
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .items = ItemsConverter::encoderInit(local.items)
+                .items = ItemsConverter::encoderCallbackInit(local.items)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .items = ItemsConverter::decoderInit(local.items)
+                .items = ItemsConverter::decoderCallbackInit(local.items)
         };
     }
 

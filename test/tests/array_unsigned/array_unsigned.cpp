@@ -34,13 +34,13 @@ class TestMessageConverter : public MessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = ArrayUnsignedCallbackConverter<LOCAL_TestMessage::ContainerType>::encoderInit(local.values)
+                .values = ArrayUnsignedCallbackConverter<LOCAL_TestMessage::ContainerType>::encoderCallbackInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayUnsignedCallbackConverter<LOCAL_TestMessage::ContainerType>::decoderInit(local.values)
+                .values = ArrayUnsignedCallbackConverter<LOCAL_TestMessage::ContainerType>::decoderCallbackInit(local.values)
         };
     }
 

@@ -60,13 +60,13 @@ public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
                 .number = local.number,
-                .items = ItemsConverter::encoderInit(local.items)
+                .items = ItemsConverter::encoderCallbackInit(local.items)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .items = ItemsConverter::decoderInit(local.items)
+                .items = ItemsConverter::decoderCallbackInit(local.items)
         };
     }
 

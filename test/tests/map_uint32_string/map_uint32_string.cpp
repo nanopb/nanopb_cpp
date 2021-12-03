@@ -40,13 +40,13 @@ private:
         static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
                     .key = localKey,
-                    .value = StringCallbackConverter::encoderInit(localValue)
+                    .value = StringCallbackConverter::encoderCallbackInit(localValue)
             };
         }
         static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
                     // no need to set key decoder because it is scalar type, not callback
-                    .value = StringCallbackConverter::decoderInit(localValue)
+                    .value = StringCallbackConverter::decoderCallbackInit(localValue)
             };
         }
         static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){
@@ -58,13 +58,13 @@ private:
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .items = SimpleItemsConverter::encoderInit(local.items)
+                .items = SimpleItemsConverter::encoderCallbackInit(local.items)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .items = SimpleItemsConverter::decoderInit(local.items)
+                .items = SimpleItemsConverter::decoderCallbackInit(local.items)
         };
     }
 
