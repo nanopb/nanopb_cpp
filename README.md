@@ -71,8 +71,8 @@ FIXME: TODO.
 
 ## Examples
 
-See [examples](examples) folder for the examples.
-Also, you can find more examples in [tests](test/tests) folder.
+* See [examples](examples) folder for the examples.
+* See [tests](test/tests) folder. (NOTE: copy constructors are disabled just for test reasons. You don't need to disable them actually.) 
 
 ### Basic string example:
 
