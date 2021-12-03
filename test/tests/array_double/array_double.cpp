@@ -5,6 +5,9 @@
 #include "tests_common.h"
 #include "array_double.pb.h"
 
+#ifndef PB_WITHOUT_64BIT
+
+
 using namespace NanoPb::Converter;
 
 struct LOCAL_TestMessage {
@@ -69,12 +72,16 @@ int testRepeated(){
     TEST(original == decoded);
     return status;
 }
+#endif
 
 int main() {
     int status = 0;
 
+#ifndef PB_WITHOUT_64BIT
     status |= testRepeated<std::vector<double>>();
     status |= testRepeated<std::list<double>>();
+#endif
 
     return status;
 }
+

@@ -324,14 +324,19 @@ namespace NanoPb {
          * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
          */
         template<class CONTAINER>
-        class ArraySignedCallbackConverter : public RepeatedCallbackConverter<ArrayUnsignedCallbackConverter<CONTAINER>,CONTAINER> {
+        class ArraySignedCallbackConverter : public RepeatedCallbackConverter<ArraySignedCallbackConverter<CONTAINER>,CONTAINER> {
         private:
             using ValueType = typename CONTAINER::value_type;
         public:
             static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& number){
                 if (!pb_encode_tag_for_field(stream, field))
                     return false;
-                if (!pb_encode_varint(stream, number))
+#ifdef PB_WITHOUT_64BIT
+                int32_t value = number;
+#else
+                int64_t value = number;
+#endif
+                if (!pb_encode_svarint(stream, value))
                     return false;
                 return true;
             }
@@ -339,13 +344,11 @@ namespace NanoPb {
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
 #ifdef PB_WITHOUT_64BIT
                 int32_t value;
-                if (!pb_decode_svarint32(stream, &value))
-                    return false;
 #else
                 int64_t value;
+#endif
                 if (!pb_decode_svarint(stream, &value))
                     return false;
-#endif
                 container.push_back(value);
                 return true;
             }
@@ -376,6 +379,7 @@ namespace NanoPb {
             }
         };
 
+#ifndef PB_WITHOUT_64BIT
         /**
          * Array double converter.
          *
@@ -400,6 +404,7 @@ namespace NanoPb {
                 return true;
             }
         };
+#endif
 
 
         /**

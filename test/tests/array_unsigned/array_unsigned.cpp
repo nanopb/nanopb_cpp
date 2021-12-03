@@ -8,7 +8,11 @@
 using namespace NanoPb::Converter;
 
 struct LOCAL_TestMessage {
+#ifndef PB_WITHOUT_64BIT
+    using ContainerType = std::vector<uint32_t>;
+#else
     using ContainerType = std::vector<uint64_t>;
+#endif
     ContainerType values;
 
     LOCAL_TestMessage() = default;
@@ -73,11 +77,13 @@ int testRepeated(const typename CONTAINER::value_type minValue, const typename C
 int main() {
     int status = 0;
 
+#ifndef PB_WITHOUT_64BIT
     status |= testRepeated<std::vector<uint64_t>>(0, UINT64_MAX);
     status |= testRepeated<std::list<uint64_t>>(0, UINT64_MAX);
-
+#else
     status |= testRepeated<std::vector<uint32_t>>(0, UINT32_MAX);
     status |= testRepeated<std::list<uint32_t>>(0, UINT32_MAX);
+#endif
 
     return status;
 }

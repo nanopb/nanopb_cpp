@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(nanopb_cpp)
 
+set(CMAKE_CXX_STANDARD 14)
+
 #
 # Options
 #
@@ -8,6 +10,7 @@ set(NANOPB_VERSION 0.4.5 CACHE STRING "nanopb version")
 option(BUILD_SHARED "Build shared instead of static" OFF)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)
+option(PB_WITHOUT_64BIT "Build nanopb without 64-bit support" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -23,7 +26,9 @@ set(NANOPB_ROOT ${lib_nanopb_SOURCE_DIR})
 
 list(APPEND CMAKE_MODULE_PATH CMAKE_MODULE_PATH ${NANOPB_ROOT}/extra)
 
-set(CMAKE_CXX_STANDARD 14)
+if (PB_WITHOUT_64BIT)
+    add_definitions(-DPB_WITHOUT_64BIT)
+endif()
 
 if (BUILD_SHARED)
     add_library(nanopb_cpp SHARED nanopb_cpp.cpp)
