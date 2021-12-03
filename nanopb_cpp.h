@@ -24,7 +24,6 @@ namespace NanoPb {
     using BufferType = std::string;
     using BufferPtr = std::unique_ptr<BufferType>;
 
-
     /**
      * StringOutputStream
      */
@@ -32,6 +31,7 @@ namespace NanoPb {
     public:
         // FIXME: Is maxSize really needed? We can dynamically increase max size on each write.
         //  Need to ask PetteriAimonen
+        //  Update README.md after fix
         StringOutputStream(size_t maxSize);
         BufferPtr release();
     private:
