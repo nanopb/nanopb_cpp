@@ -225,8 +225,8 @@ namespace NanoPb {
         protected:
             using LocalType = LOCAL_TYPE;
         public:
-            static pb_callback_t encoderInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _encodeCallback }, .arg = (void*)&local }; }
-            static pb_callback_t decoderInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _decodeCallback }, .arg = (void*)&local }; }
+            static pb_callback_t encoderInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
+            static pb_callback_t decoderInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
 
         public:  // Should be overwritten in child class
 
@@ -234,10 +234,10 @@ namespace NanoPb {
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
 
         private:
-            static bool _encodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
+            static bool _pbEncodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
                 return CONVERTER::encodeCallback(stream, field, *(static_cast<const LocalType *>(*arg)));
             };
-            static bool _decodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
+            static bool _pbDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
                 return CONVERTER::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
             };
         };
