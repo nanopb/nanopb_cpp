@@ -359,6 +359,61 @@ namespace NanoPb {
         };
 
         /**
+         * Array float converter.
+         *
+         * @tparam CONTAINER - can be std::vector<float> or std::list<float>
+         */
+        template<class CONTAINER>
+        class ArrayFloatCallbackConverter : public RepeatedCallbackConverter<ArrayFloatCallbackConverter<CONTAINER>,CONTAINER> {
+        public:
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const float& number){
+                if (!pb_encode_tag_for_field(stream, field)) {
+                    return false;
+                }
+                if (!pb_encode_fixed32(stream, &number))
+                    return false;
+                return true;
+            }
+
+            static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
+                float value;
+                if (!pb_decode_fixed32(stream, &value)) {
+                    return false;
+                }
+                container.push_back(value);
+                return true;
+            }
+        };
+
+        /**
+         * Array double converter.
+         *
+         * @tparam CONTAINER - can be std::vector<float> or std::list<float>
+         */
+        template<class CONTAINER>
+        class ArrayDoubleCallbackConverter : public RepeatedCallbackConverter<ArrayDoubleCallbackConverter<CONTAINER>,CONTAINER> {
+        public:
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const double& number){
+                if (!pb_encode_tag_for_field(stream, field)) {
+                    return false;
+                }
+                if (!pb_encode_fixed64(stream, &number))
+                    return false;
+                return true;
+            }
+
+            static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
+                double value;
+                if (!pb_decode_fixed64(stream, &value)) {
+                    return false;
+                }
+                container.push_back(value);
+                return true;
+            }
+        };
+
+
+        /**
          * Array string converter.
          *
          * @tparam CONTAINER - can be std::vector<std::string> or std::list<std::string>

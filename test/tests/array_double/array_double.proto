@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package PROTO;
+
+message TestMessage {
+  repeated double values = 1;
+}
