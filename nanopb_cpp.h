@@ -166,7 +166,7 @@ namespace NanoPb {
          * @tparam PROTO_TYPE - NanoPb type
          */
         template<class LOCAL_TYPE, class PROTO_TYPE>
-        class ScalarConverter {
+        class EnumConverter {
         protected:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
