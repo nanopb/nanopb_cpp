@@ -1,4 +1,5 @@
 #include <vector>
+#include <list>
 
 #include "tests_common.h"
 #include "inner_message.hpp"
@@ -6,53 +7,43 @@
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_OuterMessage {
-    using ItemsContainer = std::vector<LOCAL_InnerMessage>;
+template <class CONTAINER>
+struct LOCAL_TestMessage {
+    using ItemsContainer = CONTAINER;
 
     int32_t number = 0;
     ItemsContainer items;
 
-    LOCAL_OuterMessage() = default;
-    LOCAL_OuterMessage(const LOCAL_OuterMessage&) = delete;
-    LOCAL_OuterMessage(LOCAL_OuterMessage&&) = default;
+    LOCAL_TestMessage() = default;
+    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
+    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
 
-    LOCAL_OuterMessage(int32_t number, ItemsContainer &&items) : number(number), items(std::move(items)) {}
+    LOCAL_TestMessage(int32_t number, ItemsContainer &&items) : number(number), items(std::move(items)) {}
 
-    bool operator==(const LOCAL_OuterMessage &rhs) const {
+    bool operator==(const LOCAL_TestMessage &rhs) const {
         return number == rhs.number &&
                items == rhs.items;
     }
 
-    bool operator!=(const LOCAL_OuterMessage &rhs) const {
+    bool operator!=(const LOCAL_TestMessage &rhs) const {
         return !(rhs == *this);
-    }
-
-    static std::vector<LOCAL_OuterMessage> createTestMessages(){
-        std::vector<LOCAL_OuterMessage> ret;
-        {
-            std::vector<LOCAL_InnerMessage> items;
-            items.push_back(LOCAL_InnerMessage(1, "entry_1"));
-            items.push_back(LOCAL_InnerMessage(2, "entry_1"));
-            items.push_back(LOCAL_InnerMessage(UINT32_MAX, "entry_max"));
-
-            ret.push_back(
-                    LOCAL_OuterMessage(INT32_MIN, std::move(items))
-                    );
-        }
-        return ret;
     }
 };
 
+template <class CONTAINER>
 class OuterMessageConverter : public MessageConverter<
-        OuterMessageConverter,
-        LOCAL_OuterMessage,
-        PROTO_OuterMessage,
-        &PROTO_OuterMessage_msg>
+        OuterMessageConverter<CONTAINER>,
+        LOCAL_TestMessage<CONTAINER>,
+        PROTO_TestMessage,
+        &PROTO_TestMessage_msg>
 {
+public:
+    using ProtoType = typename OuterMessageConverter<CONTAINER>::ProtoType;
+    using LocalType = LOCAL_TestMessage<CONTAINER>;
 private:
     class ItemsConverter : public ArrayMessageCallbackConverter<
             ItemsConverter,
-            LOCAL_OuterMessage::ItemsContainer ,
+            typename LOCAL_TestMessage<CONTAINER>::ItemsContainer ,
             InnerMessageConverter>
     {};
 
@@ -76,26 +67,45 @@ public:
     }
 };
 
+template <class CONTAINER>
+int testRepeated(){
+    int status = 0;
+
+    std::vector<LOCAL_TestMessage<CONTAINER>> messages;
+    {
+        CONTAINER items;
+        items.push_back(LOCAL_InnerMessage(1, "entry_1"));
+        items.push_back(LOCAL_InnerMessage(2, "entry_1"));
+        items.push_back(LOCAL_InnerMessage(UINT32_MAX, "entry_max"));
+
+        messages.push_back(
+                LOCAL_TestMessage<CONTAINER>(INT32_MIN, std::move(items))
+        );
+    }
+
+    for (const LOCAL_TestMessage<CONTAINER>& original : messages) {
+
+        NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+
+        TEST(NanoPb::encode<OuterMessageConverter<CONTAINER>>(outputStream, original));
+
+        auto inputStream = NanoPb::StringInputStream(outputStream.release());
+
+        LOCAL_TestMessage<CONTAINER> decoded;
+
+        TEST(NanoPb::decode<OuterMessageConverter<CONTAINER>>(inputStream, decoded));
+
+        TEST(original == decoded);
+    }
+    return status;
+}
+
 
 int main() {
     int status = 0;
 
-    const auto messages = LOCAL_OuterMessage::createTestMessages();
-
-    for (auto& original : messages) {
-
-        NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
-
-        TEST(NanoPb::encode<OuterMessageConverter>(outputStream, original));
-
-        auto inputStream = NanoPb::StringInputStream(outputStream.release());
-
-        LOCAL_OuterMessage decoded;
-
-        TEST(NanoPb::decode<OuterMessageConverter>(inputStream, decoded));
-
-        TEST(original == decoded);
-    }
+    status |= testRepeated<std::vector<LOCAL_InnerMessage>>();
+    status |= testRepeated<std::list<LOCAL_InnerMessage>>();
 
     return status;
 }

@@ -30,6 +30,8 @@ namespace NanoPb {
      */
     class StringOutputStream : public pb_ostream_t {
     public:
+        // FIXME: Is maxSize really needed? We can dynamically increase max size on each write.
+        //  Need to ask PetteriAimonen
         StringOutputStream(size_t maxSize);
         BufferPtr release();
     private:

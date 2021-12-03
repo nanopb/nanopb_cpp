@@ -7,12 +7,10 @@
 
 using namespace NanoPb::Converter;
 
+template <class CONTAINER>
 struct LOCAL_TestMessage {
-#ifndef PB_WITHOUT_64BIT
-    using ContainerType = std::vector<int32_t>;
-#else
-    using ContainerType = std::vector<int64_t>;
-#endif
+    using ContainerType = CONTAINER;
+
     ContainerType values;
 
     LOCAL_TestMessage() = default;
@@ -29,22 +27,26 @@ struct LOCAL_TestMessage {
     }
 };
 
+template <class CONTAINER>
 class TestMessageConverter : public MessageConverter<
-        TestMessageConverter,
-        LOCAL_TestMessage,
+        TestMessageConverter<CONTAINER>,
+        LOCAL_TestMessage<CONTAINER>,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {
 public:
+    using ProtoType = typename TestMessageConverter<CONTAINER>::ProtoType;
+    using LocalType = LOCAL_TestMessage<CONTAINER>;
+public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = ArraySignedCallbackConverter<LOCAL_TestMessage::ContainerType>::encoderCallbackInit(local.values)
+                .values = ArraySignedCallbackConverter<typename LocalType::ContainerType>::encoderCallbackInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArraySignedCallbackConverter<LOCAL_TestMessage::ContainerType>::decoderCallbackInit(local.values)
+                .values = ArraySignedCallbackConverter<typename LocalType::ContainerType>::decoderCallbackInit(local.values)
         };
     }
 
@@ -58,17 +60,17 @@ template <class CONTAINER>
 int testRepeated(const typename CONTAINER::value_type minValue, const typename CONTAINER::value_type maxValue){
     int status = 0;
 
-    LOCAL_TestMessage original({minValue, 0, 1 , 2, 3, 4, 5, maxValue});
+    LOCAL_TestMessage<CONTAINER> original({minValue, 0, 1 , 2, 3, 4, 5, maxValue});
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
+    TEST(NanoPb::encode<TestMessageConverter<CONTAINER>>(outputStream, original));
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_TestMessage decoded;
+    LOCAL_TestMessage<CONTAINER> decoded;
 
-    TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
+    TEST(NanoPb::decode<TestMessageConverter<CONTAINER>>(inputStream, decoded));
 
     TEST(original == decoded);
     return status;

@@ -4,7 +4,7 @@ import "inner_message.proto";
 
 package PROTO;
 
-message OuterMessage {
+message TestMessage {
   int32 number = 1;
   repeated InnerMessage items = 2;
 }
