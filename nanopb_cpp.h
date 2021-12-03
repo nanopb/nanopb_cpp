@@ -262,9 +262,8 @@ namespace NanoPb {
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
                 for (auto &item: container) {
-                    if (!CONVERTER::encodeItem(stream, field, item)){
+                    if (!CONVERTER::encodeItem(stream, field, item))
                         return false;
-                    }
                 }
                 return true;
             }
@@ -290,12 +289,11 @@ namespace NanoPb {
         template<class CONTAINER>
         class ArrayUnsignedCallbackConverter  : public RepeatedCallbackConverter<ArrayUnsignedCallbackConverter<CONTAINER>,CONTAINER> {
         private:
-            using UnsignedType = typename CONTAINER::value_type;
+            using ValueType = typename CONTAINER::value_type;
         public:
-            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const UnsignedType& number){
-                if (!pb_encode_tag_for_field(stream, field)) {
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& number){
+                if (!pb_encode_tag_for_field(stream, field))
                     return false;
-                }
                 if (!pb_encode_varint(stream, number))
                     return false;
                 return true;
@@ -304,14 +302,12 @@ namespace NanoPb {
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container){
 #ifdef PB_WITHOUT_64BIT
                 uint32_t value;
-                if (!pb_decode_varint32(stream, &value)) {
+                if (!pb_decode_varint32(stream, &value))
                     return false;
-                }
 #else
                 uint64_t value;
-                if (!pb_decode_varint(stream, &value)) {
+                if (!pb_decode_varint(stream, &value))
                     return false;
-                }
 #endif
                 container.push_back(value);
                 return true;
@@ -330,12 +326,11 @@ namespace NanoPb {
         template<class CONTAINER>
         class ArraySignedCallbackConverter : public RepeatedCallbackConverter<ArrayUnsignedCallbackConverter<CONTAINER>,CONTAINER> {
         private:
-            using SignedType = typename CONTAINER::value_type;
+            using ValueType = typename CONTAINER::value_type;
         public:
-            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const SignedType& number){
-                if (!pb_encode_tag_for_field(stream, field)) {
+            static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& number){
+                if (!pb_encode_tag_for_field(stream, field))
                     return false;
-                }
                 if (!pb_encode_varint(stream, number))
                     return false;
                 return true;
@@ -344,14 +339,12 @@ namespace NanoPb {
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
 #ifdef PB_WITHOUT_64BIT
                 int32_t value;
-                if (!pb_decode_svarint32(stream, &value)) {
+                if (!pb_decode_svarint32(stream, &value))
                     return false;
-                }
 #else
                 int64_t value;
-                if (!pb_decode_svarint(stream, &value)) {
+                if (!pb_decode_svarint(stream, &value))
                     return false;
-                }
 #endif
                 container.push_back(value);
                 return true;
@@ -367,9 +360,8 @@ namespace NanoPb {
         class ArrayFloatCallbackConverter : public RepeatedCallbackConverter<ArrayFloatCallbackConverter<CONTAINER>,CONTAINER> {
         public:
             static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const float& number){
-                if (!pb_encode_tag_for_field(stream, field)) {
+                if (!pb_encode_tag_for_field(stream, field))
                     return false;
-                }
                 if (!pb_encode_fixed32(stream, &number))
                     return false;
                 return true;
@@ -377,9 +369,8 @@ namespace NanoPb {
 
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
                 float value;
-                if (!pb_decode_fixed32(stream, &value)) {
+                if (!pb_decode_fixed32(stream, &value))
                     return false;
-                }
                 container.push_back(value);
                 return true;
             }
@@ -394,9 +385,8 @@ namespace NanoPb {
         class ArrayDoubleCallbackConverter : public RepeatedCallbackConverter<ArrayDoubleCallbackConverter<CONTAINER>,CONTAINER> {
         public:
             static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const double& number){
-                if (!pb_encode_tag_for_field(stream, field)) {
+                if (!pb_encode_tag_for_field(stream, field))
                     return false;
-                }
                 if (!pb_encode_fixed64(stream, &number))
                     return false;
                 return true;
@@ -404,9 +394,8 @@ namespace NanoPb {
 
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER& container){
                 double value;
-                if (!pb_decode_fixed64(stream, &value)) {
+                if (!pb_decode_fixed64(stream, &value))
                     return false;
-                }
                 container.push_back(value);
                 return true;
             }
@@ -449,10 +438,8 @@ namespace NanoPb {
                 for (auto &item: container) {
                     if (!pb_encode_tag_for_field(stream, field))
                         return false;
-
-                    if (!encodeSubMessage<ITEM_CONVERTER>(*stream, item)){
+                    if (!encodeSubMessage<ITEM_CONVERTER>(*stream, item))
                         return false;
-                    }
                 }
                 return true;
             }
@@ -460,9 +447,8 @@ namespace NanoPb {
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
                 container.push_back(ContextItem());
                 ContextItem& v = *container.rbegin();
-                if (!decode<ITEM_CONVERTER>(*stream, v)){
+                if (!decode<ITEM_CONVERTER>(*stream, v))
                     return false;
-                }
                 return true;
             }
         };
