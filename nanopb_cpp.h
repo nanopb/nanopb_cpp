@@ -159,6 +159,9 @@ namespace NanoPb {
 
         /**
          * Abstract converter for basic scalar types like enum
+         *
+         * @tparam LOCAL_TYPE - Local type
+         * @tparam PROTO_TYPE - NanoPb type
          */
         template<class LOCAL_TYPE, class PROTO_TYPE>
         class ScalarConverter {
@@ -174,6 +177,11 @@ namespace NanoPb {
 
         /**
          * Abstract message converter
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam LOCAL_TYPE - Local type
+         * @tparam PROTO_TYPE - NanoPb type
+         * @tparam PROTO_TYPE_MSG - NanoPb msg descriptor
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class MessageConverter {
@@ -193,6 +201,11 @@ namespace NanoPb {
 
         /**
          * Abstract union message converter
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam LOCAL_TYPE - Local type
+         * @tparam PROTO_TYPE - NanoPb type
+         * @tparam PROTO_TYPE_MSG - NanoPb msg descriptor
          */
         template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class UnionMessageConverter : public MessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
@@ -219,6 +232,9 @@ namespace NanoPb {
          * Abstract Callback converter
          *
          *  See StringCallbackConverter for the example implementation
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam LOCAL_TYPE - Local type
          */
         template<class CONVERTER, class LOCAL_TYPE>
         class CallbackConverter {
@@ -254,6 +270,9 @@ namespace NanoPb {
 
         /**
          * Abstract repeated converter
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam CONTAINER - Local container type
          */
         template<class CONVERTER, class CONTAINER>
         class RepeatedCallbackConverter : public CallbackConverter<RepeatedCallbackConverter<CONVERTER, CONTAINER>,CONTAINER> {
@@ -280,11 +299,13 @@ namespace NanoPb {
         /**
          * Array unsigned converter.
          *
+         *  VALUE: unsigned|uint64_t|uint32_t|uint16_t|uint8_t|...
+         *
          *  Value size depend on PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
          *
-         * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
+         * @tparam CONTAINER - can be std::vector<VALUE> or std::list<VALUE>
          */
         template<class CONTAINER>
         class ArrayUnsignedCallbackConverter  : public RepeatedCallbackConverter<ArrayUnsignedCallbackConverter<CONTAINER>,CONTAINER> {
@@ -317,11 +338,13 @@ namespace NanoPb {
         /**
          * Array signed converter.
          *
+         *  VALUE: int|int64_t|int32_t|int16_t|int8_t|...
+         *
          *  Value size depend on PB_WITHOUT_64BIT:
          *      is set: max 32 bit
          *      is not set: max 64 bit
          *
-         * @tparam CONTAINER - can be std::vector<XXX> or std::list<XXX>
+         * @tparam CONTAINER - can be std::vector<VALUE> or std::list<VALUE>
          */
         template<class CONTAINER>
         class ArraySignedCallbackConverter : public RepeatedCallbackConverter<ArraySignedCallbackConverter<CONTAINER>,CONTAINER> {
@@ -429,7 +452,11 @@ namespace NanoPb {
         };
 
         /**
-         * Converter for vector/list
+         * Converter for vector/list of sub-message
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam CONTEXT_CONTAINER - std::vector<ITEM_CONVERTER::LocalType> or std::list<ITEM_CONVERTER::LocalType>
+         * @tparam ITEM_CONVERTER - MessageConverter<...>
          */
         template<class CONVERTER, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
         class ArrayMessageCallbackConverter : public CallbackConverter<
@@ -460,6 +487,11 @@ namespace NanoPb {
 
         /**
          * Converter for map
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam CONTAINER - std::map<> of any type
+         * @tparam PROTO_PAIR_TYPE - NanoPb XXX_xxxEntry struct, where xxx is map fild
+         * @tparam PROTO_PAIR_TYPE_MSG - NanoPb msg descriptor for PROTO_PAIR_TYPE
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class MapCallbackConverter : public CallbackConverter<
