@@ -18,10 +18,6 @@ function(nanopb_cpp_add_test TEST)
         message(FATAL_ERROR "SRC should not be empty")
     endif()
 
-    if (NOT TEST_PROTOS)
-        message(FATAL_ERROR "PROTO should not be empty")
-    endif()
-
     if (TEST_PROTOS)
         foreach(PROTO ${TEST_PROTOS})
             get_filename_component(PROTO_ABS ${PROTO} ABSOLUTE)
@@ -35,6 +31,12 @@ function(nanopb_cpp_add_test TEST)
                 ${TEST_PROTOS_ABS}
         )
         list(APPEND TEST_SOURCES ${PROTO_SRCS} ${PROTO_HDRS})
+    else()
+        list(APPEND TEST_SOURCES
+                ${lib_nanopb_SOURCE_DIR}/pb_common.c
+                ${lib_nanopb_SOURCE_DIR}/pb_encode.c
+                ${lib_nanopb_SOURCE_DIR}/pb_decode.c
+                )
     endif()
 
     add_executable(${EXECUTABLE}
