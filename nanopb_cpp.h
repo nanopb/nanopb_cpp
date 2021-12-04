@@ -160,7 +160,7 @@ namespace NanoPb {
     namespace Converter {
 
         /**
-         * Abstract converter for basic scalar types like enum
+         * Enum converter
          *
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
@@ -178,7 +178,7 @@ namespace NanoPb {
         };
 
         /**
-         * Abstract message converter
+         * Message converter
          *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
@@ -202,7 +202,7 @@ namespace NanoPb {
         };
 
         /**
-         * Abstract union message converter
+         * Union message converter
          *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
@@ -231,7 +231,7 @@ namespace NanoPb {
         };
 
         /**
-         * Abstract Callback converter
+         * Callback converter
          *
          *  See StringCallbackConverter for the example implementation
          *
@@ -271,7 +271,7 @@ namespace NanoPb {
         };
 
         /**
-         * Abstract repeated converter
+         * Repeated converter
          *
          * @tparam CONVERTER - Derived class
          * @tparam CONTAINER - Local container type
