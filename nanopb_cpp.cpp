@@ -100,7 +100,7 @@ bool NanoPb::Converter::StringCallbackConverter::decodeCallback(pb_istream_t *st
     NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING || PB_LTYPE(field->type) == PB_LTYPE_BYTES);
     size_t len = stream->bytes_left;
     local.resize(len);
-    if (!pb_read(stream, (uint8_t *) local.data(), len)) {
+    if (!pb_read(stream, (pb_byte_t *) local.data(), len)) {
         return false;
     }
     return true;

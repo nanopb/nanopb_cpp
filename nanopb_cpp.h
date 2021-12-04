@@ -374,6 +374,46 @@ namespace NanoPb {
         };
 
         /**
+         * Basic scalar converter.
+         *
+         *  Can be used for field with wire types: PB_WT_VARINT, PB_WT_64BIT, PB_WT_32BIT
+         *
+         * @tparam CONVERTER - Derived class
+         * @tparam SCALAR - Scalar with one of listed above wire type.
+         */
+        template <class CONVERTER, class SCALAR>
+        class AbstractScalarCallbackConverter : public CallbackConverter<CONVERTER, typename SCALAR::LocalType> {
+        public:
+            using LocalType = typename SCALAR::LocalType;
+        public:
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
+                if (!pb_encode_tag_for_field(stream, field))
+                    return false;
+                return SCALAR::rawEncode(stream, local);
+            }
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
+                return SCALAR::rawDecode(stream, local);
+            }
+        };
+
+        /**
+         * Set of basic scalar types converters to used in RepeatedCallbackConverter and other cases
+         */
+        class Int32CallbackConverter : public AbstractScalarCallbackConverter<Int32CallbackConverter,ScalarType::Int32> {};
+        class SInt32CallbackConverter : public AbstractScalarCallbackConverter<SInt32CallbackConverter,ScalarType::SInt32> {};
+        class UInt32CallbackConverter : public AbstractScalarCallbackConverter<UInt32CallbackConverter,ScalarType::UInt32> {};
+        class Fixed32CallbackConverter : public AbstractScalarCallbackConverter<Fixed32CallbackConverter,ScalarType::Fixed32> {};
+        class SFixed32CallbackConverter : public AbstractScalarCallbackConverter<SFixed32CallbackConverter,ScalarType::SFixed32> {};
+        class FloatCallbackConverter : public AbstractScalarCallbackConverter<FloatCallbackConverter,ScalarType::Float> {};
+        class BoolCallbackConverter : public AbstractScalarCallbackConverter<BoolCallbackConverter,ScalarType::Bool> {};
+        class Int64CallbackConverter : public AbstractScalarCallbackConverter<Int64CallbackConverter,ScalarType::Int64> {};
+        class SInt64CallbackConverter : public AbstractScalarCallbackConverter<SInt64CallbackConverter,ScalarType::SInt64> {};
+        class UInt64CallbackConverter : public AbstractScalarCallbackConverter<UInt64CallbackConverter,ScalarType::UInt64> {};
+        class Fixed64CallbackConverter : public AbstractScalarCallbackConverter<Fixed64CallbackConverter,ScalarType::Fixed64> {};
+        class SFixed64CallbackConverter : public AbstractScalarCallbackConverter<SFixed64CallbackConverter,ScalarType::SFixed64> {};
+        class DoubleCallbackConverter : public AbstractScalarCallbackConverter<DoubleCallbackConverter,ScalarType::Double> {};
+
+        /**
          * StringCallbackConverter
          * Can be used to encode/decode string and bytes fields to/from std::string
          */
@@ -382,6 +422,8 @@ namespace NanoPb {
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
         };
+
+        // FIXME: Add BytesCallbackConverter
 
         /**
          * Repeated converter
