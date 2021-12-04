@@ -162,6 +162,7 @@ namespace NanoPb {
      *
      *  Should implement
      *      rawEncode()/rawDecode()
+     *
      */
     namespace ScalarType {
         template<class LOCAL_TYPE>
@@ -212,12 +213,18 @@ namespace NanoPb {
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
+        /**
+         * NOTE: rawEncode()/rawDecode() **does NOT** add length for String/Bytes
+         */
         class String : public AbstractScalarType<std::string>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
+        /**
+         * NOTE: rawEncode()/rawDecode() **does NOT** add length for String/Bytes
+         */
         class Bytes : public AbstractScalarType<std::string>{ // use std::string as container
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);

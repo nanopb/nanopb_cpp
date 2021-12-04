@@ -194,12 +194,10 @@ bool NanoPb::ScalarType::Bool::rawDecode(pb_istream_t *stream, bool &value) {
 /******************************************/
 
 bool NanoPb::ScalarType::String::rawEncode(pb_ostream_t *stream, const std::string &value) {
-    //FIXME: this is `raw` encoder, assume that substream was created
     return pb_write(stream, (const pb_byte_t *) value.data(), value.size());
 }
 
 bool NanoPb::ScalarType::String::rawDecode(pb_istream_t *stream, std::string &value) {
-    //FIXME: this is `raw` decoder, assume that substream was created
     size_t len = stream->bytes_left;
     value.resize(len);
     return pb_read(stream, (pb_byte_t *) value.data(), len);
