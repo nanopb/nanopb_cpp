@@ -159,7 +159,9 @@ namespace NanoPb {
     /**
      * Basic Scalar types.
      * Used in Repeated converter. Also can be used in manual decoding/encoding.
-     * Should implement encodeStream()/decodeStream()
+     *
+     *  Should implement
+     *      rawEncode()/rawDecode()
      */
     namespace ScalarType {
         template<class LOCAL_TYPE>
@@ -170,93 +172,93 @@ namespace NanoPb {
         
         class Int32 : public AbstractScalarType<int32_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class SInt32 : public AbstractScalarType<int32_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class UInt32 : public AbstractScalarType<uint32_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class Fixed32 : public AbstractScalarType<uint32_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class SFixed32 : public AbstractScalarType<int32_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class Float : public AbstractScalarType<float>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class Bool : public AbstractScalarType<bool>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class String : public AbstractScalarType<std::string>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class Bytes : public AbstractScalarType<std::string>{ // use std::string as container
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
 #ifndef PB_WITHOUT_64BIT
         class Int64 : public AbstractScalarType<int64_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class SInt64 : public AbstractScalarType<int64_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class UInt64 : public AbstractScalarType<uint64_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class Fixed64 : public AbstractScalarType<uint64_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class SFixed64 : public AbstractScalarType<int64_t>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
         class Double : public AbstractScalarType<double>{
         public:
-            static bool encodeStream(pb_ostream_t *stream, const LocalType& value);
-            static bool decodeStream(pb_istream_t *stream, LocalType& value);
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 #endif
     }

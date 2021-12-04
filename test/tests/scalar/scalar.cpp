@@ -9,14 +9,14 @@ template <class SCALAR>
 bool scalarTest(typename SCALAR::LocalType original){
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
-    if (!SCALAR::encodeStream(&outputStream, original))
+    if (!SCALAR::rawEncode(&outputStream, original))
         return false;
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
     typename SCALAR::LocalType decoded;
 
-    if (!SCALAR::decodeStream(&inputStream, decoded))
+    if (!SCALAR::rawDecode(&inputStream, decoded))
         return false;
 
     return original == decoded;
