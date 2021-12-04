@@ -40,13 +40,13 @@ public:
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = ArrayStringCallbackConverter<typename LocalType::ContainerType>::encoderCallbackInit(local.values)
+                .values = ArrayCallbackConverter<StringCallbackConverter, typename LocalType::ContainerType>::encoderCallbackInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayStringCallbackConverter<typename LocalType::ContainerType>::decoderCallbackInit(local.values)
+                .values = ArrayCallbackConverter<StringCallbackConverter, typename LocalType::ContainerType>::decoderCallbackInit(local.values)
         };
     }
 

@@ -158,7 +158,6 @@ namespace NanoPb {
 
     /**
      * Basic Scalar types.
-     * Used in Repeated converter. Also can be used in manual decoding/encoding.
      *
      *  Should implement
      *      rawEncode()/rawDecode()
@@ -353,7 +352,7 @@ namespace NanoPb {
          */
         template<class CONVERTER, class LOCAL_TYPE>
         class CallbackConverter {
-        protected:
+        public:
             using LocalType = LOCAL_TYPE;
         public:
             static pb_callback_t encoderCallbackInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
@@ -397,7 +396,7 @@ namespace NanoPb {
         };
 
         /**
-         * Set of basic scalar types converters to used in RepeatedCallbackConverter and other cases
+         * Set of basic scalar types converters to used in ArrayCallbackConverter and other cases
          */
         class Int32CallbackConverter : public AbstractScalarCallbackConverter<Int32CallbackConverter,ScalarType::Int32> {};
         class SInt32CallbackConverter : public AbstractScalarCallbackConverter<SInt32CallbackConverter,ScalarType::SInt32> {};
@@ -451,6 +450,35 @@ namespace NanoPb {
         public:  // Should be overwritten in child class
             static bool encodeItem(pb_ostream_t *stream, const pb_field_t *field, const ValueType& item);
             static bool decodeItem(pb_istream_t *stream, const pb_field_t *field, CONTAINER & container);
+        };
+
+        /**
+         * Array converter for items
+         *
+         * @tparam ITEM_CONVERTER
+         * @tparam CONTAINER can be std::vector<ITEM_CONVERTER::LocalType> or std::ITEM_CONVERTER::LocalType>
+         *
+         * NOTE: ITEM_CONVERTER::LocalType and CONTAINER::value_type should match each other
+         */
+        template<class ITEM_CONVERTER, class CONTAINER>
+        class ArrayCallbackConverter : public CallbackConverter<ArrayCallbackConverter<ITEM_CONVERTER, CONTAINER>,CONTAINER> {
+            static_assert(std::is_same<typename ITEM_CONVERTER::LocalType, typename CONTAINER::value_type>::value,
+                    "ITEM_CONVERTER::LocalType and CONTAINER::value_type should be same type");
+        public:
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
+                for (auto &item: container) {
+                    if (!ITEM_CONVERTER::encodeCallback(stream, field, item))
+                        return false;
+                }
+                return true;
+            }
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
+                typename ITEM_CONVERTER::LocalType item;
+                if (!ITEM_CONVERTER::decodeCallback(stream, field, item))
+                    return false;
+                container.emplace_back(item);
+                return true;
+            }
         };
 
         /**
