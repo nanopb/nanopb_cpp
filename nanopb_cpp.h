@@ -405,12 +405,14 @@ namespace NanoPb {
         class SFixed32CallbackConverter : public AbstractScalarCallbackConverter<SFixed32CallbackConverter,ScalarType::SFixed32> {};
         class FloatCallbackConverter : public AbstractScalarCallbackConverter<FloatCallbackConverter,ScalarType::Float> {};
         class BoolCallbackConverter : public AbstractScalarCallbackConverter<BoolCallbackConverter,ScalarType::Bool> {};
+#ifndef PB_WITHOUT_64BIT
         class Int64CallbackConverter : public AbstractScalarCallbackConverter<Int64CallbackConverter,ScalarType::Int64> {};
         class SInt64CallbackConverter : public AbstractScalarCallbackConverter<SInt64CallbackConverter,ScalarType::SInt64> {};
         class UInt64CallbackConverter : public AbstractScalarCallbackConverter<UInt64CallbackConverter,ScalarType::UInt64> {};
         class Fixed64CallbackConverter : public AbstractScalarCallbackConverter<Fixed64CallbackConverter,ScalarType::Fixed64> {};
         class SFixed64CallbackConverter : public AbstractScalarCallbackConverter<SFixed64CallbackConverter,ScalarType::SFixed64> {};
         class DoubleCallbackConverter : public AbstractScalarCallbackConverter<DoubleCallbackConverter,ScalarType::Double> {};
+#endif
 
         /**
          * StringCallbackConverter
