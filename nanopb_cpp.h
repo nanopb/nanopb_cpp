@@ -516,7 +516,7 @@ namespace NanoPb {
                 return true;
             }
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
-                container.push_back(typename ITEM_CONVERTER::LocalType());
+                container.emplace_back(typename ITEM_CONVERTER::LocalType());
                 typename ITEM_CONVERTER::LocalType& item = *container.rbegin();
                 if (!ITEM_CONVERTER::decodeCallback(stream, field, item))
                     return false;
