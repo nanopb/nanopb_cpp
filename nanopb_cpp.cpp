@@ -90,14 +90,31 @@ const pb_msgdesc_t *NanoPb::decodeUnionMessageType(pb_istream_t &stream, const p
 /****************************************************************************************************************/
 
 bool NanoPb::Converter::StringCallbackConverter::encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local) {
-    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING || PB_LTYPE(field->type) == PB_LTYPE_BYTES);
+    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
     if (!pb_encode_tag_for_field(stream, field))
         return false;
     return pb_encode_string(stream, (const pb_byte_t *) local.c_str(), local.size());
 }
 
 bool NanoPb::Converter::StringCallbackConverter::decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local) {
-    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING || PB_LTYPE(field->type) == PB_LTYPE_BYTES);
+    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_STRING);
+    size_t len = stream->bytes_left;
+    local.resize(len);
+    if (!pb_read(stream, (pb_byte_t *) local.data(), len)) {
+        return false;
+    }
+    return true;
+}
+
+bool NanoPb::Converter::BytesCallbackConverter::encodeCallback(pb_ostream_t *stream,  const pb_field_t *field, const LocalType &local) {
+    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_BYTES);
+    if (!pb_encode_tag_for_field(stream, field))
+        return false;
+    return pb_encode_string(stream, (const pb_byte_t *) local.c_str(), local.size());
+}
+
+bool NanoPb::Converter::BytesCallbackConverter::decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local) {
+    NANOPB_CPP_ASSERT(PB_LTYPE(field->type) == PB_LTYPE_BYTES);
     size_t len = stream->bytes_left;
     local.resize(len);
     if (!pb_read(stream, (pb_byte_t *) local.data(), len)) {

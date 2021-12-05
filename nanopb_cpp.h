@@ -386,6 +386,7 @@ namespace NanoPb {
             using LocalType = typename SCALAR::LocalType;
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
+                //FIXME: Add assert on field type
                 if (!pb_encode_tag_for_field(stream, field))
                     return false;
                 return SCALAR::rawEncode(stream, local);
@@ -413,16 +414,18 @@ namespace NanoPb {
         class SFixed64CallbackConverter : public AbstractScalarCallbackConverter<SFixed64CallbackConverter,Type::SFixed64> {};
         class DoubleCallbackConverter : public AbstractScalarCallbackConverter<DoubleCallbackConverter,Type::Double> {};
 #endif
-
-        /**
-         * StringCallbackConverter
-         * Can be used to encode/decode string and bytes fields to/from std::string
-         */
         class StringCallbackConverter : public CallbackConverter<StringCallbackConverter, std::string> {
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
         };
+
+        class BytesCallbackConverter : public CallbackConverter<BytesCallbackConverter, std::string> {
+        public:
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
+        };
+
 
         // FIXME: Add BytesCallbackConverter
 
@@ -468,7 +471,7 @@ namespace NanoPb {
                     "ITEM_CONVERTER::LocalType and CONTAINER::value_type should be same type");
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
-                for (auto &item: container) {
+                for (const auto &item: container) {
                     if (!ITEM_CONVERTER::encodeCallback(stream, field, item))
                         return false;
                 }
@@ -478,7 +481,7 @@ namespace NanoPb {
                 typename ITEM_CONVERTER::LocalType item;
                 if (!ITEM_CONVERTER::decodeCallback(stream, field, item))
                     return false;
-                container.emplace_back(item);
+                container.push_back(item);
                 return true;
             }
         };
