@@ -143,22 +143,8 @@ int main() {
     TEST_ARRAY(Double,  std::list<double>,      {DBL_MIN _ 0 _ DBL_MAX});
 #endif
 
-    // ENUM
-    bool enumVector = testRepeated<
-        SimpleEnumConverter,
-        std::vector<SimpleEnum>,
-        PROTO_Repeated_Enum,
-        &PROTO_Repeated_Enum_msg
-    >({SimpleEnum::Invalid, SimpleEnum::ValueOne, SimpleEnum::ValueTwo});
-    TEST(enumVector);
-
-    bool enumList = testRepeated<
-            SimpleEnumConverter,
-            std::list<SimpleEnum>,
-            PROTO_Repeated_Enum,
-            &PROTO_Repeated_Enum_msg
-    >({SimpleEnum::Invalid, SimpleEnum::ValueOne, SimpleEnum::ValueTwo});
-    TEST(enumList);
+    TEST_ARRAY(SimpleEnum,  std::vector<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
+    TEST_ARRAY(SimpleEnum,  std::list<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
 
     return status;
 }
