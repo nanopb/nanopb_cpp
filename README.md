@@ -44,14 +44,15 @@ All scalar types are defined in `NanoPb::Type` namespace.
 
 ### Base converter classes:
 
+* #### `CallbackConverter` - Converter for callback fields.
+  TODO: describe
+
 * #### `EnumConverter` - Converter for `enum`
   TODO: describe
 
 * #### `MessageConverter` - Converter for message.
   TODO: describe
 
-* #### `CallbackConverter` - Converter for callback fields.
-  TODO: describe
 
 ### Helper converters: 
 

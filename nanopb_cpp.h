@@ -278,6 +278,8 @@ namespace NanoPb {
           *      static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
           *      static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
           *
+          *  NOTE: Usually user must implement `MessageConverter` and NOT extend this class directly.
+          *
           * @tparam DERIVED - Derived class
           * @tparam LOCAL_TYPE - Local type
           */
