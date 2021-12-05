@@ -13,3 +13,6 @@
     }
 
 #endif //NANOPB_CPP_UNIT_TEST_H
+
+#define CONCAT(a,b) a ## b
+#define CONCAT3(a,b,c) a ## b ## c
