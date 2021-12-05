@@ -164,58 +164,49 @@ namespace NanoPb {
      *
      */
     namespace Type {
-        template<class TYPE, class LOCAL_TYPE>
+        template<class LOCAL_TYPE>
         class AbstractScalarType {
         public:
             using LocalType = LOCAL_TYPE;
         };
 
-        class Int32 : public AbstractScalarType<Int32, int32_t>{
+        class Int32 : public AbstractScalarType<int32_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SInt32 : public AbstractScalarType<SInt32, int32_t>{
+        class SInt32 : public AbstractScalarType<int32_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class UInt32 : public AbstractScalarType<UInt32, uint32_t>{
+        class UInt32 : public AbstractScalarType<uint32_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Fixed32 : public AbstractScalarType<Fixed32, uint32_t>{
+        class Fixed32 : public AbstractScalarType<uint32_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SFixed32 : public AbstractScalarType<SFixed32, int32_t>{
+        class SFixed32 : public AbstractScalarType<int32_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Float : public AbstractScalarType<Float, float>{
+        class Float : public AbstractScalarType<float>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Bool : public AbstractScalarType<Bool, bool>{
-        public:
-            static bool encode(pb_ostream_t *stream, const LocalType& value);
-            static bool decode(pb_istream_t *stream, LocalType& value);
-        };
-
-        /**
-         * NOTE: encode()/decode() **does NOT** add length for String/Bytes
-         */
-        class String : public AbstractScalarType<String, std::string>{
+        class Bool : public AbstractScalarType<bool>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
@@ -224,44 +215,53 @@ namespace NanoPb {
         /**
          * NOTE: encode()/decode() **does NOT** add length for String/Bytes
          */
-        class Bytes : public AbstractScalarType<Bytes, std::string>{ // use std::string as container
+        class String : public AbstractScalarType<std::string>{
+        public:
+            static bool encode(pb_ostream_t *stream, const LocalType& value);
+            static bool decode(pb_istream_t *stream, LocalType& value);
+        };
+
+        /**
+         * NOTE: encode()/decode() **does NOT** add length for String/Bytes
+         */
+        class Bytes : public AbstractScalarType<std::string>{ // use std::string as container
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
 #ifndef PB_WITHOUT_64BIT
-        class Int64 : public AbstractScalarType<Int64, int64_t>{
+        class Int64 : public AbstractScalarType<int64_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SInt64 : public AbstractScalarType<SInt64, int64_t>{
+        class SInt64 : public AbstractScalarType<int64_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class UInt64 : public AbstractScalarType<UInt64, uint64_t>{
+        class UInt64 : public AbstractScalarType<uint64_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Fixed64 : public AbstractScalarType<Fixed64, uint64_t>{
+        class Fixed64 : public AbstractScalarType<uint64_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SFixed64 : public AbstractScalarType<SFixed64, int64_t>{
+        class SFixed64 : public AbstractScalarType<int64_t>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Double : public AbstractScalarType<Double, double>{
+        class Double : public AbstractScalarType<double>{
         public:
             static bool encode(pb_ostream_t *stream, const LocalType& value);
             static bool decode(pb_istream_t *stream, LocalType& value);
@@ -443,7 +443,7 @@ namespace NanoPb {
         /**
          * Array converter for items
          *
-         * @tparam ITEM_CONVERTER
+         * @tparam ITEM_CONVERTER - Derived from MessageConverter class
          * @tparam CONTAINER can be std::vector<ITEM_CONVERTER::LocalType> or std::ITEM_CONVERTER::LocalType>
          *
          * NOTE: ITEM_CONVERTER::LocalType and CONTAINER::value_type should match each other
@@ -474,13 +474,12 @@ namespace NanoPb {
         /**
          * Converter for vector/list of sub-message
          *
-         * @tparam DERIVED - Derived class
+         * @tparam ITEM_CONVERTER - Derived from MessageConverter class
          * @tparam CONTEXT_CONTAINER - std::vector<ITEM_CONVERTER::LocalType> or std::list<ITEM_CONVERTER::LocalType>
-         * @tparam ITEM_CONVERTER - MessageConverter<...>
          */
-        template<class DERIVED, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
+        template<class ITEM_CONVERTER, class CONTEXT_CONTAINER>
         class ArrayMessageConverter : public CallbackConverter<
-                ArrayMessageConverter<DERIVED, CONTEXT_CONTAINER, ITEM_CONVERTER>,
+                ArrayMessageConverter<ITEM_CONVERTER, CONTEXT_CONTAINER>,
                 CONTEXT_CONTAINER>
         {
         private:

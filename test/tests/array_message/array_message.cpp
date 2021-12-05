@@ -42,9 +42,9 @@ public:
     using LocalType = LOCAL_TestMessage<CONTAINER>;
 private:
     class ItemsConverter : public ArrayMessageConverter<
-            ItemsConverter,
-            typename LOCAL_TestMessage<CONTAINER>::ItemsContainer ,
-            InnerMessageConverter>
+            InnerMessageConverter,
+            typename LOCAL_TestMessage<CONTAINER>::ItemsContainer
+            >
     {};
 
 public:
