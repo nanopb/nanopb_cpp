@@ -5,9 +5,10 @@
 using namespace NanoPb::Converter;
 
 enum class SimpleEnum {
-    Invalid = 0,
-    ValueOne = 1,
-    ValueTwo = 2
+    // Use other values than in proto, to be 100% sure
+    Invalid = 100,
+    ValueOne = 101,
+    ValueTwo = 102
 };
 
 
