@@ -273,6 +273,11 @@ namespace NanoPb {
         /**
          * Enum converter
          *
+         *  Derived class must implement next methods:
+         *
+         *      static ProtoType encode(const LocalType& local);
+         *      static LocalType decode(const ProtoType& proto);
+         *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
@@ -282,11 +287,6 @@ namespace NanoPb {
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
-
-        public:  // Should be overwritten in child class
-
-            static ProtoType encode(const LocalType& local);
-            static LocalType decode(const ProtoType& proto);
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
@@ -309,6 +309,12 @@ namespace NanoPb {
         /**
          * Message converter
          *
+         *  Derived class must implement next methods:
+         *
+         *      static ProtoType encoderInit(const LocalType& local);
+         *      static ProtoType decoderInit(LocalType& local);
+         *      static bool decoderApply(const ProtoType& proto, LocalType& local);
+         *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
@@ -322,16 +328,17 @@ namespace NanoPb {
 
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
-
-        public:  // Should be overwritten in child class
-
-            static ProtoType encoderInit(const LocalType& local);
-            static ProtoType decoderInit(LocalType& local);
-            static bool decoderApply(const ProtoType& proto, LocalType& local);
         };
 
         /**
          * Union message converter
+         *
+         *  Derived class must implement:
+         *
+         *      - all methods from MessageConverter.
+         *      - additional methods:
+         *
+         *          static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
          *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
@@ -346,13 +353,6 @@ namespace NanoPb {
 
             static pb_callback_t unionDecoderInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _unionDecodeCallback }, .arg = (void*)&local }; }
 
-        public:  // Should be overwritten in child class
-
-            static ProtoType encoderInit(const LocalType& local);
-            static ProtoType decoderInit(LocalType& local);
-            static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
-            static bool decoderApply(const ProtoType& proto, LocalType& local);
-
         private:
             static bool _unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
                 return CONVERTER::unionDecodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
@@ -361,6 +361,11 @@ namespace NanoPb {
 
         /**
          * Callback converter
+         *
+         *  Derived class must implement next methods:
+         *
+         *      static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
+         *      static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
          *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
@@ -372,11 +377,6 @@ namespace NanoPb {
         public:
             static pb_callback_t encoderCallbackInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
             static pb_callback_t decoderCallbackInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
-
-        public:  // Should be overwritten in child class
-
-            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
-            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
 
         private:
             static bool _pbEncodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
@@ -401,7 +401,6 @@ namespace NanoPb {
             using LocalType = typename SCALAR::LocalType;
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
-                //FIXME: Add assert on field type
                 if (!pb_encode_tag_for_field(stream, field))
                     return false;
                 return SCALAR::encode(stream, local);
@@ -450,7 +449,8 @@ namespace NanoPb {
          * NOTE: ITEM_CONVERTER::LocalType and CONTAINER::value_type should match each other
          */
         template<class ITEM_CONVERTER, class CONTAINER>
-        class ArrayConverter : public CallbackConverter<ArrayConverter<ITEM_CONVERTER, CONTAINER>,CONTAINER> {
+        class ArrayConverter : public CallbackConverter<ArrayConverter<ITEM_CONVERTER, CONTAINER>,CONTAINER>
+        {
             static_assert(std::is_same<typename ITEM_CONVERTER::LocalType, typename CONTAINER::value_type>::value,
                     "ITEM_CONVERTER::LocalType and CONTAINER::value_type should be same type");
         public:
@@ -508,9 +508,15 @@ namespace NanoPb {
         /**
          * Converter for map
          *
+         *  Derived class must implement next methods:
+         *
+         *      static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue);
+         *      static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue);
+         *      static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue);
+         *
          * @tparam CONVERTER - Derived class
          * @tparam CONTAINER - std::map<> of any type
-         * @tparam PROTO_PAIR_TYPE - NanoPb XXX_xxxEntry struct, where xxx is map fild
+         * @tparam PROTO_PAIR_TYPE - NanoPb XXX_xxxEntry struct, where xxx is map field
          * @tparam PROTO_PAIR_TYPE_MSG - NanoPb msg descriptor for PROTO_PAIR_TYPE
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
@@ -525,12 +531,6 @@ namespace NanoPb {
 
         private:
             using ContextPairType = std::pair<LocalKeyType,LocalValueType>;
-
-        public:
-
-            static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue);
-            static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue);
-            static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue);
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTAINER &container){
