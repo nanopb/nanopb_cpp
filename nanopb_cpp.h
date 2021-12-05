@@ -285,7 +285,6 @@ namespace NanoPb {
         class CallbackConverter {
         public:
             using LocalType = LOCAL_TYPE;
-            using ProtoType = pb_callback_t;
         public:
             static pb_callback_t encoderCallbackInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
             static pb_callback_t decoderCallbackInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
@@ -316,7 +315,10 @@ namespace NanoPb {
          * @tparam PROTO_TYPE - NanoPb type
          */
         template<class DERIVED, class LOCAL_TYPE, class PROTO_TYPE>
-        class EnumConverter {
+        class EnumConverter : public CallbackConverter<
+                EnumConverter<DERIVED, LOCAL_TYPE, PROTO_TYPE>,
+                LOCAL_TYPE>
+        {
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
@@ -336,7 +338,15 @@ namespace NanoPb {
                 local = DERIVED::decode(static_cast<ProtoType>(v));
                 return true;
             }
-            // FIXME: Add apply() method to make compatible with base converter
+        public:
+            static ProtoType encoderInit(const LocalType& local){
+                return DERIVED::encode(local);
+            }
+            static ProtoType decoderInit(LocalType& local){ return ProtoType{}; }
+            static bool decoderApply(const ProtoType& proto, LocalType& local){
+                local =  DERIVED::decode(proto);
+                return true;
+            }
         public: // for internal use
             template<class T> static void _mapEncoderApply(T& pair){}
         };
@@ -467,16 +477,19 @@ namespace NanoPb {
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
         public:
-            static ProtoType encoderInit(const LocalType& local){ return encoderCallbackInit(local);}
-            static ProtoType decoderInit(LocalType& local){ return decoderCallbackInit(local);}
-            static bool decoderApply(const ProtoType& proto, LocalType& local){ return true;/* nothing to apply */}
+            static pb_callback_t encoderInit(const LocalType& local){ return encoderCallbackInit(local);}
+            static pb_callback_t decoderInit(LocalType& local){ return decoderCallbackInit(local);}
+            static bool decoderApply(const pb_callback_t& proto, LocalType& local){ return true;/* nothing to apply */}
         };
 
         class BytesConverter : public CallbackConverter<BytesConverter, std::string> {
-            //FIXME: add encoderInit/decoderInit/decoderApply methods
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
+        public:
+            static pb_callback_t encoderInit(const LocalType& local){ return encoderCallbackInit(local);}
+            static pb_callback_t decoderInit(LocalType& local){ return decoderCallbackInit(local);}
+            static bool decoderApply(const pb_callback_t& proto, LocalType& local){ return true;/* nothing to apply */}
         };
 
         /**
