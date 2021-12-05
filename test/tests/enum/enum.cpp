@@ -32,7 +32,6 @@ public:
         }
         return SimpleEnum::Invalid;
     };
-
 };
 
 int testEnumItem(SimpleEnum local, PROTO_SimpleEnum proto){

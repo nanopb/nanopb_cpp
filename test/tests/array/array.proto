@@ -2,48 +2,59 @@ syntax = "proto3";
 
 package PROTO;
 
+enum SimpleEnum {
+  Invalid = 0;
+  ValueOne = 1;
+  ValueTwo = 2;
+}
+
 message Repeated_Int32 {
   repeated int32 values = 1;
 }
 message Repeated_SInt32 {
-  repeated sint32 values = 2;
+  repeated sint32 values = 1;
 }
 message Repeated_UInt32 {
-  repeated uint32 values = 3;
+  repeated uint32 values = 1;
 }
 message Repeated_Fixed32 {
-  repeated fixed32 values = 4;
+  repeated fixed32 values = 1;
 }
 message Repeated_SFixed32 {
-  repeated sfixed32 values = 5;
+  repeated sfixed32 values = 1;
 }
 message Repeated_Float {
-  repeated float values = 6;
+  repeated float values = 1;
 }
 message Repeated_Bool {
-  repeated bool values = 7;
+  repeated bool values = 1;
 }
 message Repeated_String {
-  repeated string values = 8;
+  repeated string values = 1;
 }
 message Repeated_Bytes {
-  repeated bytes values = 9;
+  repeated bytes values = 1;
 }
 message Repeated_Int64 {
-  repeated int64 values = 10;
+  repeated int64 values = 1;
 }
 message Repeated_SInt64 {
-  repeated sint64 values = 11;
+  repeated sint64 values = 1;
 }
 message Repeated_UInt64 {
-  repeated uint64 values = 12;
+  repeated uint64 values = 1;
 }
 message Repeated_Fixed64 {
-  repeated fixed64 values = 13;
+  repeated fixed64 values = 1;
 }
 message Repeated_SFixed64 {
-  repeated sfixed64 values = 14;
+  repeated sfixed64 values = 1;
 }
 message Repeated_Double {
-  repeated double values = 15;
+  repeated double values = 1;
 }
+
+message Repeated_Enum {
+  repeated SimpleEnum values = 1;
+}
+

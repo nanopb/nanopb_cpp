@@ -8,6 +8,39 @@
 
 using namespace NanoPb::Converter;
 
+enum class SimpleEnum {
+    Invalid = 0,
+    ValueOne = 1,
+    ValueTwo = 2
+};
+
+
+class SimpleEnumConverter: public NanoPb::Converter::EnumConverter<SimpleEnumConverter, SimpleEnum, PROTO_SimpleEnum> {
+public:
+    static ProtoType encode(const LocalType& local){
+        switch (local) {
+            case SimpleEnum::Invalid:
+                return PROTO_SimpleEnum_Invalid;
+            case SimpleEnum::ValueOne:
+                return PROTO_SimpleEnum_ValueOne;
+            case SimpleEnum::ValueTwo:
+                return PROTO_SimpleEnum_ValueTwo;
+        }
+        return PROTO_SimpleEnum_Invalid;
+    };
+    static LocalType decode(const ProtoType& proto){
+        switch (proto) {
+            case PROTO_SimpleEnum_Invalid:
+                return SimpleEnum::Invalid;
+            case PROTO_SimpleEnum_ValueOne:
+                return SimpleEnum::ValueOne;
+            case PROTO_SimpleEnum_ValueTwo:
+                return SimpleEnum::ValueTwo;
+        }
+        return SimpleEnum::Invalid;
+    };
+};
+
 template <class CONTAINER>
 struct LOCAL_TestMessage {
     using ContainerType = CONTAINER;
@@ -140,6 +173,24 @@ int main() {
     TEST_ARRAY(Double,  std::vector<double>,    {DBL_MIN _ 0 _ DBL_MAX});
     TEST_ARRAY(Double,  std::list<double>,      {DBL_MIN _ 0 _ DBL_MAX});
 #endif
+
+    // ENUM
+    bool enumVector = testRepeated<
+        SimpleEnumConverter,
+        std::vector<SimpleEnum>,
+        PROTO_Repeated_Enum,
+        &PROTO_Repeated_Enum_msg
+    >({SimpleEnum::Invalid, SimpleEnum::ValueOne, SimpleEnum::ValueTwo});
+    TEST(enumVector);
+
+    bool enumList = testRepeated<
+            SimpleEnumConverter,
+            std::list<SimpleEnum>,
+            PROTO_Repeated_Enum,
+            &PROTO_Repeated_Enum_msg
+    >({SimpleEnum::Invalid, SimpleEnum::ValueOne, SimpleEnum::ValueTwo});
+    TEST(enumList);
+
 
 
 #ifndef PB_WITHOUT_64BIT

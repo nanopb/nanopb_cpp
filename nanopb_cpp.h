@@ -287,6 +287,22 @@ namespace NanoPb {
 
             static ProtoType encode(const LocalType& local);
             static LocalType decode(const ProtoType& proto);
+
+        public:
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
+                if (!pb_encode_tag_for_field(stream, field))
+                    return false;
+                ProtoType v = CONVERTER::encode(local);
+                return Type::Int32::rawEncode(stream, v);
+            }
+
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
+                int32_t v;
+                if (!Type::Int32::rawDecode(stream, v))
+                    return false;
+                local = CONVERTER::decode(static_cast<ProtoType>(v));
+                return true;
+            }
         };
 
 
