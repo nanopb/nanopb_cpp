@@ -328,6 +328,17 @@ namespace NanoPb {
 
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
+
+        public:
+            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
+                if (!pb_encode_tag_for_field(stream, field))
+                    return false;
+                return encodeSubMessage<DERIVED>(*stream, local);
+            }
+
+            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
+                return decode<DERIVED>(*stream, local);
+            }
         };
 
         /**
@@ -462,50 +473,16 @@ namespace NanoPb {
                 return true;
             }
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTAINER &container){
-                typename ITEM_CONVERTER::LocalType item;
+                container.push_back(typename ITEM_CONVERTER::LocalType());
+                typename ITEM_CONVERTER::LocalType& item = *container.rbegin();
                 if (!ITEM_CONVERTER::decodeCallback(stream, field, item))
                     return false;
-                container.push_back(item);
-                return true;
-            }
-        };
-
-
-        /**
-         * Converter for vector/list of sub-message
-         *
-         * @tparam ITEM_CONVERTER - Derived from MessageConverter class
-         * @tparam CONTEXT_CONTAINER - std::vector<ITEM_CONVERTER::LocalType> or std::list<ITEM_CONVERTER::LocalType>
-         */
-        template<class ITEM_CONVERTER, class CONTEXT_CONTAINER>
-        class ArrayMessageConverter : public CallbackConverter<
-                ArrayMessageConverter<ITEM_CONVERTER, CONTEXT_CONTAINER>,
-                CONTEXT_CONTAINER>
-        {
-        private:
-            using ContextItem = typename CONTEXT_CONTAINER::value_type;
-        public:
-            static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const CONTEXT_CONTAINER &container){
-                for (auto &item: container) {
-                    if (!pb_encode_tag_for_field(stream, field))
-                        return false;
-                    if (!encodeSubMessage<ITEM_CONVERTER>(*stream, item))
-                        return false;
-                }
-                return true;
-            }
-
-            static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, CONTEXT_CONTAINER &container){
-                container.push_back(ContextItem());
-                ContextItem& v = *container.rbegin();
-                if (!decode<ITEM_CONVERTER>(*stream, v))
-                    return false;
                 return true;
             }
         };
 
         /**
-         * Converter for map
+         * Map converter
          *
          *  Derived class must implement next methods:
          *

@@ -41,7 +41,7 @@ public:
     using ProtoType = typename OuterMessageConverter<CONTAINER>::ProtoType;
     using LocalType = LOCAL_TestMessage<CONTAINER>;
 private:
-    class ItemsConverter : public ArrayMessageConverter<
+    class ItemsConverter : public ArrayConverter<
             InnerMessageConverter,
             typename LOCAL_TestMessage<CONTAINER>::ItemsContainer
             >

@@ -86,8 +86,7 @@ All scalar converters are derived from `CallbackConverter` class.
 
 All container converters are derived from `CallbackConverter` class.
 
-* `ArrayConverter` - Array converter for `std::vector<xxx>` or `std::list<xxx>`.
-* `ArrayMessageConverter` - Repeated convertor for `std::vector<CLASS>` or `std::list<CLASS>`. 
+* `ArrayConverter` - Array converter for `std::vector<xxx>` or `std::list<xxx>`. 
 * `MapConverter` - Map with any type of the key and value.
 
 ## Install
@@ -217,6 +216,10 @@ if (!NanoPb::decode<TestMessageConverter>(inputStream, decoded)){
     // decode error
 }
 ```
+
+## Limitations
+
+* ArrayConverter can't work with `std::vector<bool>`, because it has specific implementation which is not compatible with standard behavior.
 
 [protobuf]: https://developers.google.com/protocol-buffers
 [nanopb]: https://github.com/nanopb/nanopb
