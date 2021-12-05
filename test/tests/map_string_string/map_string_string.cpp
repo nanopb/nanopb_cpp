@@ -29,7 +29,7 @@ class TestMessageConverter : public MessageConverter<
         &PROTO_TestMessage_msg>
 {
 private:
-    class ValuesConverter : public MapCallbackConverter<
+    class ValuesConverter : public MapConverter<
             ValuesConverter,
             LOCAL_TestMessage::SimpleMapType,
             PROTO_TestMessage_ItemsEntry,
@@ -38,14 +38,14 @@ private:
     public:
         static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
             return ProtoPairType{
-                    .key = StringCallbackConverter::encoderCallbackInit(localKey),
-                    .value = StringCallbackConverter::encoderCallbackInit(localValue)
+                    .key = StringConverter::encoderCallbackInit(localKey),
+                    .value = StringConverter::encoderCallbackInit(localValue)
             };
         }
         static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
             return ProtoPairType{
-                    .key = StringCallbackConverter::decoderCallbackInit(localKey),
-                    .value = StringCallbackConverter::decoderCallbackInit(localValue)
+                    .key = StringConverter::decoderCallbackInit(localKey),
+                    .value = StringConverter::decoderCallbackInit(localValue)
             };
         }
         static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){

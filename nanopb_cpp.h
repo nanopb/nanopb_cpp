@@ -345,8 +345,6 @@ namespace NanoPb {
         /**
          * Callback converter
          *
-         *  See StringCallbackConverter for the example implementation
-         *
          * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
          */
@@ -381,7 +379,7 @@ namespace NanoPb {
          * @tparam SCALAR - Scalar with one of listed above wire type.
          */
         template <class CONVERTER, class SCALAR>
-        class AbstractScalarCallbackConverter : public CallbackConverter<CONVERTER, typename SCALAR::LocalType> {
+        class AbstractScalarConverter : public CallbackConverter<CONVERTER, typename SCALAR::LocalType> {
         public:
             using LocalType = typename SCALAR::LocalType;
         public:
@@ -397,30 +395,30 @@ namespace NanoPb {
         };
 
         /**
-         * Set of basic scalar types converters to used in ArrayCallbackConverter and other cases
+         * Set of basic scalar types converters to used in ArrayConverter and other cases
          */
-        class Int32CallbackConverter : public AbstractScalarCallbackConverter<Int32CallbackConverter,Type::Int32> {};
-        class SInt32CallbackConverter : public AbstractScalarCallbackConverter<SInt32CallbackConverter,Type::SInt32> {};
-        class UInt32CallbackConverter : public AbstractScalarCallbackConverter<UInt32CallbackConverter,Type::UInt32> {};
-        class Fixed32CallbackConverter : public AbstractScalarCallbackConverter<Fixed32CallbackConverter,Type::Fixed32> {};
-        class SFixed32CallbackConverter : public AbstractScalarCallbackConverter<SFixed32CallbackConverter,Type::SFixed32> {};
-        class FloatCallbackConverter : public AbstractScalarCallbackConverter<FloatCallbackConverter,Type::Float> {};
-        class BoolCallbackConverter : public AbstractScalarCallbackConverter<BoolCallbackConverter,Type::Bool> {};
+        class Int32Converter : public AbstractScalarConverter<Int32Converter,Type::Int32> {};
+        class SInt32Converter : public AbstractScalarConverter<SInt32Converter,Type::SInt32> {};
+        class UInt32Converter : public AbstractScalarConverter<UInt32Converter,Type::UInt32> {};
+        class Fixed32Converter : public AbstractScalarConverter<Fixed32Converter,Type::Fixed32> {};
+        class SFixed32Converter : public AbstractScalarConverter<SFixed32Converter,Type::SFixed32> {};
+        class FloatConverter : public AbstractScalarConverter<FloatConverter,Type::Float> {};
+        class BoolConverter : public AbstractScalarConverter<BoolConverter,Type::Bool> {};
 #ifndef PB_WITHOUT_64BIT
-        class Int64CallbackConverter : public AbstractScalarCallbackConverter<Int64CallbackConverter,Type::Int64> {};
-        class SInt64CallbackConverter : public AbstractScalarCallbackConverter<SInt64CallbackConverter,Type::SInt64> {};
-        class UInt64CallbackConverter : public AbstractScalarCallbackConverter<UInt64CallbackConverter,Type::UInt64> {};
-        class Fixed64CallbackConverter : public AbstractScalarCallbackConverter<Fixed64CallbackConverter,Type::Fixed64> {};
-        class SFixed64CallbackConverter : public AbstractScalarCallbackConverter<SFixed64CallbackConverter,Type::SFixed64> {};
-        class DoubleCallbackConverter : public AbstractScalarCallbackConverter<DoubleCallbackConverter,Type::Double> {};
+        class Int64Converter : public AbstractScalarConverter<Int64Converter,Type::Int64> {};
+        class SInt64Converter : public AbstractScalarConverter<SInt64Converter,Type::SInt64> {};
+        class UInt64Converter : public AbstractScalarConverter<UInt64Converter,Type::UInt64> {};
+        class Fixed64Converter : public AbstractScalarConverter<Fixed64Converter,Type::Fixed64> {};
+        class SFixed64Converter : public AbstractScalarConverter<SFixed64Converter,Type::SFixed64> {};
+        class DoubleConverter : public AbstractScalarConverter<DoubleConverter,Type::Double> {};
 #endif
-        class StringCallbackConverter : public CallbackConverter<StringCallbackConverter, std::string> {
+        class StringConverter : public CallbackConverter<StringConverter, std::string> {
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
         };
 
-        class BytesCallbackConverter : public CallbackConverter<BytesCallbackConverter, std::string> {
+        class BytesConverter : public CallbackConverter<BytesConverter, std::string> {
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
@@ -435,7 +433,7 @@ namespace NanoPb {
          * NOTE: ITEM_CONVERTER::LocalType and CONTAINER::value_type should match each other
          */
         template<class ITEM_CONVERTER, class CONTAINER>
-        class ArrayCallbackConverter : public CallbackConverter<ArrayCallbackConverter<ITEM_CONVERTER, CONTAINER>,CONTAINER> {
+        class ArrayConverter : public CallbackConverter<ArrayConverter<ITEM_CONVERTER, CONTAINER>,CONTAINER> {
             static_assert(std::is_same<typename ITEM_CONVERTER::LocalType, typename CONTAINER::value_type>::value,
                     "ITEM_CONVERTER::LocalType and CONTAINER::value_type should be same type");
         public:
@@ -464,8 +462,8 @@ namespace NanoPb {
          * @tparam ITEM_CONVERTER - MessageConverter<...>
          */
         template<class CONVERTER, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
-        class ArrayMessageCallbackConverter : public CallbackConverter<
-                ArrayMessageCallbackConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
+        class ArrayMessageConverter : public CallbackConverter<
+                ArrayMessageConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
                 CONTEXT_CONTAINER>
         {
         private:
@@ -499,8 +497,8 @@ namespace NanoPb {
          * @tparam PROTO_PAIR_TYPE_MSG - NanoPb msg descriptor for PROTO_PAIR_TYPE
          */
         template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
-        class MapCallbackConverter : public CallbackConverter<
-                MapCallbackConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
+        class MapConverter : public CallbackConverter<
+                MapConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                 CONTAINER>
         {
         protected:

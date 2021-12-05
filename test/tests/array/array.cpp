@@ -43,13 +43,13 @@ private:
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .values = ArrayCallbackConverter<ITEM_CONVERTER, ContainerType>::encoderCallbackInit(local.values)
+                .values = ArrayConverter<ITEM_CONVERTER, ContainerType>::encoderCallbackInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayCallbackConverter<ITEM_CONVERTER, ContainerType>::decoderCallbackInit(local.values)
+                .values = ArrayConverter<ITEM_CONVERTER, ContainerType>::decoderCallbackInit(local.values)
         };
     }
 
@@ -81,7 +81,7 @@ bool testRepeated(const CONTAINER& values){
 #define TEST_ARRAY(PROTO_TYPE, LOCAL_TYPE, VALUES)  \
     {                                               \
     bool CONCAT(result,PROTO_TYPE) = testRepeated<                     \
-        CONCAT(PROTO_TYPE,CallbackConverter),       \
+        CONCAT(PROTO_TYPE,Converter),       \
         LOCAL_TYPE,                                 \
         CONCAT(PROTO_Repeated_,PROTO_TYPE),         \
         &CONCAT3(PROTO_Repeated_,PROTO_TYPE,_msg)   \

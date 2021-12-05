@@ -29,13 +29,13 @@ class TestMessageConverter : public MessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType{
-                .str = StringCallbackConverter::encoderCallbackInit(local.str)
+                .str = StringConverter::encoderCallbackInit(local.str)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .str = StringCallbackConverter::decoderCallbackInit(local.str)
+                .str = StringConverter::decoderCallbackInit(local.str)
         };
     }
 
