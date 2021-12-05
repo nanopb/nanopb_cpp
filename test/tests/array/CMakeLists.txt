@@ -5,5 +5,6 @@ nanopb_cpp_add_test(array
         PROTO
             array.proto
             ../../common/simple_enum.proto
+            ../../common/inner_message.proto
 
         )

@@ -1,9 +1,11 @@
 syntax = "proto3";
 
 import "simple_enum.proto";
+import "inner_message.proto";
 
 package PROTO;
 
+// Scalar types
 message Repeated_Int32 {
   repeated int32 values = 1;
 }
@@ -50,7 +52,13 @@ message Repeated_Double {
   repeated double values = 1;
 }
 
+// Complicated types
+
 message Repeated_SimpleEnum {
   repeated SimpleEnum values = 1;
+}
+
+message Repeated_InnerMessage {
+  repeated InnerMessage values = 1;
 }
 

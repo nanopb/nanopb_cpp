@@ -5,6 +5,7 @@
 
 #include "tests_common.h"
 #include "simple_enum.hpp"
+#include "inner_message.hpp"
 #include "array.pb.h"
 
 using namespace NanoPb::Converter;
@@ -18,7 +19,7 @@ struct LOCAL_TestMessage {
     LOCAL_TestMessage() = default;
     LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
     LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
-    LOCAL_TestMessage(const ContainerType& values) : values(values) {}
+    LOCAL_TestMessage(ContainerType&& values) : values(std::move(values)) {}
 
     bool operator==(const LOCAL_TestMessage &rhs) const {
         return values == rhs.values;
@@ -61,8 +62,8 @@ public:
 
 
 template <class ITEM_CONVERTER, class CONTAINER, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-bool testRepeated(const CONTAINER& values){
-    const LOCAL_TestMessage<CONTAINER> original(values);
+bool testRepeated(CONTAINER&& values){
+    const LOCAL_TestMessage<CONTAINER> original(std::move(values));
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
@@ -145,6 +146,10 @@ int main() {
 
     TEST_ARRAY(SimpleEnum,  std::vector<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
     TEST_ARRAY(SimpleEnum,  std::list<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
+
+    TEST_ARRAY(InnerMessage,  std::vector<LOCAL_InnerMessage>, LOCAL_InnerMessage::createTestMessages<std::vector<LOCAL_InnerMessage>>());
+    TEST_ARRAY(InnerMessage,  std::list<LOCAL_InnerMessage>, LOCAL_InnerMessage::createTestMessages<std::list<LOCAL_InnerMessage>>());
+
 
     return status;
 }
