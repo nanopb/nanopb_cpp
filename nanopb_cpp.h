@@ -163,59 +163,50 @@ namespace NanoPb {
      *      rawEncode()/rawDecode()
      *
      */
-    namespace ScalarType {
-        template<class LOCAL_TYPE>
+    namespace Type {
+        template<class TYPE, class LOCAL_TYPE>
         class AbstractScalarType {
         public:
             using LocalType = LOCAL_TYPE;
         };
-        
-        class Int32 : public AbstractScalarType<int32_t>{
+
+        class Int32 : public AbstractScalarType<Int32, int32_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SInt32 : public AbstractScalarType<int32_t>{
+        class SInt32 : public AbstractScalarType<SInt32, int32_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class UInt32 : public AbstractScalarType<uint32_t>{
+        class UInt32 : public AbstractScalarType<UInt32, uint32_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Fixed32 : public AbstractScalarType<uint32_t>{
+        class Fixed32 : public AbstractScalarType<Fixed32, uint32_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SFixed32 : public AbstractScalarType<int32_t>{
+        class SFixed32 : public AbstractScalarType<SFixed32, int32_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Float : public AbstractScalarType<float>{
+        class Float : public AbstractScalarType<Float, float>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Bool : public AbstractScalarType<bool>{
-        public:
-            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
-            static bool rawDecode(pb_istream_t *stream, LocalType& value);
-        };
-
-        /**
-         * NOTE: rawEncode()/rawDecode() **does NOT** add length for String/Bytes
-         */
-        class String : public AbstractScalarType<std::string>{
+        class Bool : public AbstractScalarType<Bool, bool>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
@@ -224,44 +215,53 @@ namespace NanoPb {
         /**
          * NOTE: rawEncode()/rawDecode() **does NOT** add length for String/Bytes
          */
-        class Bytes : public AbstractScalarType<std::string>{ // use std::string as container
+        class String : public AbstractScalarType<String, std::string>{
+        public:
+            static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
+            static bool rawDecode(pb_istream_t *stream, LocalType& value);
+        };
+
+        /**
+         * NOTE: rawEncode()/rawDecode() **does NOT** add length for String/Bytes
+         */
+        class Bytes : public AbstractScalarType<Bytes, std::string>{ // use std::string as container
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
 #ifndef PB_WITHOUT_64BIT
-        class Int64 : public AbstractScalarType<int64_t>{
+        class Int64 : public AbstractScalarType<Int64, int64_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SInt64 : public AbstractScalarType<int64_t>{
+        class SInt64 : public AbstractScalarType<SInt64, int64_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class UInt64 : public AbstractScalarType<uint64_t>{
+        class UInt64 : public AbstractScalarType<UInt64, uint64_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Fixed64 : public AbstractScalarType<uint64_t>{
+        class Fixed64 : public AbstractScalarType<Fixed64, uint64_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class SFixed64 : public AbstractScalarType<int64_t>{
+        class SFixed64 : public AbstractScalarType<SFixed64, int64_t>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
         };
 
-        class Double : public AbstractScalarType<double>{
+        class Double : public AbstractScalarType<Double, double>{
         public:
             static bool rawEncode(pb_ostream_t *stream, const LocalType& value);
             static bool rawDecode(pb_istream_t *stream, LocalType& value);
@@ -398,20 +398,20 @@ namespace NanoPb {
         /**
          * Set of basic scalar types converters to used in ArrayCallbackConverter and other cases
          */
-        class Int32CallbackConverter : public AbstractScalarCallbackConverter<Int32CallbackConverter,ScalarType::Int32> {};
-        class SInt32CallbackConverter : public AbstractScalarCallbackConverter<SInt32CallbackConverter,ScalarType::SInt32> {};
-        class UInt32CallbackConverter : public AbstractScalarCallbackConverter<UInt32CallbackConverter,ScalarType::UInt32> {};
-        class Fixed32CallbackConverter : public AbstractScalarCallbackConverter<Fixed32CallbackConverter,ScalarType::Fixed32> {};
-        class SFixed32CallbackConverter : public AbstractScalarCallbackConverter<SFixed32CallbackConverter,ScalarType::SFixed32> {};
-        class FloatCallbackConverter : public AbstractScalarCallbackConverter<FloatCallbackConverter,ScalarType::Float> {};
-        class BoolCallbackConverter : public AbstractScalarCallbackConverter<BoolCallbackConverter,ScalarType::Bool> {};
+        class Int32CallbackConverter : public AbstractScalarCallbackConverter<Int32CallbackConverter,Type::Int32> {};
+        class SInt32CallbackConverter : public AbstractScalarCallbackConverter<SInt32CallbackConverter,Type::SInt32> {};
+        class UInt32CallbackConverter : public AbstractScalarCallbackConverter<UInt32CallbackConverter,Type::UInt32> {};
+        class Fixed32CallbackConverter : public AbstractScalarCallbackConverter<Fixed32CallbackConverter,Type::Fixed32> {};
+        class SFixed32CallbackConverter : public AbstractScalarCallbackConverter<SFixed32CallbackConverter,Type::SFixed32> {};
+        class FloatCallbackConverter : public AbstractScalarCallbackConverter<FloatCallbackConverter,Type::Float> {};
+        class BoolCallbackConverter : public AbstractScalarCallbackConverter<BoolCallbackConverter,Type::Bool> {};
 #ifndef PB_WITHOUT_64BIT
-        class Int64CallbackConverter : public AbstractScalarCallbackConverter<Int64CallbackConverter,ScalarType::Int64> {};
-        class SInt64CallbackConverter : public AbstractScalarCallbackConverter<SInt64CallbackConverter,ScalarType::SInt64> {};
-        class UInt64CallbackConverter : public AbstractScalarCallbackConverter<UInt64CallbackConverter,ScalarType::UInt64> {};
-        class Fixed64CallbackConverter : public AbstractScalarCallbackConverter<Fixed64CallbackConverter,ScalarType::Fixed64> {};
-        class SFixed64CallbackConverter : public AbstractScalarCallbackConverter<SFixed64CallbackConverter,ScalarType::SFixed64> {};
-        class DoubleCallbackConverter : public AbstractScalarCallbackConverter<DoubleCallbackConverter,ScalarType::Double> {};
+        class Int64CallbackConverter : public AbstractScalarCallbackConverter<Int64CallbackConverter,Type::Int64> {};
+        class SInt64CallbackConverter : public AbstractScalarCallbackConverter<SInt64CallbackConverter,Type::SInt64> {};
+        class UInt64CallbackConverter : public AbstractScalarCallbackConverter<UInt64CallbackConverter,Type::UInt64> {};
+        class Fixed64CallbackConverter : public AbstractScalarCallbackConverter<Fixed64CallbackConverter,Type::Fixed64> {};
+        class SFixed64CallbackConverter : public AbstractScalarCallbackConverter<SFixed64CallbackConverter,Type::SFixed64> {};
+        class DoubleCallbackConverter : public AbstractScalarCallbackConverter<DoubleCallbackConverter,Type::Double> {};
 #endif
 
         /**

@@ -3,7 +3,7 @@
 #include "tests_common.h"
 #include "nanopb_cpp.h"
 
-using namespace NanoPb::ScalarType;
+using namespace NanoPb::Type;
 
 template <class SCALAR>
 bool scalarTest(typename SCALAR::LocalType original){

@@ -108,12 +108,12 @@ bool NanoPb::Converter::StringCallbackConverter::decodeCallback(pb_istream_t *st
 
 /****************************************************************************************************************/
 
-bool NanoPb::ScalarType::Int32::rawEncode(pb_ostream_t *stream, const int32_t &value) {
+bool NanoPb::Type::Int32::rawEncode(pb_ostream_t *stream, const int32_t &value) {
     pb_int64_t v = value;
     return pb_encode_svarint(stream, v);
 }
 
-bool NanoPb::ScalarType::Int32::rawDecode(pb_istream_t *stream, int32_t &value) {
+bool NanoPb::Type::Int32::rawDecode(pb_istream_t *stream, int32_t &value) {
     pb_int64_t v;
     if (!pb_decode_svarint(stream, &v))
         return false;
@@ -123,12 +123,12 @@ bool NanoPb::ScalarType::Int32::rawDecode(pb_istream_t *stream, int32_t &value) 
 
 /******************************************/
 
-bool NanoPb::ScalarType::SInt32::rawEncode(pb_ostream_t *stream, const int32_t &value) {
+bool NanoPb::Type::SInt32::rawEncode(pb_ostream_t *stream, const int32_t &value) {
     pb_int64_t v = value;
     return pb_encode_svarint(stream, v);
 }
 
-bool NanoPb::ScalarType::SInt32::rawDecode(pb_istream_t *stream, int32_t &value) {
+bool NanoPb::Type::SInt32::rawDecode(pb_istream_t *stream, int32_t &value) {
     pb_int64_t v;
     if (!pb_decode_svarint(stream, &v))
         return false;
@@ -138,52 +138,52 @@ bool NanoPb::ScalarType::SInt32::rawDecode(pb_istream_t *stream, int32_t &value)
 
 /******************************************/
 
-bool NanoPb::ScalarType::UInt32::rawEncode(pb_ostream_t *stream, const uint32_t &value) {
+bool NanoPb::Type::UInt32::rawEncode(pb_ostream_t *stream, const uint32_t &value) {
     return pb_encode_varint(stream, value);
 }
 
-bool NanoPb::ScalarType::UInt32::rawDecode(pb_istream_t *stream, uint32_t &value) {
+bool NanoPb::Type::UInt32::rawDecode(pb_istream_t *stream, uint32_t &value) {
     return pb_decode_varint32(stream, &value);
 }
 
 /******************************************/
 
-bool NanoPb::ScalarType::Fixed32::rawEncode(pb_ostream_t *stream, const uint32_t &value) {
+bool NanoPb::Type::Fixed32::rawEncode(pb_ostream_t *stream, const uint32_t &value) {
     return pb_encode_fixed32(stream, &value);
 }
 
-bool NanoPb::ScalarType::Fixed32::rawDecode(pb_istream_t *stream, uint32_t &value) {
+bool NanoPb::Type::Fixed32::rawDecode(pb_istream_t *stream, uint32_t &value) {
     return pb_decode_fixed32(stream, &value);
 }
 
 /******************************************/
 
-bool NanoPb::ScalarType::SFixed32::rawEncode(pb_ostream_t *stream, const int32_t &value) {
+bool NanoPb::Type::SFixed32::rawEncode(pb_ostream_t *stream, const int32_t &value) {
     return pb_encode_fixed32(stream, &value);
 }
 
-bool NanoPb::ScalarType::SFixed32::rawDecode(pb_istream_t *stream, int32_t &value) {
+bool NanoPb::Type::SFixed32::rawDecode(pb_istream_t *stream, int32_t &value) {
     return pb_decode_fixed32(stream, &value);
 }
 
 /******************************************/
 
-bool NanoPb::ScalarType::Float::rawEncode(pb_ostream_t *stream, const float &value) {
+bool NanoPb::Type::Float::rawEncode(pb_ostream_t *stream, const float &value) {
     return pb_encode_fixed32(stream, &value);
 }
 
-bool NanoPb::ScalarType::Float::rawDecode(pb_istream_t *stream, float &value) {
+bool NanoPb::Type::Float::rawDecode(pb_istream_t *stream, float &value) {
     return pb_decode_fixed32(stream, &value);
 }
 
 /******************************************/
 
-bool NanoPb::ScalarType::Bool::rawEncode(pb_ostream_t *stream, const bool &value) {
+bool NanoPb::Type::Bool::rawEncode(pb_ostream_t *stream, const bool &value) {
     uint32_t v = value;
     return pb_encode_varint(stream, v);
 }
 
-bool NanoPb::ScalarType::Bool::rawDecode(pb_istream_t *stream, bool &value) {
+bool NanoPb::Type::Bool::rawDecode(pb_istream_t *stream, bool &value) {
     uint32_t v;
     if (!pb_decode_varint32(stream, &v))
         return false;
@@ -193,11 +193,11 @@ bool NanoPb::ScalarType::Bool::rawDecode(pb_istream_t *stream, bool &value) {
 
 /******************************************/
 
-bool NanoPb::ScalarType::String::rawEncode(pb_ostream_t *stream, const std::string &value) {
+bool NanoPb::Type::String::rawEncode(pb_ostream_t *stream, const std::string &value) {
     return pb_write(stream, (const pb_byte_t *) value.data(), value.size());
 }
 
-bool NanoPb::ScalarType::String::rawDecode(pb_istream_t *stream, std::string &value) {
+bool NanoPb::Type::String::rawDecode(pb_istream_t *stream, std::string &value) {
     size_t len = stream->bytes_left;
     value.resize(len);
     return pb_read(stream, (pb_byte_t *) value.data(), len);
@@ -205,11 +205,11 @@ bool NanoPb::ScalarType::String::rawDecode(pb_istream_t *stream, std::string &va
 
 /******************************************/
 
-bool NanoPb::ScalarType::Bytes::rawEncode(pb_ostream_t *stream, const std::string &value) {
+bool NanoPb::Type::Bytes::rawEncode(pb_ostream_t *stream, const std::string &value) {
     return String::rawEncode(stream, value);
 }
 
-bool NanoPb::ScalarType::Bytes::rawDecode(pb_istream_t *stream, std::string &value) {
+bool NanoPb::Type::Bytes::rawDecode(pb_istream_t *stream, std::string &value) {
     return String::rawDecode(stream, value);
 }
 
@@ -217,11 +217,11 @@ bool NanoPb::ScalarType::Bytes::rawDecode(pb_istream_t *stream, std::string &val
 
 #ifndef PB_WITHOUT_64BIT
 
-bool NanoPb::ScalarType::Int64::rawEncode(pb_ostream_t *stream, const int64_t &value) {
+bool NanoPb::Type::Int64::rawEncode(pb_ostream_t *stream, const int64_t &value) {
     return pb_encode_svarint(stream, value);
 }
 
-bool NanoPb::ScalarType::Int64::rawDecode(pb_istream_t *stream, int64_t &value) {
+bool NanoPb::Type::Int64::rawDecode(pb_istream_t *stream, int64_t &value) {
     pb_int64_t v;
     if (!pb_decode_svarint(stream, &v))
         return false;
@@ -231,12 +231,12 @@ bool NanoPb::ScalarType::Int64::rawDecode(pb_istream_t *stream, int64_t &value) 
 
 /******************************************/
 
-bool NanoPb::ScalarType::SInt64::rawEncode(pb_ostream_t *stream, const int64_t &value) {
+bool NanoPb::Type::SInt64::rawEncode(pb_ostream_t *stream, const int64_t &value) {
     pb_int64_t v = value;
     return pb_encode_svarint(stream, v);
 }
 
-bool NanoPb::ScalarType::SInt64::rawDecode(pb_istream_t *stream, int64_t &value) {
+bool NanoPb::Type::SInt64::rawDecode(pb_istream_t *stream, int64_t &value) {
     pb_int64_t v;
     if (!pb_decode_svarint(stream, &v))
         return false;
@@ -246,11 +246,11 @@ bool NanoPb::ScalarType::SInt64::rawDecode(pb_istream_t *stream, int64_t &value)
 /******************************************/
 
 
-bool NanoPb::ScalarType::UInt64::rawEncode(pb_ostream_t *stream, const uint64_t &value) {
+bool NanoPb::Type::UInt64::rawEncode(pb_ostream_t *stream, const uint64_t &value) {
     return pb_encode_varint(stream, value);
 }
 
-bool NanoPb::ScalarType::UInt64::rawDecode(pb_istream_t *stream, uint64_t &value) {
+bool NanoPb::Type::UInt64::rawDecode(pb_istream_t *stream, uint64_t &value) {
     pb_uint64_t v;
     if (!pb_decode_varint(stream, &v))
         return false;
@@ -260,31 +260,31 @@ bool NanoPb::ScalarType::UInt64::rawDecode(pb_istream_t *stream, uint64_t &value
 
 /******************************************/
 
-bool NanoPb::ScalarType::Fixed64::rawEncode(pb_ostream_t *stream, const uint64_t &value) {
+bool NanoPb::Type::Fixed64::rawEncode(pb_ostream_t *stream, const uint64_t &value) {
     return pb_encode_fixed64(stream, &value);
 }
 
-bool NanoPb::ScalarType::Fixed64::rawDecode(pb_istream_t *stream, uint64_t &value) {
+bool NanoPb::Type::Fixed64::rawDecode(pb_istream_t *stream, uint64_t &value) {
     return pb_decode_fixed64(stream, &value);
 }
 
 /******************************************/
 
-bool NanoPb::ScalarType::SFixed64::rawEncode(pb_ostream_t *stream, const int64_t &value) {
+bool NanoPb::Type::SFixed64::rawEncode(pb_ostream_t *stream, const int64_t &value) {
     return pb_encode_fixed64(stream, &value);
 }
 
-bool NanoPb::ScalarType::SFixed64::rawDecode(pb_istream_t *stream, int64_t &value) {
+bool NanoPb::Type::SFixed64::rawDecode(pb_istream_t *stream, int64_t &value) {
     return pb_decode_fixed64(stream, &value);
 }
 
 /******************************************/
 
-bool NanoPb::ScalarType::Double::rawEncode(pb_ostream_t *stream, const double &value) {
+bool NanoPb::Type::Double::rawEncode(pb_ostream_t *stream, const double &value) {
     return pb_encode_fixed64(stream, &value);
 }
 
-bool NanoPb::ScalarType::Double::rawDecode(pb_istream_t *stream, double &value) {
+bool NanoPb::Type::Double::rawDecode(pb_istream_t *stream, double &value) {
     return pb_decode_fixed64(stream, &value);
 }
 #endif
