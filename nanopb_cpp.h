@@ -273,12 +273,13 @@ namespace NanoPb {
         /**
          * Enum converter
          *
+         * @tparam CONVERTER - Derived class
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
          */
-        template<class LOCAL_TYPE, class PROTO_TYPE>
+        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
         class EnumConverter {
-        protected:
+        public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
 
