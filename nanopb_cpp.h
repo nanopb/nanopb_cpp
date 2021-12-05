@@ -278,11 +278,11 @@ namespace NanoPb {
          *      static ProtoType encode(const LocalType& local);
          *      static LocalType decode(const ProtoType& proto);
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
          */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE>
+        template<class DERIVED, class LOCAL_TYPE, class PROTO_TYPE>
         class EnumConverter {
         public:
             using LocalType = LOCAL_TYPE;
@@ -292,7 +292,7 @@ namespace NanoPb {
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
                 if (!pb_encode_tag_for_field(stream, field))
                     return false;
-                ProtoType v = CONVERTER::encode(local);
+                ProtoType v = DERIVED::encode(local);
                 return Type::Int32::encode(stream, v);
             }
 
@@ -300,7 +300,7 @@ namespace NanoPb {
                 int32_t v;
                 if (!Type::Int32::decode(stream, v))
                     return false;
-                local = CONVERTER::decode(static_cast<ProtoType>(v));
+                local = DERIVED::decode(static_cast<ProtoType>(v));
                 return true;
             }
         };
@@ -315,12 +315,12 @@ namespace NanoPb {
          *      static ProtoType decoderInit(LocalType& local);
          *      static bool decoderApply(const ProtoType& proto, LocalType& local);
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
          * @tparam PROTO_TYPE_MSG - NanoPb msg descriptor
          */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
+        template<class DERIVED, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
         class MessageConverter {
         public:
             using LocalType = LOCAL_TYPE;
@@ -340,13 +340,13 @@ namespace NanoPb {
          *
          *          static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam LOCAL_TYPE - Local type
          * @tparam PROTO_TYPE - NanoPb type
          * @tparam PROTO_TYPE_MSG - NanoPb msg descriptor
          */
-        template<class CONVERTER, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class UnionMessageConverter : public MessageConverter<CONVERTER, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
+        template<class DERIVED, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
+        class UnionMessageConverter : public MessageConverter<DERIVED, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>{
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
@@ -355,7 +355,7 @@ namespace NanoPb {
 
         private:
             static bool _unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::unionDecodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
+                return DERIVED::unionDecodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
             }
         };
 
@@ -367,10 +367,10 @@ namespace NanoPb {
          *      static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
          *      static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam LOCAL_TYPE - Local type
          */
-        template<class CONVERTER, class LOCAL_TYPE>
+        template<class DERIVED, class LOCAL_TYPE>
         class CallbackConverter {
         public:
             using LocalType = LOCAL_TYPE;
@@ -380,10 +380,10 @@ namespace NanoPb {
 
         private:
             static bool _pbEncodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return CONVERTER::encodeCallback(stream, field, *(static_cast<const LocalType *>(*arg)));
+                return DERIVED::encodeCallback(stream, field, *(static_cast<const LocalType *>(*arg)));
             };
             static bool _pbDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return CONVERTER::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
+                return DERIVED::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
             };
         };
 
@@ -392,11 +392,11 @@ namespace NanoPb {
          *
          *  Can be used for field with wire types: PB_WT_VARINT, PB_WT_64BIT, PB_WT_32BIT
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam SCALAR - Scalar with one of listed above wire type.
          */
-        template <class CONVERTER, class SCALAR>
-        class AbstractScalarConverter : public CallbackConverter<CONVERTER, typename SCALAR::LocalType> {
+        template <class DERIVED, class SCALAR>
+        class AbstractScalarConverter : public CallbackConverter<DERIVED, typename SCALAR::LocalType> {
         public:
             using LocalType = typename SCALAR::LocalType;
         public:
@@ -474,13 +474,13 @@ namespace NanoPb {
         /**
          * Converter for vector/list of sub-message
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam CONTEXT_CONTAINER - std::vector<ITEM_CONVERTER::LocalType> or std::list<ITEM_CONVERTER::LocalType>
          * @tparam ITEM_CONVERTER - MessageConverter<...>
          */
-        template<class CONVERTER, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
+        template<class DERIVED, class CONTEXT_CONTAINER, class ITEM_CONVERTER>
         class ArrayMessageConverter : public CallbackConverter<
-                ArrayMessageConverter<CONVERTER, CONTEXT_CONTAINER, ITEM_CONVERTER>,
+                ArrayMessageConverter<DERIVED, CONTEXT_CONTAINER, ITEM_CONVERTER>,
                 CONTEXT_CONTAINER>
         {
         private:
@@ -514,14 +514,14 @@ namespace NanoPb {
          *      static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue);
          *      static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue);
          *
-         * @tparam CONVERTER - Derived class
+         * @tparam DERIVED - Derived class
          * @tparam CONTAINER - std::map<> of any type
          * @tparam PROTO_PAIR_TYPE - NanoPb XXX_xxxEntry struct, where xxx is map field
          * @tparam PROTO_PAIR_TYPE_MSG - NanoPb msg descriptor for PROTO_PAIR_TYPE
          */
-        template<class CONVERTER, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
+        template<class DERIVED, class CONTAINER, class PROTO_PAIR_TYPE, const pb_msgdesc_t* PROTO_PAIR_TYPE_MSG>
         class MapConverter : public CallbackConverter<
-                MapConverter<CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
+                MapConverter<DERIVED, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                 CONTAINER>
         {
         protected:
@@ -541,7 +541,7 @@ namespace NanoPb {
                     const LocalKeyType& localKey = pair.first;
                     const LocalValueType& localValue = pair.second;
 
-                    ProtoPairType protoPair = CONVERTER::itemEncoderInit(localKey, localValue);
+                    ProtoPairType protoPair = DERIVED::itemEncoderInit(localKey, localValue);
 
                     if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                         return false;
@@ -553,11 +553,11 @@ namespace NanoPb {
                 LocalKeyType localKey;
                 LocalValueType localValue;
 
-                ProtoPairType protoPair = CONVERTER::itemDecoderInit(localKey, localValue);
+                ProtoPairType protoPair = DERIVED::itemDecoderInit(localKey, localValue);
 
                 if (!pb_decode(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                     return false;
-                if (!CONVERTER::itemDecoderApply(protoPair, localKey, localValue))
+                if (!DERIVED::itemDecoderApply(protoPair, localKey, localValue))
                     return false;
 
                 container.insert(std::move(ContextPairType(std::move(localKey), std::move(localValue))));
