@@ -7,7 +7,7 @@
 using namespace NanoPb::Converter;
 
 template <class UNION_CONVERTER>
-int test_standard(const LOCAL_UnionContainer& original){
+int test_standard(const UnionContainer& original){
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
@@ -16,7 +16,7 @@ int test_standard(const LOCAL_UnionContainer& original){
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_UnionContainer decoded;
+    UnionContainer decoded;
 
     TEST(NanoPb::decode<UNION_CONVERTER>(inputStream, decoded));
 
@@ -27,24 +27,24 @@ int test_standard(const LOCAL_UnionContainer& original){
 
 // *** ENCODE ONLY union message, without prefix/suffix ***
 template <class UNION_CONVERTER>
-int test_manual_encode(const LOCAL_UnionContainer& original) {
+int test_manual_encode(const UnionContainer& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
     switch (original.message->getType()) {
-        case LOCAL_InnerMessage::Type::UnionInnerOne: {
-            auto& local = *original.message->as<LOCAL_UnionInnerOne>();
+        case InnerMessage::Type::UnionInnerOne: {
+            auto& local = *original.message->as<UnionInnerOne>();
             TEST(NanoPb::encodeUnionMessage<UnionInnerOneConverter>(outputStream, local, &PROTO_UnionContainer_msg));
             break;
         }
-        case LOCAL_InnerMessage::Type::UnionInnerTwo: {
-            auto& local = *original.message->as<LOCAL_UnionInnerTwo>();
+        case InnerMessage::Type::UnionInnerTwo: {
+            auto& local = *original.message->as<UnionInnerTwo>();
             TEST(NanoPb::encodeUnionMessage<UnionInnerTwoConverter>(outputStream, local, &PROTO_UnionContainer_msg));
             break;
         }
-        case LOCAL_InnerMessage::Type::UnionInnerThree: {
-            auto& local = *original.message->as<LOCAL_UnionInnerThree>();
+        case InnerMessage::Type::UnionInnerThree: {
+            auto& local = *original.message->as<UnionInnerThree>();
             TEST(NanoPb::encodeUnionMessage<UnionInnerThreeConverter>(outputStream, local, &PROTO_UnionContainer_msg));
             break;
         }
@@ -52,7 +52,7 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_UnionContainer decoded;
+    UnionContainer decoded;
 
     TEST(NanoPb::decode<UNION_CONVERTER>(inputStream, decoded));
 
@@ -63,7 +63,7 @@ int test_manual_encode(const LOCAL_UnionContainer& original) {
 }
 
 template <class UNION_CONVERTER>
-int test_manual_decode(const LOCAL_UnionContainer& original) {
+int test_manual_decode(const UnionContainer& original) {
     int status = 0;
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
@@ -79,17 +79,17 @@ int test_manual_decode(const LOCAL_UnionContainer& original) {
     if (type){
         if (type == UnionInnerOneConverter::getMsgType())
         {
-            LOCAL_UnionInnerOne decodedMessage;
+            UnionInnerOne decodedMessage;
             TEST(NanoPb::decodeSubMessage<UnionInnerOneConverter>(inputStream, decodedMessage))
         }
         else if (type == UnionInnerTwoConverter::getMsgType())
         {
-            LOCAL_UnionInnerTwo decodedMessage;
+            UnionInnerTwo decodedMessage;
             TEST(NanoPb::decodeSubMessage<UnionInnerTwoConverter>(inputStream, decodedMessage))
         }
         else if (type == UnionInnerThreeConverter::getMsgType())
         {
-            LOCAL_UnionInnerThree decodedMessage;
+            UnionInnerThree decodedMessage;
             TEST(NanoPb::decodeSubMessage<UnionInnerThreeConverter>(inputStream, decodedMessage))
         }
         else
@@ -104,7 +104,7 @@ int test_manual_decode(const LOCAL_UnionContainer& original) {
 int main() {
     int status = 0;
 
-    const auto messages = LOCAL_UnionContainer::createTestMessages();
+    const auto messages = UnionContainer::createTestMessages();
 
     for (auto& original : messages){
         {

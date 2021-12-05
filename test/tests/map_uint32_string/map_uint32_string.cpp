@@ -5,27 +5,27 @@
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_TestMessage {
+struct TestMessage {
     using SimpleMapType = std::map<uint32_t, std::string>;
 
     SimpleMapType items;
 
-    LOCAL_TestMessage() = default;
-    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
-    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
+    TestMessage() = default;
+    TestMessage(const TestMessage&) = delete;
+    TestMessage(TestMessage&&) = default;
 
-    bool operator==(const LOCAL_TestMessage &rhs) const {
+    bool operator==(const TestMessage &rhs) const {
         return items == rhs.items;
     }
 
-    bool operator!=(const LOCAL_TestMessage &rhs) const {
+    bool operator!=(const TestMessage &rhs) const {
         return !(rhs == *this);
     }
 };
 
 class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
-        LOCAL_TestMessage,
+        TestMessage,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {
@@ -33,7 +33,7 @@ private:
     using SimpleItemsConverter = MapConverter<
             UInt32Converter,
             StringConverter,
-            LOCAL_TestMessage::SimpleMapType,
+            TestMessage::SimpleMapType,
             PROTO_TestMessage_ItemsEntry,
             &PROTO_TestMessage_ItemsEntry_msg>;
 
@@ -59,7 +59,7 @@ public:
 int main() {
     int status = 0;
 
-    const LOCAL_TestMessage original = {
+    const TestMessage original = {
             .items = {
                     {1, "value_1"},
                     {2, "value_2"}
@@ -72,7 +72,7 @@ int main() {
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_TestMessage decoded;
+    TestMessage decoded;
 
     TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
 

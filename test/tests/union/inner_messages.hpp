@@ -2,13 +2,13 @@
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_InnerMessage {
+struct InnerMessage {
     enum class Type {
         UnionInnerOne,
         UnionInnerTwo,
         UnionInnerThree
     };
-    virtual ~LOCAL_InnerMessage(){}
+    virtual ~InnerMessage(){}
     virtual Type getType() const = 0;
 
     template<class T>
@@ -16,75 +16,75 @@ struct LOCAL_InnerMessage {
     template<class T>
     const T* as() const { return static_cast<const T*>(this); }
 
-    bool operator==(const LOCAL_InnerMessage &rhs) const {
+    bool operator==(const InnerMessage &rhs) const {
         return rhs.getType() == getType();
     }
 
-    bool operator!=(const LOCAL_InnerMessage &rhs) const {
+    bool operator!=(const InnerMessage &rhs) const {
         return !(rhs == *this);
     }
 };
 
-struct LOCAL_UnionInnerOne : public LOCAL_InnerMessage {
+struct UnionInnerOne : public InnerMessage {
     int number = 0;
 
-    LOCAL_UnionInnerOne() = default;
-    LOCAL_UnionInnerOne(const LOCAL_UnionInnerOne&) = delete;
-    LOCAL_UnionInnerOne(LOCAL_UnionInnerOne&&) = default;
+    UnionInnerOne() = default;
+    UnionInnerOne(const UnionInnerOne&) = delete;
+    UnionInnerOne(UnionInnerOne&&) = default;
 
-    LOCAL_UnionInnerOne(int number) : number(number) {}
+    UnionInnerOne(int number) : number(number) {}
 
     Type getType() const override { return Type::UnionInnerOne; }
 
-    bool operator==(const LOCAL_UnionInnerOne &rhs) const {
-        return static_cast<const LOCAL_InnerMessage &>(*this) == static_cast<const LOCAL_InnerMessage &>(rhs) &&
+    bool operator==(const UnionInnerOne &rhs) const {
+        return static_cast<const InnerMessage &>(*this) == static_cast<const InnerMessage &>(rhs) &&
                number == rhs.number;
     }
 
-    bool operator!=(const LOCAL_UnionInnerOne &rhs) const {
+    bool operator!=(const UnionInnerOne &rhs) const {
         return !(rhs == *this);
     }
 };
 
-struct LOCAL_UnionInnerTwo : public LOCAL_InnerMessage {
+struct UnionInnerTwo : public InnerMessage {
     std::string str;
 
-    LOCAL_UnionInnerTwo() = default;
-    LOCAL_UnionInnerTwo(const LOCAL_UnionInnerTwo&) = delete;
-    LOCAL_UnionInnerTwo(LOCAL_UnionInnerTwo&&) = default;
+    UnionInnerTwo() = default;
+    UnionInnerTwo(const UnionInnerTwo&) = delete;
+    UnionInnerTwo(UnionInnerTwo&&) = default;
 
-    LOCAL_UnionInnerTwo(const std::string &str) : str(str) {}
+    UnionInnerTwo(const std::string &str) : str(str) {}
 
     Type getType() const override { return Type::UnionInnerTwo; }
 
-    bool operator==(const LOCAL_UnionInnerTwo &rhs) const {
-        return static_cast<const LOCAL_InnerMessage &>(*this) == static_cast<const LOCAL_InnerMessage &>(rhs) &&
+    bool operator==(const UnionInnerTwo &rhs) const {
+        return static_cast<const InnerMessage &>(*this) == static_cast<const InnerMessage &>(rhs) &&
                str == rhs.str;
     }
 
-    bool operator!=(const LOCAL_UnionInnerTwo &rhs) const {
+    bool operator!=(const UnionInnerTwo &rhs) const {
         return !(rhs == *this);
     }
 };
 
-struct LOCAL_UnionInnerThree : public LOCAL_InnerMessage {
+struct UnionInnerThree : public InnerMessage {
     using ValuesContainer = std::vector<uint32_t>;
     ValuesContainer values;
 
-    LOCAL_UnionInnerThree() = default;
-    LOCAL_UnionInnerThree(const LOCAL_UnionInnerThree&) = delete;
-    LOCAL_UnionInnerThree(LOCAL_UnionInnerThree&&) = default;
+    UnionInnerThree() = default;
+    UnionInnerThree(const UnionInnerThree&) = delete;
+    UnionInnerThree(UnionInnerThree&&) = default;
 
-    LOCAL_UnionInnerThree(const ValuesContainer &values) : values(values) {}
+    UnionInnerThree(const ValuesContainer &values) : values(values) {}
 
     Type getType() const override { return Type::UnionInnerThree; }
 
-    bool operator==(const LOCAL_UnionInnerThree &rhs) const {
-        return static_cast<const LOCAL_InnerMessage &>(*this) == static_cast<const LOCAL_InnerMessage &>(rhs) &&
+    bool operator==(const UnionInnerThree &rhs) const {
+        return static_cast<const InnerMessage &>(*this) == static_cast<const InnerMessage &>(rhs) &&
                values == rhs.values;
     }
 
-    bool operator!=(const LOCAL_UnionInnerThree &rhs) const {
+    bool operator!=(const UnionInnerThree &rhs) const {
         return !(rhs == *this);
     }
 };
@@ -93,7 +93,7 @@ struct LOCAL_UnionInnerThree : public LOCAL_InnerMessage {
 
 class UnionInnerOneConverter : public MessageConverter<
         UnionInnerOneConverter,
-        LOCAL_UnionInnerOne,
+        UnionInnerOne,
         PROTO_UnionInnerOne,
         &PROTO_UnionInnerOne_msg>
 {
@@ -117,7 +117,7 @@ public:
 
 class UnionInnerTwoConverter : public MessageConverter<
         UnionInnerTwoConverter,
-        LOCAL_UnionInnerTwo,
+        UnionInnerTwo,
         PROTO_UnionInnerTwo,
         &PROTO_UnionInnerTwo_msg>
 {
@@ -141,20 +141,20 @@ public:
 
 class UnionInnerThreeConverter : public MessageConverter<
         UnionInnerThreeConverter,
-        LOCAL_UnionInnerThree,
+        UnionInnerThree,
         PROTO_UnionInnerThree,
         &PROTO_UnionInnerThree_msg>
 {
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .values = ArrayConverter<UInt32Converter,LOCAL_UnionInnerThree::ValuesContainer>::encoderCallbackInit(local.values)
+                .values = ArrayConverter<UInt32Converter,UnionInnerThree::ValuesContainer>::encoderCallbackInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayConverter<UInt32Converter, LOCAL_UnionInnerThree::ValuesContainer>::decoderCallbackInit(local.values)
+                .values = ArrayConverter<UInt32Converter, UnionInnerThree::ValuesContainer>::decoderCallbackInit(local.values)
         };
     }
 

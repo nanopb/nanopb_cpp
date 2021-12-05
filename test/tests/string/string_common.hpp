@@ -4,25 +4,25 @@
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_TestMessage {
+struct TestMessage {
     std::string str;
 
-    LOCAL_TestMessage() = default;
-    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
-    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
+    TestMessage() = default;
+    TestMessage(const TestMessage&) = delete;
+    TestMessage(TestMessage&&) = default;
 
-    bool operator==(const LOCAL_TestMessage &rhs) const {
+    bool operator==(const TestMessage &rhs) const {
         return str == rhs.str;
     }
 
-    bool operator!=(const LOCAL_TestMessage &rhs) const {
+    bool operator!=(const TestMessage &rhs) const {
         return !(rhs == *this);
     }
 };
 
 class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
-        LOCAL_TestMessage,
+        TestMessage,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {

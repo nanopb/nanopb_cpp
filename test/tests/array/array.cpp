@@ -11,21 +11,21 @@
 using namespace NanoPb::Converter;
 
 template <class CONTAINER>
-struct LOCAL_TestMessage {
+struct TestMessage {
     using ContainerType = CONTAINER;
 
     ContainerType values;
 
-    LOCAL_TestMessage() = default;
-    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
-    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
-    LOCAL_TestMessage(ContainerType&& values) : values(std::move(values)) {}
+    TestMessage() = default;
+    TestMessage(const TestMessage&) = delete;
+    TestMessage(TestMessage&&) = default;
+    TestMessage(ContainerType&& values) : values(std::move(values)) {}
 
-    bool operator==(const LOCAL_TestMessage &rhs) const {
+    bool operator==(const TestMessage &rhs) const {
         return values == rhs.values;
     }
 
-    bool operator!=(const LOCAL_TestMessage &rhs) const {
+    bool operator!=(const TestMessage &rhs) const {
         return !(rhs == *this);
     }
 };
@@ -33,13 +33,13 @@ struct LOCAL_TestMessage {
 template <class ITEM_CONVERTER, class CONTAINER, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
 class TestMessageConverter : public MessageConverter<
         TestMessageConverter<ITEM_CONVERTER, CONTAINER, PROTO_TYPE, PROTO_TYPE_MSG>,
-        LOCAL_TestMessage<CONTAINER>,
+        TestMessage<CONTAINER>,
         PROTO_TYPE,
         PROTO_TYPE_MSG>
 {
 public:
     using ProtoType = typename TestMessageConverter<ITEM_CONVERTER, CONTAINER, PROTO_TYPE, PROTO_TYPE_MSG>::ProtoType;
-    using LocalType = LOCAL_TestMessage<CONTAINER>;
+    using LocalType = TestMessage<CONTAINER>;
 private:
     using ContainerType = typename LocalType::ContainerType;
 public:
@@ -63,7 +63,7 @@ public:
 
 template <class ITEM_CONVERTER, class CONTAINER, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
 bool testRepeated(CONTAINER&& values){
-    const LOCAL_TestMessage<CONTAINER> original(std::move(values));
+    const TestMessage<CONTAINER> original(std::move(values));
 
     NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
 
@@ -72,7 +72,7 @@ bool testRepeated(CONTAINER&& values){
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_TestMessage<CONTAINER> decoded;
+    TestMessage<CONTAINER> decoded;
 
     if(!NanoPb::decode<TestMessageConverter<ITEM_CONVERTER, CONTAINER, PROTO_TYPE, PROTO_TYPE_MSG>>(inputStream, decoded))
         return false;
@@ -80,11 +80,11 @@ bool testRepeated(CONTAINER&& values){
     return original == decoded;
 }
 
-#define TEST_ARRAY(PROTO_TYPE, LOCAL_TYPE, VALUES)  \
+#define TEST_ARRAY(PROTO_TYPE, TYPE, VALUES)  \
     {                                               \
     bool CONCAT(result,PROTO_TYPE) = testRepeated<                     \
         CONCAT(PROTO_TYPE,Converter),       \
-        LOCAL_TYPE,                                 \
+        TYPE,                                 \
         CONCAT(PROTO_Repeated_,PROTO_TYPE),         \
         &CONCAT3(PROTO_Repeated_,PROTO_TYPE,_msg)   \
     >(VALUES);                                      \
@@ -147,8 +147,8 @@ int main() {
     TEST_ARRAY(SimpleEnum,  std::vector<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
     TEST_ARRAY(SimpleEnum,  std::list<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
 
-    TEST_ARRAY(InnerMessage,  std::vector<LOCAL_InnerMessage>, LOCAL_InnerMessage::createTestMessages<std::vector<LOCAL_InnerMessage>>());
-    TEST_ARRAY(InnerMessage,  std::list<LOCAL_InnerMessage>, LOCAL_InnerMessage::createTestMessages<std::list<LOCAL_InnerMessage>>());
+    TEST_ARRAY(InnerMessage,  std::vector<InnerMessage>, InnerMessage::createTestMessages<std::vector<InnerMessage>>());
+    TEST_ARRAY(InnerMessage,  std::list<InnerMessage>, InnerMessage::createTestMessages<std::list<InnerMessage>>());
 
 
     return status;

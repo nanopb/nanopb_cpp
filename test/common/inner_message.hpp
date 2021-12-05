@@ -6,41 +6,41 @@
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_InnerMessage {
+struct InnerMessage {
     uint32_t number = 0;
     std::string text;
 
-    LOCAL_InnerMessage() = default; // Default constructor is required
+    InnerMessage() = default; // Default constructor is required
 
     // Remove copy constructor and add move constructor
     // to ensure that all can work without copy constructor
-    LOCAL_InnerMessage(const LOCAL_InnerMessage&) = delete;
-    LOCAL_InnerMessage(LOCAL_InnerMessage&& other) = default;
+    InnerMessage(const InnerMessage&) = delete;
+    InnerMessage(InnerMessage&& other) = default;
 
-    LOCAL_InnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
+    InnerMessage(uint32_t number, const std::string &text) : number(number), text(text) {}
 
-    bool operator==(const LOCAL_InnerMessage &rhs) const {
+    bool operator==(const InnerMessage &rhs) const {
         return number == rhs.number &&
                text == rhs.text;
     }
 
-    bool operator!=(const LOCAL_InnerMessage &rhs) const {
+    bool operator!=(const InnerMessage &rhs) const {
         return !(rhs == *this);
     }
 
     template<class T>
     static T createTestMessages(){
         T ret;
-        ret.push_back(LOCAL_InnerMessage(1, "entry_1"));
-        ret.push_back(LOCAL_InnerMessage(2, "entry_2"));
-        ret.push_back(LOCAL_InnerMessage(3, "entry_3"));
+        ret.push_back(InnerMessage(1, "entry_1"));
+        ret.push_back(InnerMessage(2, "entry_2"));
+        ret.push_back(InnerMessage(3, "entry_3"));
         return ret;
     }
 };
 
 class InnerMessageConverter : public MessageConverter<
         InnerMessageConverter,
-        LOCAL_InnerMessage,
+        InnerMessage,
         PROTO_InnerMessage,
         &PROTO_InnerMessage_msg>
 {

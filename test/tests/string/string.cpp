@@ -4,7 +4,7 @@
 int main() {
     int status = 0;
 
-    const LOCAL_TestMessage original(
+    const TestMessage original(
             {"My super string"}
             );
 
@@ -14,7 +14,7 @@ int main() {
 
     auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-    LOCAL_TestMessage decoded;
+    TestMessage decoded;
 
     TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
 

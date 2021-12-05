@@ -6,28 +6,28 @@
 
 using namespace NanoPb::Converter;
 
-struct LOCAL_TestMessage {
-    using MapType = std::map<std::string, LOCAL_InnerMessage>;
+struct TestMessage {
+    using MapType = std::map<std::string, InnerMessage>;
     MapType items;
 
-    LOCAL_TestMessage() = default;
-    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
-    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
-    LOCAL_TestMessage(MapType &&items) : items(std::move(items)) {}
+    TestMessage() = default;
+    TestMessage(const TestMessage&) = delete;
+    TestMessage(TestMessage&&) = default;
+    TestMessage(MapType &&items) : items(std::move(items)) {}
 
-    bool operator==(const LOCAL_TestMessage &rhs) const {
+    bool operator==(const TestMessage &rhs) const {
         return items == rhs.items;
     }
 
-    bool operator!=(const LOCAL_TestMessage &rhs) const {
+    bool operator!=(const TestMessage &rhs) const {
         return !(rhs == *this);
     }
 
-    static std::vector<LOCAL_TestMessage> createTestMessages() {
-        std::vector<LOCAL_TestMessage> ret;
-        auto innerMessages = LOCAL_InnerMessage::createTestMessages<std::vector<LOCAL_InnerMessage>>();
+    static std::vector<TestMessage> createTestMessages() {
+        std::vector<TestMessage> ret;
+        auto innerMessages = InnerMessage::createTestMessages<std::vector<InnerMessage>>();
 
-        LOCAL_TestMessage::MapType items;
+        TestMessage::MapType items;
 
         uint32_t key = 0;
         for (auto& m: innerMessages){
@@ -35,7 +35,7 @@ struct LOCAL_TestMessage {
             key++;
         }
 
-        ret.push_back(LOCAL_TestMessage(std::move(items)));
+        ret.push_back(TestMessage(std::move(items)));
 
         return ret;
     }
@@ -43,7 +43,7 @@ struct LOCAL_TestMessage {
 
 class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
-        LOCAL_TestMessage,
+        TestMessage,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {
@@ -51,7 +51,7 @@ private:
     using ItemsConverter = MapConverter<
             StringConverter,
             InnerMessageConverter,
-            LOCAL_TestMessage::MapType,
+            TestMessage::MapType,
             PROTO_TestMessage_ItemsEntry,
             &PROTO_TestMessage_ItemsEntry_msg>;
 
@@ -77,7 +77,7 @@ public:
 int main() {
     int status = 0;
 
-    const auto messages = LOCAL_TestMessage::createTestMessages();
+    const auto messages = TestMessage::createTestMessages();
 
     for (auto& original : messages){
 
@@ -87,7 +87,7 @@ int main() {
 
         auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-        LOCAL_TestMessage decoded;
+        TestMessage decoded;
 
         TEST(NanoPb::decode<TestMessageConverter>(inputStream, decoded));
 

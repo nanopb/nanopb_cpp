@@ -7,7 +7,7 @@ using namespace NanoPb::Converter;
 
 class UnionContainerNoUnionConverter : public UnionMessageConverter<
         UnionContainerNoUnionConverter,
-        LOCAL_UnionContainer,
+        UnionContainer,
         PROTO_UnionContainer,
         &PROTO_UnionContainer_msg>
 {
@@ -23,17 +23,17 @@ public:
             return ret;
         }
         switch (local.message->getType()) {
-            case LOCAL_InnerMessage::Type::UnionInnerOne:
+            case InnerMessage::Type::UnionInnerOne:
                 ret.which_msg = PROTO_UnionContainer_msg1_tag;
-                ret.msg.msg1 = UnionInnerOneConverter::encoderInit(*local.message->as<LOCAL_UnionInnerOne>());
+                ret.msg.msg1 = UnionInnerOneConverter::encoderInit(*local.message->as<UnionInnerOne>());
                 break;
-            case LOCAL_InnerMessage::Type::UnionInnerTwo:
+            case InnerMessage::Type::UnionInnerTwo:
                 ret.which_msg = PROTO_UnionContainer_msg2_tag;
-                ret.msg.msg2 = UnionInnerTwoConverter::encoderInit(*local.message->as<LOCAL_UnionInnerTwo>());
+                ret.msg.msg2 = UnionInnerTwoConverter::encoderInit(*local.message->as<UnionInnerTwo>());
                 break;
-            case LOCAL_InnerMessage::Type::UnionInnerThree:
+            case InnerMessage::Type::UnionInnerThree:
                 ret.which_msg = PROTO_UnionContainer_msg3_tag;
-                ret.msg.msg3 = UnionInnerThreeConverter::encoderInit(*local.message->as<LOCAL_UnionInnerThree>());
+                ret.msg.msg3 = UnionInnerThreeConverter::encoderInit(*local.message->as<UnionInnerThree>());
                 break;
         }
         return ret;
@@ -48,18 +48,18 @@ public:
     static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
         if (field->tag == PROTO_UnionContainer_msg1_tag){
             auto* msg = static_cast<PROTO_UnionInnerOne *>(field->pData);
-            local.message = std::unique_ptr<LOCAL_UnionInnerOne>(new LOCAL_UnionInnerOne());
-            *msg = UnionInnerOneConverter::decoderInit(*local.message->as<LOCAL_UnionInnerOne>());
+            local.message = std::unique_ptr<UnionInnerOne>(new UnionInnerOne());
+            *msg = UnionInnerOneConverter::decoderInit(*local.message->as<UnionInnerOne>());
         }
         else if (field->tag == PROTO_UnionContainer_msg2_tag){
             auto* msg = static_cast<PROTO_UnionInnerTwo *>(field->pData);
-            local.message = std::unique_ptr<LOCAL_UnionInnerTwo>(new LOCAL_UnionInnerTwo());
-            *msg = UnionInnerTwoConverter::decoderInit(*local.message->as<LOCAL_UnionInnerTwo>());
+            local.message = std::unique_ptr<UnionInnerTwo>(new UnionInnerTwo());
+            *msg = UnionInnerTwoConverter::decoderInit(*local.message->as<UnionInnerTwo>());
         }
         else if (field->tag == PROTO_UnionContainer_msg3_tag){
             auto* msg = static_cast<PROTO_UnionInnerThree *>(field->pData);
-            local.message = std::unique_ptr<LOCAL_UnionInnerThree>(new LOCAL_UnionInnerThree());
-            *msg = UnionInnerThreeConverter::decoderInit(*local.message->as<LOCAL_UnionInnerThree>());
+            local.message = std::unique_ptr<UnionInnerThree>(new UnionInnerThree());
+            *msg = UnionInnerThreeConverter::decoderInit(*local.message->as<UnionInnerThree>());
         } else {
             NANOPB_CPP_ASSERT(0&&"Invalid");
         }
@@ -71,13 +71,13 @@ public:
         local.suffix = proto.suffix;
 
         if (proto.which_msg == PROTO_UnionContainer_msg1_tag){
-            UnionInnerOneConverter::decoderApply(proto.msg.msg1, *local.message->as<LOCAL_UnionInnerOne>());
+            UnionInnerOneConverter::decoderApply(proto.msg.msg1, *local.message->as<UnionInnerOne>());
         }
         else if (proto.which_msg == PROTO_UnionContainer_msg2_tag){
-            UnionInnerTwoConverter::decoderApply(proto.msg.msg2, *local.message->as<LOCAL_UnionInnerTwo>());
+            UnionInnerTwoConverter::decoderApply(proto.msg.msg2, *local.message->as<UnionInnerTwo>());
         }
         else if (proto.which_msg == PROTO_UnionContainer_msg3_tag){
-            UnionInnerThreeConverter::decoderApply(proto.msg.msg3, *local.message->as<LOCAL_UnionInnerThree>());
+            UnionInnerThreeConverter::decoderApply(proto.msg.msg3, *local.message->as<UnionInnerThree>());
         } else {
             NANOPB_CPP_ASSERT(0&&"Invalid");
         }
