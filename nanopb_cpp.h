@@ -304,6 +304,8 @@ namespace NanoPb {
                 return true;
             }
             // FIXME: Add apply() method to make compatible with base converter
+        public: // for internal use
+            template<class T> static void _mapEncoderApply(T& pair){}
         };
 
 
@@ -340,6 +342,10 @@ namespace NanoPb {
             static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
                 return decode<DERIVED>(*stream, local);
             }
+
+        public: // for internal use
+            template<class T>
+            static void _mapEncoderApply(T& pair){ pair.has_value = true; }
         };
 
         /**
@@ -398,6 +404,9 @@ namespace NanoPb {
             static bool _pbDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
                 return DERIVED::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
             };
+
+        public: // for internal use
+            template<class T> static void _mapEncoderApply(T& pair){}
         };
 
         /**
@@ -524,9 +533,10 @@ namespace NanoPb {
 
                     ProtoPairType protoPair {
                         .key = KEY_CONVERTER::encoderInit(pair.first),
-                        // .has_value = true, //FIXME: Need to solve this case
                         .value = VALUE_CONVERTER::encoderInit(pair.second)
                     };
+
+                    VALUE_CONVERTER::template _mapEncoderApply<ProtoPairType>(protoPair);
 
                     if (!pb_encode_submessage(stream, PROTO_PAIR_TYPE_MSG, &protoPair))
                         return false;
