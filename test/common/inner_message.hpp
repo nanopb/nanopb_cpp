@@ -28,8 +28,9 @@ struct LOCAL_InnerMessage {
         return !(rhs == *this);
     }
 
-    static std::vector<LOCAL_InnerMessage> createTestMessages(){
-        std::vector<LOCAL_InnerMessage> ret;
+    template<class T>
+    static T createTestMessages(){
+        T ret;
         ret.push_back(LOCAL_InnerMessage(1, "entry_1"));
         ret.push_back(LOCAL_InnerMessage(2, "entry_2"));
         ret.push_back(LOCAL_InnerMessage(3, "entry_3"));

@@ -25,7 +25,7 @@ struct LOCAL_TestMessage {
 
     static std::vector<LOCAL_TestMessage> createTestMessages() {
         std::vector<LOCAL_TestMessage> ret;
-        auto innerMessages = LOCAL_InnerMessage::createTestMessages();
+        auto innerMessages = LOCAL_InnerMessage::createTestMessages<std::vector<LOCAL_InnerMessage>>();
 
         LOCAL_TestMessage::MapType items;
 
