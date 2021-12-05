@@ -1,12 +1,8 @@
 syntax = "proto3";
 
-package PROTO;
+import "simple_enum.proto";
 
-enum SimpleEnum {
-  Invalid = 0;
-  ValueOne = 1;
-  ValueTwo = 2;
-}
+package PROTO;
 
 message Repeated_Int32 {
   repeated int32 values = 1;

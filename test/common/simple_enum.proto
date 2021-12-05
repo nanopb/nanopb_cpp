@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package PROTO;
+
+enum SimpleEnum {
+  Invalid = 0;
+  ValueOne = 1;
+  ValueTwo = 2;
+}
