@@ -2,8 +2,42 @@ syntax = "proto3";
 
 package PROTO;
 
-enum SimpleEnum {
-  Invalid = 0;
-  ValueOne = 1;
-  ValueTwo = 2;
+
+enum Food {
+  Food_Invalid = 0;
+  Food_Meat = 1;
+  Food_Chicken = 2;
+  Food_Vegetable = 3;
+}
+
+enum RelationType {
+    RelationType_Invalid = 0;
+    RelationType_Parent = 1;
+    RelationType_Friend = 2;
+    RelationType_Child = 3;
+}
+
+message Person {
+
+  message Adult {
+    string companyName = 1;
+    string position = 2;
+    float salary = 3;
+  }
+
+  message Child {
+    string schoolName = 1;
+    repeated float lastScores = 2;
+  }
+
+  string name = 1;
+  uint32 age = 2;
+
+  oneof details {
+    Adult adult = 10;
+    Child child = 11;
+  }
+
+  repeated Food likeFood = 3;
+  map<string/*name*/, RelationType> relations = 4;
 }
