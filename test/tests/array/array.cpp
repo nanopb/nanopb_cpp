@@ -191,11 +191,5 @@ int main() {
     >({SimpleEnum::Invalid, SimpleEnum::ValueOne, SimpleEnum::ValueTwo});
     TEST(enumList);
 
-
-
-#ifndef PB_WITHOUT_64BIT
-///FIXME: TODO
-#endif
-
     return status;
 }
