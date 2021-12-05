@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package PROTO;
-
-message TestMessage {
-  repeated float values = 1;
-}

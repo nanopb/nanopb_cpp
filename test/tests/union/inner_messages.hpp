@@ -148,13 +148,13 @@ class UnionInnerThreeConverter : public MessageConverter<
 public:
     static ProtoType encoderInit(const LocalType& local) {
         return ProtoType {
-                .values = ArrayUnsignedCallbackConverter<LOCAL_UnionInnerThree::ValuesContainer>::encoderCallbackInit(local.values)
+                .values = ArrayCallbackConverter<UInt32CallbackConverter,LOCAL_UnionInnerThree::ValuesContainer>::encoderCallbackInit(local.values)
         };
     }
 
     static ProtoType decoderInit(LocalType& local){
         return ProtoType{
-                .values = ArrayUnsignedCallbackConverter<LOCAL_UnionInnerThree::ValuesContainer>::decoderCallbackInit(local.values)
+                .values = ArrayCallbackConverter<UInt32CallbackConverter, LOCAL_UnionInnerThree::ValuesContainer>::decoderCallbackInit(local.values)
         };
     }
 
