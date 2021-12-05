@@ -48,31 +48,12 @@ class TestMessageConverter : public MessageConverter<
         &PROTO_TestMessage_msg>
 {
 private:
-    class ItemsConverter : public MapConverter<
-            ItemsConverter,
+    using ItemsConverter = MapConverter<
+            StringConverter,
+            InnerMessageConverter,
             LOCAL_TestMessage::MapType,
             PROTO_TestMessage_ItemsEntry,
-            &PROTO_TestMessage_ItemsEntry_msg>
-    {
-    public:
-        static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
-            return ProtoPairType{
-                    .key = StringConverter::encoderCallbackInit(localKey),
-                    .has_value = true,
-                    .value = InnerMessageConverter::encoderInit(localValue),
-            };
-        }
-        static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
-            return ProtoPairType{
-                    .key = StringConverter::decoderCallbackInit(localKey),
-                    .value = InnerMessageConverter::decoderInit(localValue)
-            };
-        }
-        static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){
-            InnerMessageConverter::decoderApply(proto.value, localValue);
-            return true;
-        }
-    };
+            &PROTO_TestMessage_ItemsEntry_msg>;
 
 public:
     static ProtoType encoderInit(const LocalType& local) {

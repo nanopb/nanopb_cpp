@@ -30,30 +30,12 @@ class TestMessageConverter : public MessageConverter<
         &PROTO_TestMessage_msg>
 {
 private:
-    class SimpleItemsConverter : public MapConverter<
-            SimpleItemsConverter,
+    using SimpleItemsConverter = MapConverter<
+            UInt32Converter,
+            StringConverter,
             LOCAL_TestMessage::SimpleMapType,
             PROTO_TestMessage_ItemsEntry,
-            &PROTO_TestMessage_ItemsEntry_msg>
-    {
-    public:
-        static ProtoPairType itemEncoderInit(const LocalKeyType& localKey, const LocalValueType& localValue) {
-            return ProtoPairType{
-                    .key = localKey,
-                    .value = StringConverter::encoderCallbackInit(localValue)
-            };
-        }
-        static ProtoPairType itemDecoderInit(LocalKeyType& localKey, LocalValueType& localValue){
-            return ProtoPairType{
-                    // no need to set key decoder because it is scalar type, not callback
-                    .value = StringConverter::decoderCallbackInit(localValue)
-            };
-        }
-        static bool itemDecoderApply(const ProtoPairType& proto, LocalKeyType& localKey, LocalValueType& localValue){
-            localKey = proto.key;
-            return true;
-        }
-    };
+            &PROTO_TestMessage_ItemsEntry_msg>;
 
 public:
     static ProtoType encoderInit(const LocalType& local) {
