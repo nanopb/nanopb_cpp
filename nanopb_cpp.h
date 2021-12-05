@@ -271,6 +271,39 @@ namespace NanoPb {
 
     namespace Converter {
         /**
+          * Callback converter
+          *
+          *  Derived class must implement next methods:
+          *
+          *      static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
+          *      static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
+          *
+          * @tparam DERIVED - Derived class
+          * @tparam LOCAL_TYPE - Local type
+          */
+        template<class DERIVED, class LOCAL_TYPE>
+        class CallbackConverter {
+        public:
+            using LocalType = LOCAL_TYPE;
+            using ProtoType = pb_callback_t;
+        public:
+            static pb_callback_t encoderCallbackInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
+            static pb_callback_t decoderCallbackInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
+
+        private:
+            static bool _pbEncodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
+                return DERIVED::encodeCallback(stream, field, *(static_cast<const LocalType *>(*arg)));
+            };
+            static bool _pbDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
+                return DERIVED::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
+            };
+
+        public: // for internal use
+            template<class T> static void _mapEncoderApply(T& pair){}
+        };
+
+
+        /**
          * Enum converter
          *
          *  Derived class must implement next methods:
@@ -324,7 +357,10 @@ namespace NanoPb {
          * @tparam PROTO_TYPE_MSG - NanoPb msg descriptor
          */
         template<class DERIVED, class LOCAL_TYPE, class PROTO_TYPE, const pb_msgdesc_t* PROTO_TYPE_MSG>
-        class MessageConverter {
+        class MessageConverter : public CallbackConverter<
+                MessageConverter<DERIVED, LOCAL_TYPE, PROTO_TYPE, PROTO_TYPE_MSG>,
+                LOCAL_TYPE>
+        {
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
@@ -375,38 +411,6 @@ namespace NanoPb {
             static bool _unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
                 return DERIVED::unionDecodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
             }
-        };
-
-        /**
-         * Callback converter
-         *
-         *  Derived class must implement next methods:
-         *
-         *      static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local);
-         *      static bool decodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local);
-         *
-         * @tparam DERIVED - Derived class
-         * @tparam LOCAL_TYPE - Local type
-         */
-        template<class DERIVED, class LOCAL_TYPE>
-        class CallbackConverter {
-        public:
-            using LocalType = LOCAL_TYPE;
-            using ProtoType = pb_callback_t;
-        public:
-            static ProtoType encoderCallbackInit(const LocalType& local) { return ProtoType{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
-            static ProtoType decoderCallbackInit(LocalType& local) { return ProtoType{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
-
-        private:
-            static bool _pbEncodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
-                return DERIVED::encodeCallback(stream, field, *(static_cast<const LocalType *>(*arg)));
-            };
-            static bool _pbDecodeCallback(pb_istream_t *stream, const pb_field_t *field, void **arg){
-                return DERIVED::decodeCallback(stream, field, *(static_cast<LocalType *>(*arg)));
-            };
-
-        public: // for internal use
-            template<class T> static void _mapEncoderApply(T& pair){}
         };
 
         /**
