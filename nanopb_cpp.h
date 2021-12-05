@@ -388,8 +388,8 @@ namespace NanoPb {
             using LocalType = LOCAL_TYPE;
             using ProtoType = pb_callback_t;
         public:
-            static pb_callback_t encoderCallbackInit(const LocalType& local) { return pb_callback_t{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
-            static pb_callback_t decoderCallbackInit(LocalType& local) { return pb_callback_t{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
+            static ProtoType encoderCallbackInit(const LocalType& local) { return ProtoType{ .funcs = { .encode = _pbEncodeCallback }, .arg = (void*)&local }; }
+            static ProtoType decoderCallbackInit(LocalType& local) { return ProtoType{ .funcs = { .decode = _pbDecodeCallback }, .arg = (void*)&local }; }
 
         private:
             static bool _pbEncodeCallback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg){
