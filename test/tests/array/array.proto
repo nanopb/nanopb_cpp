@@ -5,7 +5,8 @@ import "inner_message.proto";
 
 package PROTO;
 
-// Scalar types
+// 32 bit types
+
 message Repeated_Int32 {
   repeated int32 values = 1;
 }
@@ -27,12 +28,18 @@ message Repeated_Float {
 message Repeated_Bool {
   repeated bool values = 1;
 }
+
+// string/bytes
+
 message Repeated_String {
   repeated string values = 1;
 }
 message Repeated_Bytes {
   repeated bytes values = 1;
 }
+
+// 64 bit types
+
 message Repeated_Int64 {
   repeated int64 values = 1;
 }

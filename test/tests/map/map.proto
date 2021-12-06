@@ -6,6 +6,7 @@ import "inner_message.proto";
 package PROTO;
 
 // 32 bit types
+
 message Map_Int32_Int32 {
   map<int32,int32> values = 1;
 }
@@ -29,6 +30,7 @@ message Map_Bool_Bool {
 }
 
 // string/bytes
+
 message Map_String_String {
   map<string,string> values = 1;
 }
@@ -56,8 +58,6 @@ message Map_SFixed64_SFixed64 {
 message Map_Int32_Double {
   map<int32,double> values = 1;  // double can`t be key
 }
-
-
 
 // Complicated types
 

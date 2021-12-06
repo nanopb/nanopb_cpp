@@ -96,6 +96,8 @@ bool testRepeated(CONTAINER&& values){
 int main() {
     int status = 0;
 
+    // 32 bit types
+
     TEST_ARRAY(Int32,   std::vector<int32_t>,   {INT32_MIN _ 0 _ INT32_MAX});
     TEST_ARRAY(Int32,   std::list<int32_t>,     {INT32_MIN _ 0 _ INT32_MAX});
 
@@ -118,11 +120,15 @@ int main() {
 //    TEST_ARRAY(Bool,    std::vector<bool>,      {true _ false});
 //    TEST_ARRAY(Bool,    std::list<bool>,        {true _ false});
 
+    // string/bytes
+
     TEST_ARRAY(String,  std::vector<std::string>,{"One" _ "Two"});
     TEST_ARRAY(String,  std::list<std::string>, {"One" _ "Two"});
 
     TEST_ARRAY(Bytes,   std::vector<std::string>,{"One" _ "Two"});
     TEST_ARRAY(Bytes,   std::list<std::string>, {"One" _ "Two"});
+
+    // 64 bit types
 
 #ifndef PB_WITHOUT_64BIT
     TEST_ARRAY(Int64,   std::vector<int64_t>,   {INT64_MIN _ 0 _ INT64_MAX});
@@ -143,6 +149,8 @@ int main() {
     TEST_ARRAY(Double,  std::vector<double>,    {DBL_MIN _ 0 _ DBL_MAX});
     TEST_ARRAY(Double,  std::list<double>,      {DBL_MIN _ 0 _ DBL_MAX});
 #endif
+
+    // Complicated types
 
     TEST_ARRAY(SimpleEnum,  std::vector<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
     TEST_ARRAY(SimpleEnum,  std::list<SimpleEnum>,      {SimpleEnum::Invalid _ SimpleEnum::ValueOne _ SimpleEnum::ValueTwo});
