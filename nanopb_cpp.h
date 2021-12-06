@@ -538,6 +538,11 @@ namespace NanoPb {
                 MapConverter<KEY_CONVERTER, VALUE_CONVERTER, CONTAINER, PROTO_PAIR_TYPE, PROTO_PAIR_TYPE_MSG>,
                 CONTAINER>
         {
+            static_assert(std::is_same<typename KEY_CONVERTER::LocalType, typename CONTAINER::key_type>::value,
+                          "KEY_CONVERTER::LocalType and CONTAINER::key_type should be same type");
+            static_assert(std::is_same<typename VALUE_CONVERTER::LocalType, typename CONTAINER::mapped_type>::value,
+                          "VALUE_CONVERTER::LocalType and CONTAINER::mapped_type should be same type");
+
         private:
             using LocalKeyType = typename CONTAINER::key_type;
             using LocalValueType = typename CONTAINER::mapped_type;
