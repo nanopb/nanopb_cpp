@@ -17,6 +17,7 @@ set (CMAKE_CXX_STANDARD 11)
 add_definitions(-Werror -Wall)
 
 add_subdirectory(tests/enum)
+add_subdirectory(tests/inner_callback)
 add_subdirectory(tests/map)
 add_subdirectory(tests/array)
 add_subdirectory(tests/scalar)
