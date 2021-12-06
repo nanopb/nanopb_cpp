@@ -150,12 +150,12 @@ message TestMessage {
 #### C++ local model:
 
 ```c++
-struct LOCAL_TestMessage {
+struct TestMessage {
     std::string str;
 
-    LOCAL_TestMessage() = default;
-    LOCAL_TestMessage(const LOCAL_TestMessage&) = delete;
-    LOCAL_TestMessage(LOCAL_TestMessage&&) = default;
+    TestMessage() = default;
+    TestMessage(const TestMessage&) = delete;
+    TestMessage(TestMessage&&) = default;
 };
 ```
 
@@ -166,7 +166,7 @@ using namespace NanoPb::Converter;
 
 class TestMessageConverter : public MessageConverter<
         TestMessageConverter,
-        LOCAL_TestMessage,
+        TestMessage,
         PROTO_TestMessage,
         &PROTO_TestMessage_msg>
 {
@@ -192,7 +192,7 @@ public:
 #### Usage:
 
 ```c++
-const LOCAL_TestMessage original(
+const TestMessage original(
         {"My super string"}
         );
 
@@ -210,7 +210,7 @@ if (!NanoPb::encode<TestMessageConverter>(outputStream, original)){
 // Define input stream
 auto inputStream = NanoPb::StringInputStream(outputStream.release());
 
-LOCAL_TestMessage decoded;
+TestMessage decoded;
 
 /// Decode message
 if (!NanoPb::decode<TestMessageConverter>(inputStream, decoded)){
