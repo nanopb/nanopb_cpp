@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package PROTO;
-
-message TestMessage {
-  map<uint32, string> items = 1;
-}

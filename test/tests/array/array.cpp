@@ -131,11 +131,11 @@ int main() {
     TEST_ARRAY(SInt64,  std::vector<int64_t>,   {INT64_MIN _ 0 _ INT64_MAX});
     TEST_ARRAY(SInt64,  std::list<int64_t>,     {INT64_MIN _ 0 _ INT64_MAX});
 
-    TEST_ARRAY(UInt64,  std::vector<uint64_t>,  {0 _ INT64_MAX});
-    TEST_ARRAY(UInt64,  std::list<uint64_t>,    {0 _ INT64_MAX});
+    TEST_ARRAY(UInt64,  std::vector<uint64_t>,  {0 _ UINT64_MAX});
+    TEST_ARRAY(UInt64,  std::list<uint64_t>,    {0 _ UINT64_MAX});
 
-    TEST_ARRAY(Fixed64, std::vector<uint64_t>,  {0 _ INT64_MAX});
-    TEST_ARRAY(Fixed64, std::list<uint64_t>,    {0 _ INT64_MAX});
+    TEST_ARRAY(Fixed64, std::vector<uint64_t>,  {0 _ UINT64_MAX});
+    TEST_ARRAY(Fixed64, std::list<uint64_t>,    {0 _ UINT64_MAX});
 
     TEST_ARRAY(SFixed64,std::vector<int64_t>,   {INT64_MIN _ 0 _ INT64_MAX});
     TEST_ARRAY(SFixed64,std::list<int64_t>,     {INT64_MIN _ 0 _ INT64_MAX});

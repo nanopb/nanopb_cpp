@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+import "simple_enum.proto";
+import "inner_message.proto";
+
+package PROTO;
+
+// 32 bit types
+message Map_Int32_Int32 {
+  map<int32,int32> values = 1;
+}
+message Map_SInt32_SInt32 {
+  map<sint32,sint32> values = 1;
+}
+message Map_UInt32_UInt32 {
+  map<uint32,uint32> values = 1;
+}
+message Map_Fixed32_Fixed32 {
+  map<fixed32,fixed32> values = 1;
+}
+message Map_SFixed32_SFixed32 {
+  map<sfixed32,sfixed32> values = 1;
+}
+message Map_Int32_Float {
+  map<int32,float> values = 1; // float can`t be key
+}
+message Map_Bool_Bool {
+  map<bool,bool> values = 1;
+}
+
+// string/bytes
+message Map_String_String {
+  map<string,string> values = 1;
+}
+message Map_Int32_Bytes {
+  map<int32,bytes> values = 1; // bytes can`t be key
+}
+
+// 64 bit types
+
+message Map_Int64_Int64 {
+  map<int64,int64> values = 1;
+}
+message Map_SInt64_SInt64 {
+  map<sint64,sint64> values = 1;
+}
+message Map_UInt64_UInt64 {
+  map<uint64,uint64> values = 1;
+}
+message Map_Fixed64_Fixed64 {
+  map<fixed64,fixed64> values = 1;
+}
+message Map_SFixed64_SFixed64 {
+  map<sfixed64,sfixed64> values = 1;
+}
+message Map_Int32_Double {
+  map<int32,double> values = 1;  // double can`t be key
+}
+
+
+
+// Complicated types
+
+message Map_Int32_SimpleEnum {
+  map<int32,SimpleEnum> values = 1;
+}
+message Map_String_SimpleEnum {
+  map<string,SimpleEnum> values = 1;
+}
+message Map_Int32_InnerMessage {
+  map<int32,InnerMessage> values = 1;
+}
+message Map_String_InnerMessage {
+  map<string,InnerMessage> values = 1;
+}
+
+
