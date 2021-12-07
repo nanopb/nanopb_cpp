@@ -1,5 +1,3 @@
-# WARNING: project is not production ready until it will be in `main` branch.
-
 # NanoPb C++ 
 
 ![ci](https://github.com/hacker-cb/nanopb_cpp/actions/workflows/ci.yaml/badge.svg)
