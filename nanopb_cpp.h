@@ -111,9 +111,9 @@ namespace NanoPb {
     template<class MESSAGE_CONVERTER>
     bool decode(pb_istream_t &stream, typename MESSAGE_CONVERTER::LocalType& v){
         using ProtoType = typename MESSAGE_CONVERTER::ProtoType;
-        using LocalType = typename MESSAGE_CONVERTER::LocalType;
+        using DecoderContext = typename MESSAGE_CONVERTER::DecoderContext;
 
-        LocalType& local = v;
+        DecoderContext local = v;
         ProtoType proto = MESSAGE_CONVERTER::decoderInit(local);
 
         if (!pb_decode(&stream, MESSAGE_CONVERTER::getMsgType(), &proto))
@@ -375,6 +375,12 @@ namespace NanoPb {
         public:
             using LocalType = LOCAL_TYPE;
             using ProtoType = PROTO_TYPE;
+            /**
+             * You can define custom DecoderContext.
+             * This can be useful to store temporary vars.
+             * See examples/comlex/converters.hpp for the details.
+             */
+            using DecoderContext = LocalType&;
 
         public:
             static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
