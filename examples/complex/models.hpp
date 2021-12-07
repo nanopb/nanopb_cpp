@@ -4,6 +4,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <list>
 
 namespace Model {
     enum class Food {
@@ -13,11 +14,17 @@ namespace Model {
         Vegetable
     };
 
-    enum class RelationType {
-        Invalid,
-        Parent,
-        Friend,
-        Child
+
+
+    struct Relation {
+        enum class Type {
+            Invalid,
+            Parent,
+            Friend,
+            Child
+        };
+        Type type;
+        uint32_t sinceYear;
     };
 
     struct Person {
@@ -29,7 +36,7 @@ namespace Model {
         std::string name;
         unsigned age = 0;
         std::vector<Food> likeFood;
-        std::map<std::string, RelationType> relations;
+        std::list<Relation> relations;
 
         virtual ~Person() = delete;
         virtual Type getType() const = 0;
@@ -47,7 +54,7 @@ namespace Model {
 
     struct Child : public Person {
         std::string schoolName;
-        std::vector<float> lastScores;
+        std::map<std::string, float> lastScores;
         Type getType() const override { return Type::Child; }
     };
 

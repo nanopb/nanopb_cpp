@@ -10,11 +10,17 @@ enum Food {
   Food_Vegetable = 3;
 }
 
-enum RelationType {
-    RelationType_Invalid = 0;
-    RelationType_Parent = 1;
-    RelationType_Friend = 2;
-    RelationType_Child = 3;
+
+
+message Relation {
+  enum Type {
+    Type_Invalid = 0;
+    Type_Parent = 1;
+    Type_Friend = 2;
+    Type_Child = 3;
+  }
+  Type type = 1;
+  uint32 sinceYear = 2;
 }
 
 message Person {
@@ -27,17 +33,19 @@ message Person {
 
   message Child {
     string schoolName = 1;
-    repeated float lastScores = 2;
+    map<string, float> scores = 2;
   }
 
   string name = 1;
   uint32 age = 2;
+  repeated Food likeFood = 3;
+  repeated Relation relations = 4;
 
   oneof details {
     Adult adult = 10;
     Child child = 11;
   }
 
-  repeated Food likeFood = 3;
-  map<string/*name*/, RelationType> relations = 4;
+
+//  map<string/*name*/, Relation> relations = 4;
 }
