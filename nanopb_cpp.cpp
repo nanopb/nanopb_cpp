@@ -14,20 +14,22 @@
 /****************************************************************************************************************/
 
 NanoPb::StringOutputStream::StringOutputStream(size_t maxSize) : _buffer(new NanoPb::BufferType()) {
-    callback = +[](pb_ostream_t *stream, const pb_byte_t *buf, size_t count) -> bool {
-        auto strBuffer = static_cast<NanoPb::BufferPtr *>(stream->state);
-        NANOPB_CPP_ASSERT(strBuffer);
-        if (!strBuffer)
-            return false;
-        (*strBuffer)->append((char*)buf, count);
-        return true;
-    };
+    callback = &NanoPb::StringOutputStream::_pbCallback;
     state = &_buffer;
     max_size = maxSize;
     bytes_written = 0;
 #ifndef PB_NO_ERRMSG
     errmsg = NULL;
 #endif
+}
+
+bool NanoPb::StringOutputStream::_pbCallback(pb_ostream_t *stream, const pb_byte_t *buf, size_t count) {
+    auto strBuffer = static_cast<NanoPb::BufferPtr *>(stream->state);
+    NANOPB_CPP_ASSERT(strBuffer);
+    if (!strBuffer)
+        return false;
+    (*strBuffer)->append((char*)buf, count);
+    return true;
 }
 
 /****************************************************************************************************************/
