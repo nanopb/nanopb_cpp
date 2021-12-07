@@ -11,14 +11,17 @@
 #define pb_uint64_t uint64_t
 #endif
 
+//  FIXME: Need to ask PetteriAimonen is this value enough?
+#define OUTPUT_STREAM_INCREASE_STEP 64
+
 /****************************************************************************************************************/
 
-NanoPb::StringOutputStream::StringOutputStream(size_t maxSize) :
+NanoPb::StringOutputStream::StringOutputStream() :
     _buffer(new NanoPb::BufferType())
 {
     callback = &NanoPb::StringOutputStream::_pbCallback;
     state = this;
-    max_size = maxSize;
+    max_size = OUTPUT_STREAM_INCREASE_STEP;
     bytes_written = 0;
 #ifndef PB_NO_ERRMSG
     errmsg = NULL;
@@ -31,6 +34,9 @@ bool NanoPb::StringOutputStream::_pbCallback(pb_ostream_t *stream, const pb_byte
     if (!strBuffer)
         return false;
     strBuffer->append((char*)buf, count);
+    if (self->max_size - self->bytes_written < OUTPUT_STREAM_INCREASE_STEP){
+        self->max_size += OUTPUT_STREAM_INCREASE_STEP;
+    }
     return true;
 }
 

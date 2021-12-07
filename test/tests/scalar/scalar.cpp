@@ -7,7 +7,7 @@ using namespace NanoPb::Type;
 
 template <class SCALAR>
 bool scalarTest(typename SCALAR::LocalType original){
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+    NanoPb::StringOutputStream outputStream;
 
     if (!SCALAR::encode(&outputStream, original))
         return false;

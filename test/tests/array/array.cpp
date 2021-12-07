@@ -65,7 +65,7 @@ template <class ITEM_CONVERTER, class CONTAINER, class PROTO_TYPE, const pb_msgd
 bool testRepeated(CONTAINER&& values){
     const TestMessage<CONTAINER> original(std::move(values));
 
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+    NanoPb::StringOutputStream outputStream;
 
     if (!NanoPb::encode<TestMessageConverter<ITEM_CONVERTER, CONTAINER, PROTO_TYPE, PROTO_TYPE_MSG>>(outputStream, original))
         return false;

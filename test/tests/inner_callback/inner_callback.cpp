@@ -58,7 +58,7 @@ int main() {
 
         TestMessage original(std::move(msg));
 
-        NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+        NanoPb::StringOutputStream outputStream;
 
         TEST(NanoPb::encode<TestMessageConverter>(outputStream, original));
 

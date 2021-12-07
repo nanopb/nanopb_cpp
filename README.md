@@ -197,10 +197,7 @@ const TestMessage original(
         );
 
 // Define output stream. 
-// NOTE: max size is just for nanopb limit, actual buffer will grow on demand.
-// FIXME: Is maxSize really needed? We can dynamically increase max size on each write.
-// See StringOutputStream() comments
-NanoPb::StringOutputStream outputStream(65535);
+NanoPb::StringOutputStream outputStream;
 
 // Encode
 if (!NanoPb::encode<TestMessageConverter>(outputStream, original)){

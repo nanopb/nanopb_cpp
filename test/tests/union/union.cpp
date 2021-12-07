@@ -10,7 +10,7 @@ template <class UNION_CONVERTER>
 int test_standard(const UnionContainer& original){
     int status = 0;
 
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+    NanoPb::StringOutputStream outputStream;
 
     TEST(NanoPb::encode<UNION_CONVERTER>(outputStream, original));
 
@@ -30,7 +30,7 @@ template <class UNION_CONVERTER>
 int test_manual_encode(const UnionContainer& original) {
     int status = 0;
 
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+    NanoPb::StringOutputStream outputStream;
 
     switch (original.message->getType()) {
         case InnerMessage::Type::UnionInnerOne: {
@@ -66,7 +66,7 @@ template <class UNION_CONVERTER>
 int test_manual_decode(const UnionContainer& original) {
     int status = 0;
 
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+    NanoPb::StringOutputStream outputStream;
 
     // Encode with standard way
     TEST(NanoPb::encode<UNION_CONVERTER>(outputStream, original));

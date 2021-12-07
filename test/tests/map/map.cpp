@@ -75,7 +75,7 @@ template <class CONVERTER, class CONTAINER>
 bool testMap(CONTAINER&& values){
     const TestMessage<CONTAINER> original(std::move(values));
     
-    NanoPb::StringOutputStream outputStream(STRING_BUFFER_STREAM_MAX_SIZE);
+    NanoPb::StringOutputStream outputStream;
 
     if (!NanoPb::encode<CONVERTER>(outputStream, original))
         return false;
