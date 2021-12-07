@@ -71,4 +71,10 @@ jobs:
           cd ${{ steps.build_vars.outputs.BUILD_DIR }}
           ctest
 
+      - name: Run example
+        shell: bash
+        run: |
+          cd ${{ steps.build_vars.outputs.BUILD_DIR }}
+          examples/complex/complex
+
 
