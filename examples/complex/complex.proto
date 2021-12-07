@@ -19,8 +19,10 @@ message Relation {
     Type_Friend = 2;
     Type_Child = 3;
   }
-  Type type = 1;
-  uint32 sinceYear = 2;
+  string name = 1;
+  Type type = 2;
+  uint32 sinceYear = 3;
+  string comment = 4;
 }
 
 message Person {
@@ -34,6 +36,7 @@ message Person {
   message Child {
     string schoolName = 1;
     map<string, float> scores = 2;
+    uint32 schoolStartYear = 3;
   }
 
   string name = 1;
@@ -41,11 +44,9 @@ message Person {
   repeated Food likeFood = 3;
   repeated Relation relations = 4;
 
+
   oneof details {
     Adult adult = 10;
     Child child = 11;
   }
-
-
-//  map<string/*name*/, Relation> relations = 4;
 }
