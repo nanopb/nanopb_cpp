@@ -30,7 +30,18 @@ namespace NanoPb {
     class StringOutputStream : public pb_ostream_t {
     public:
 
+        /**
+         * Create output stream without max size limits.
+         * NOTE: Prefer to use `StringOutputStream(size_t maxStreamSize)` constructor to avoid filling all RAM.
+         */
         StringOutputStream();
+
+        /**
+         * Create output memory stream with constant max size
+         *
+         * @param maxStreamSize
+         */
+        StringOutputStream(size_t maxStreamSize);
         BufferPtr release();
     private:
         static bool _pbCallback(pb_ostream_t *stream, const pb_byte_t *buf, size_t count);
