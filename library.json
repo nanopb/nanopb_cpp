@@ -5,7 +5,7 @@
   "description": "Nanopb_Cpp is a wrapper to use Nanopb in C++ projects",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Hacker-CB/nanopb_cpp"
+    "url": "https://github.com/nanopb/nanopb_cpp"
   },
   "authors": [{
     "name": "Pavel Sokolov",

@@ -1,6 +1,6 @@
 # NanoPb C++ 
 
-![ci](https://github.com/hacker-cb/nanopb_cpp/actions/workflows/ci.yaml/badge.svg)
+![ci](https://github.com/nanopb/nanopb_cpp/actions/workflows/ci.yaml/badge.svg)
 
 Extends C++ support for the [nanopb] and [protobuf].
 
@@ -100,7 +100,7 @@ All container converters are derived from `CallbackConverter` class.
 [CPM] example:
 ```cmake
 set(NANOPB_CPP_VERSION master)
-CPMAddPackage(NAME lib_nanopb_cpp GITHUB_REPOSITORY hacker-cb/nanopb_cpp GIT_TAG ${NANOPB_CPP_VERSION})
+CPMAddPackage(NAME lib_nanopb_cpp GITHUB_REPOSITORY nanopb/nanopb_cpp GIT_TAG ${NANOPB_CPP_VERSION})
 ```
 NOTE: You can add `DOWNLOAD_ONLY YES` to `CPMAddPackage()` to prevent calling `add_subdirectory()`. Project will be just downloaded in this case and you should add sources to your target manually.  
 
