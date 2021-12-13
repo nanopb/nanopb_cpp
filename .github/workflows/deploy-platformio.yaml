@@ -55,5 +55,5 @@ jobs:
 
       - name: 🚀 Publish PlatformIO package
         run: |
-          pio package publish --owner nanopb
+          pio package publish --non-interactive --owner nanopb
 
