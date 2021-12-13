@@ -15,10 +15,10 @@
     "include": [
       "*.cpp",
       "*.h",
-      "test"
+      "examples"
     ],
     "exclude": [
-      "test"
+      "examples/**/CMakeLists.txt"
     ]
   },
   "srcDir": "",
@@ -26,6 +26,12 @@
     "+<nanopb_cpp.cpp>"
   ],
   "examples": [
+    "examples/complex/complex.proto",
+    "examples/complex/complex.options",
+    "examples/complex/complex.proto",
+    "examples/complex/converters.hpp",
+    "examples/complex/models.hpp",
+    "examples/complex/main.cpp"
   ],
   "frameworks": "*",
   "platforms": "*"
