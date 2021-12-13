@@ -2,27 +2,13 @@
 name: Deploy PlatformIO
 
 on:
-  #  release:
-  #    types:
-  #      - published
-  #  workflow_run:
-  #    workflows: ["CI"]
-  #    #branches: [master]
-  #    branches: [ platform_io_deploy ]
-  #    types:
-  #      - completed
-
-  push:  # FIXME: Remove after finish tests
+  release:
+    types:
+      - published
 
 jobs:
   information:
     if: ${{ github.repository_owner == 'nanopb' }}
-    #    if: |
-    #      github.event_name == 'release'
-    #      || (
-    #        github.event_name == 'workflow_run'
-    #        && github.event.workflow_run.conclusion == 'success'
-    #      )
     name: ℹ️ Get information
     runs-on: ubuntu-latest
     outputs:
@@ -60,8 +46,6 @@ jobs:
           echo "version: ${{ needs.information.outputs.version }}"
           echo "version_semver: ${{ needs.information.outputs.version_semver }}"
           jq '.version = "${{ needs.information.outputs.version_semver }}"' library.json
-          cat library.json
-      #FIXME remove cat
 
       - name: 🏗 Install and setup PlatformIO
         run: |
@@ -70,6 +54,5 @@ jobs:
 
       - name: 🚀 Publish PlatformIO package
         run: |
-          pio package pack
-#          pio package publish --owner nanopb
+          pio package publish --owner nanopb
 
