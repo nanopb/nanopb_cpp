@@ -28,7 +28,6 @@
   "examples": [
     "examples/complex/complex.proto",
     "examples/complex/complex.options",
-    "examples/complex/complex.proto",
     "examples/complex/converters.hpp",
     "examples/complex/models.hpp",
     "examples/complex/main.cpp"
