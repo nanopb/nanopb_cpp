@@ -26,11 +26,17 @@
     "+<nanopb_cpp.cpp>"
   ],
   "examples": [
-    "examples/complex/complex.proto",
-    "examples/complex/complex.options",
-    "examples/complex/converters.hpp",
-    "examples/complex/models.hpp",
-    "examples/complex/main.cpp"
+    {
+      "name": "Complex example",
+      "base": "examples/complex",
+      "files": [
+        "complex.options",
+        "complex.proto",
+        "converters.hpp",
+        "main.cpp",
+        "models.hpp,"
+      ]
+    }
   ],
   "frameworks": "*",
   "platforms": "*"
