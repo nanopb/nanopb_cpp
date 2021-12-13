@@ -34,7 +34,7 @@
         "complex.proto",
         "converters.hpp",
         "main.cpp",
-        "models.hpp,"
+        "models.hpp"
       ]
     }
   ],
