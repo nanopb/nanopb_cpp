@@ -1,0 +1,75 @@
+---
+name: Deploy PlatformIO
+
+on:
+  #  release:
+  #    types:
+  #      - published
+  #  workflow_run:
+  #    workflows: ["CI"]
+  #    #branches: [master]
+  #    branches: [ platform_io_deploy ]
+  #    types:
+  #      - completed
+
+  push:  # FIXME: Remove after finish tests
+
+jobs:
+  information:
+    if: ${{ github.repository_owner == 'nanopb' }}
+    #    if: |
+    #      github.event_name == 'release'
+    #      || (
+    #        github.event_name == 'workflow_run'
+    #        && github.event.workflow_run.conclusion == 'success'
+    #      )
+    name: ℹ️ Get information
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      version_semver: ${{ steps.release.outputs.version_semver }}
+    steps:
+      - name: ⤵️ Checkout code
+        uses: actions/checkout@v2
+
+      - name: ⤵️ Fetch tags
+        run: |
+          git fetch --unshallow --tags
+
+      - name: ℹ️ Gather version and environment
+        id: release
+        run: |
+          version=$(git describe --tags)
+          version_semver=$(echo "${version}" | sed "s/^v//")
+          echo "::set-output name=version::${version}"
+          echo "::set-output name=version_semver::${version_semver}"
+
+  deploy-platformio:
+    if: ${{ github.repository_owner == 'nanopb' }}
+    name: 👷 Build & Deploy PlatformIO
+    needs: information
+    runs-on: ubuntu-latest
+    env:
+      PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
+    steps:
+      - name: ⤵️ Checkout code
+        uses: actions/checkout@v2
+
+      - name: ℹ️ Update version in library.json
+        run: |
+          echo "version: ${{ needs.information.outputs.version }}"
+          echo "version_semver: ${{ needs.information.outputs.version_semver }}"
+          jq '.version = "${{ needs.information.outputs.version_semver }}"' library.json
+          cat library.json
+      #FIXME remove cat
+
+      - name: 🏗 Install and setup PlatformIO
+        run: |
+          pip3 install -U platformio
+          export PATH=~/.local/bin:$PATH
+
+      - name: 🚀 Publish PlatformIO package
+        run: |
+          pio package pack
+#          pio package publish --owner nanopb
+
