@@ -111,7 +111,7 @@ NOTE: You can add `DOWNLOAD_ONLY YES` to `CPMAddPackage()` to prevent calling `a
 
 ### PlatformIO install
 
-FIXME: TODO.
+PlatformIO package: https://platformio.org/lib/show/13268/Nanopb_Cpp
 
 ## Usage
 
