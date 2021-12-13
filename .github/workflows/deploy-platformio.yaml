@@ -45,7 +45,8 @@ jobs:
         run: |
           echo "version: ${{ needs.information.outputs.version }}"
           echo "version_semver: ${{ needs.information.outputs.version_semver }}"
-          jq '.version = "${{ needs.information.outputs.version_semver }}"' library.json
+          jq '.version = "${{ needs.information.outputs.version_semver }}"' library.json > library.json.new
+          mv library.json.new library.json
 
       - name: 🏗 Install and setup PlatformIO
         run: |
