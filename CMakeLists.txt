@@ -16,11 +16,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(CPM)
 
-# Custom nanopb location
-if (NANOPB_ROOT)
-    set(CPM_lib_nanopb_SOURCE ${NANOPB_ROOT})
-endif()
-
 CPMAddPackage(NAME lib_nanopb GITHUB_REPOSITORY nanopb/nanopb GIT_TAG ${NANOPB_VERSION} DOWNLOAD_ONLY YES)
 
 list(APPEND CMAKE_MODULE_PATH CMAKE_MODULE_PATH ${lib_nanopb_SOURCE_DIR}/extra)

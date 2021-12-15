@@ -94,7 +94,7 @@ All container converters are derived from `CallbackConverter` class.
 
 * Use `add subdirectory()` or `CPMAddPackage()` from [CPM] to add **nanopb_cpp** to your CMake project.   
 * Set `NANOPB_VERSION` cmake variable to use custom nanopb version/git tag.
-* [nanopb] will be downloaded via [CPM]. Set `NANOPB_ROOT` cmake variable to use your own nanopb location if you want to skip download.
+* [nanopb] will be downloaded via [CPM]. Set `CPM_lib_nanopb_SOURCE` cmake variable to use your own nanopb location if you want to skip download.
 * Use `target_link_libraries(YOUR_TARGET nanopb_cpp)` to add dependency.
 
 [CPM] example:
