@@ -24,10 +24,14 @@ if (PB_WITHOUT_64BIT)
     add_definitions(-DPB_WITHOUT_64BIT)
 endif()
 
+set(SOURCES
+        nanopb_cpp.cpp
+        )
+
 if (BUILD_SHARED)
-    add_library(nanopb_cpp SHARED nanopb_cpp.cpp)
+    add_library(nanopb_cpp SHARED ${SOURCES})
 else()
-    add_library(nanopb_cpp STATIC nanopb_cpp.cpp)
+    add_library(nanopb_cpp STATIC ${SOURCES})
 endif()
 
 target_include_directories(nanopb_cpp PUBLIC
