@@ -88,9 +88,7 @@ All container converters are derived from `CallbackConverter` class.
 * `ArrayConverter` - Array converter for `std::vector<xxx>` or `std::list<xxx>`. 
 * `MapConverter` - Map with any type of the key and value.
 
-## Install
-
-### CMake install
+## CMake install
 
 * Use `add subdirectory()` or `CPMAddPackage()` from [CPM] to add **nanopb_cpp** to your CMake project.   
 * Set `NANOPB_VERSION` cmake variable to use custom nanopb version/git tag.
@@ -104,12 +102,12 @@ CPMAddPackage(NAME lib_nanopb_cpp GITHUB_REPOSITORY nanopb/nanopb_cpp GIT_TAG ${
 ```
 NOTE: You can add `DOWNLOAD_ONLY YES` to `CPMAddPackage()` to prevent calling `add_subdirectory()`. Project will be just downloaded in this case and you should add sources to your target manually.  
 
-### Manual install
+## Manual install
 
 * Install [nanopb]. Generate code from it.
 * Add [nanopb_cpp.cpp](nanopb_cpp.cpp) to your project sources.
 
-### PlatformIO install
+## PlatformIO install
 
 PlatformIO package: https://registry.platformio.org/packages/libraries/nanopb/Nanopb_Cpp
 
@@ -120,11 +118,6 @@ PlatformIO package: https://registry.platformio.org/packages/libraries/nanopb/Na
 * Define converter for each local/protobuf structs, inherit from `MessageConverter`.
 * Define callback converters for callback fields, inherit from `CallbackConverter`.
 * Use other converters depending on your protobuf structures.
-
-## Limitations
-
-* All C++ classes should have default constructor
-* All C++ classes should have copy constructor or move constructor
 
 ## Examples
 
@@ -215,6 +208,8 @@ if (!NanoPb::decode<TestMessageConverter>(inputStream, decoded)){
 
 ## Limitations
 
+* All C++ classes should have default constructor
+* All C++ classes should have copy constructor or move constructor
 * ArrayConverter can't work with `std::vector<bool>`, because it has specific implementation which is not compatible with standard behavior.
 
 [protobuf]: https://developers.google.com/protocol-buffers
