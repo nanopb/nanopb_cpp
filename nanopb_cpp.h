@@ -394,7 +394,7 @@ namespace NanoPb {
             using DecoderContext = LocalType&;
 
         public:
-            static const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
+            static constexpr const pb_msgdesc_t *getMsgType(){ return PROTO_TYPE_MSG; }
 
         public:
             static bool encodeCallback(pb_ostream_t *stream, const pb_field_t *field, const LocalType &local){
