@@ -12,9 +12,10 @@
         printf("\033[32;1mOK:\033[22;39m %s\n", #x); \
     }
 
-#endif //NANOPB_CPP_UNIT_TEST_H
-
 #define CONCAT(a,b) a ## b
 #define CONCAT3(a,b,c) a ## b ## c
 #define CONCAT4(a,b,c,d) a ## b ## c ## d
 #define CONCAT5(a,b,c,d,e) a ## b ## c ## d ## e
+
+
+#endif //NANOPB_CPP_UNIT_TEST_H
