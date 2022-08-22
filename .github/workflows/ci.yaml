@@ -58,7 +58,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DBUILD_TESTS=ON \
             -DBUILD_EXAMPLES=ON \
-            -DPB_WITHOUT_64BIT=${{ matrix.config.build_type }}
+            -DPB_WITHOUT_64BIT=${{ matrix.config.without_64_bit }}
 
       - name: 🚀 Build
         shell: bash
